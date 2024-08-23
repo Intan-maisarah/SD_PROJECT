@@ -1,0 +1,88 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* navigation */
+.navbar {
+    padding: 10px 0;
+    background: #ffffff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+.navbar-nav {
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+}
+
+.navbar-nav .nav-link {
+    position: relative;
+    margin: 0 8px;
+    padding: 10px 0;
+    font-weight: bold;
+    color: #333333;
+    transition: color 0.3s ease;
+    cursor: pointer;
+}
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+    color: #007bff;
+}
+
+.nav-indicator {
+    position: absolute;
+    bottom: 0;
+    height: 3px;
+    background-color: #5e8dbe;
+    transition: width 0.3s ease, left 0.3s ease;
+    width: 0;
+}
+/* navigation end */
+
+section {
+    height: 100vh;
+    padding: 80px 20px;
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #eaeaea;
+    box-sizing: border-box; /* Ensures padding is included within the height */
+}
+
+#home { background-color: pink; }
+#services { background-color: rgb(148, 65, 65); }
+#about { background-color: pink; }
+#contact { background-color: rgb(148, 65, 65); }
+#feedback { background-color: pink; }
+
+/* button */
+.btn {
+	font-size: 14px;
+	font-weight: bold;
+
+	&.btn-primary {
+		color: rgb(194, 114, 114);
+	}
+
+	&.rounded {
+		border-radius: 50px !important;
+	}
+
+	&.w-sm {
+		min-width: 100px;
+	}
+
+	&.w-md {
+		min-width: 130px;
+	}
+
+	&.w-lg {
+		min-width: 160px;
+	}
+}
