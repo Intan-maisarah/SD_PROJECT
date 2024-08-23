@@ -1,10 +1,11 @@
+/* General Styles */
 body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
 }
 
-/* navigation */
+/* Navigation Styles */
 .navbar {
     padding: 10px 0;
     background: #ffffff;
@@ -20,11 +21,29 @@ body {
     display: flex;
     justify-content: flex-end;
     width: 100%;
+    align-items: center;
 }
 
-.navbar-nav .nav-link {
-    position: relative;
-    margin: 0 8px;
+
+.navbar-nav .nav-link:hover,
+.navbar-nav .nav-link.active {
+    color: #007bff;
+}
+
+
+
+nav{
+	position: relative;
+	display: flex;
+}
+
+nav a {
+	position: relative;
+	text-decoration: none;
+	text-transform: uppercase;
+	font-size: 1em;
+	cursor: pointer;
+	margin: 0px 20px;
     padding: 10px 0;
     font-weight: bold;
     color: #333333;
@@ -32,27 +51,32 @@ body {
     cursor: pointer;
 }
 
-.navbar-nav .nav-link:hover,
-.navbar-nav .nav-link.active {
-    color: #007bff;
+nav a.active {
+    text-decoration: none !important;
 }
 
-.nav-indicator {
-    position: absolute;
-    bottom: 0;
-    height: 3px;
-    background-color: #5e8dbe;
-    transition: width 0.3s ease, left 0.3s ease;
-    width: 0;
+nav #marker{
+	position: absolute;
+	bottom: -11px;
+	left: 0;
+	background-color:#007bff;
+	width: 0;
+	height: 4px;
+	transition: 0.5s; 
 }
-/* navigation end */
 
+.navbar-expand-lg .navbar-collapse {
+    justify-content: flex-end;
+}
+
+
+/* Section Styles */
 section {
     height: 100vh;
     padding: 80px 20px;
     background-color: #f8f9fa;
     border-bottom: 1px solid #eaeaea;
-    box-sizing: border-box; /* Ensures padding is included within the height */
+    box-sizing: border-box; 
 }
 
 #home { background-color: pink; }
@@ -61,7 +85,7 @@ section {
 #contact { background-color: rgb(148, 65, 65); }
 #feedback { background-color: pink; }
 
-/* button */
+/* Button Styles */
 .btn {
 	font-size: 14px;
 	font-weight: bold;

@@ -1,13 +1,11 @@
 document.addEventListener('DOMContentLoaded', function() {
-    const navLinks = document.querySelectorAll('.nav-link');
-    const indicator = document.querySelector('.nav-indicator');
+    const navLinks = document.querySelectorAll('nav a');
+    const marker = document.querySelector('#marker');
     const navbarHeight = document.querySelector('.navbar').offsetHeight;
 
-    function updateIndicatorPosition(el) {
-        const navWidth = el.offsetWidth;
-        const navLeft = el.offsetLeft;
-        indicator.style.width = `${navWidth}px`;
-        indicator.style.left = `${navLeft}px`;
+    function indicator(el) {
+        marker.style.left = `${el.offsetLeft}px`;
+        marker.style.width = `${el.offsetWidth}px`;
     }
 
     navLinks.forEach(link => {
@@ -15,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
             e.preventDefault();
             navLinks.forEach(link => link.classList.remove('active'));
             link.classList.add('active');
-            updateIndicatorPosition(link);
+            indicator(link);
 
             const section = document.querySelector(link.getAttribute('href'));
             const sectionTop = section.getBoundingClientRect().top + window.scrollY - navbarHeight;
@@ -38,16 +36,15 @@ document.addEventListener('DOMContentLoaded', function() {
             if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
                 navLinks.forEach(link => link.classList.remove('active'));
                 link.classList.add('active');
-                updateIndicatorPosition(link);
+                indicator(link);
             }
         });
     });
 
-    // Initialize indicator position on page load
-    const activeLink = document.querySelector('.nav-link.active');
+    const activeLink = document.querySelector('nav a.active');
     if (activeLink) {
-        updateIndicatorPosition(activeLink);
+        indicator(activeLink);
     } else {
-        updateIndicatorPosition(navLinks[0]); // Initialize on first link if none active
+        indicator(navLinks[0]); 
     }
 });
