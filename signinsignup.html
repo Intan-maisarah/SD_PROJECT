@@ -8,19 +8,32 @@
 </head>
 <body>
     <div class="cont">
+        <!-- Sign In Form -->
         <div class="form sign-in">
             <h2>Welcome</h2>
             <label>
                 <span>Email</span>
-                <input type="email" id="email" />
+                <input type="email" id="signin-email" />
             </label>
             <label>
                 <span>Password</span>
-                <input type="password" id="password"/>
+                <input type="password" id="signin-password" />
             </label>
-            <p class="forgot-pass">Forgot password?</p>
-            <button type="button" class="submit">Sign In</button>
+            <p class="forgot-pass" id="forgot-pass">Forgot password?</p>
+            <button type="button" class="submit" id="signin-submit">Sign In</button>
         </div>
+
+        <!-- Forgot Password Form -->
+        <div class="form forgot-password" id="forgot-password-form">
+            <h2>Reset Password</h2>
+            <label>
+                <span>Email</span>
+                <input type="email" id="forgot-email" />
+            </label>
+            <button type="button" class="submit" id="forgot-submit">Send Reset Link</button>
+            <p class="back-to-signin">Back to <a href="#" id="back-to-signin">Sign In</a></p>
+        </div>
+
         <div class="sub-cont">
             <div class="img">
                 <div class="img__text m--up">
@@ -41,10 +54,6 @@
                     <input type="text" id="customer_name"/>
                 </label>
                 <label>
-                    <span>No.Contact</span>
-                    <input type="text" />
-                </label>
-                <label>
                     <span>Email</span>
                     <input type="email" id="email"/>
                 </label>
@@ -53,11 +62,11 @@
                     <input type="password" id="password"/>
                 </label>
                 <label>
-                    <span>contact</span>
+                    <span>Contact</span>
                     <input type="number" id="contact"/>
                 </label>
                 <label>
-                    <span>state</span>
+                    <span>State</span>
                     <input type="text" id="state"/>
                 </label>
                 <label>
@@ -73,22 +82,58 @@
                     <input type="text" id="address"/>
                 </label>
                 <label>
-                    <span>Veryfication code</span>
-                    <input type="number" id="veryfication_code"/>
-                </label>
-                <label>
-                    <span>verification code</span>
+                    <span>Verification Code</span>
                     <input type="number" />
                 </label>
-
-                <button type="button" class="submit">Sign Up</button>
+                <button type="button" class="submit" id="signup-submit">Sign Up</button>
             </div>
         </div>
     </div>
 
     <script>
+        // Function to get query parameters
+        function getQueryParam(param) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(param);
+        }
+
+        // Check the mode and toggle the class accordingly
+        const mode = getQueryParam('mode');
+        if (mode === 'signup') {
+            document.querySelector('.cont').classList.add('s--signup');
+        } else {
+            document.querySelector('.cont').classList.remove('s--signup');
+        }
+
+        // Toggle form when the image button is clicked
         document.querySelector('.img__btn').addEventListener('click', function() {
             document.querySelector('.cont').classList.toggle('s--signup');
+        });
+
+        // Show forgot password form
+        document.getElementById('forgot-pass').addEventListener('click', function() {
+            document.querySelector('.form.sign-in').style.display = 'none';
+            document.getElementById('forgot-password-form').style.display = 'block';
+        });
+
+        // Back to sign in form
+        document.getElementById('back-to-signin').addEventListener('click', function(event) {
+            event.preventDefault();
+            document.querySelector('.form.sign-in').style.display = 'block';
+            document.getElementById('forgot-password-form').style.display = 'none';
+        });
+
+        // Handle forgot password submission
+        document.getElementById('forgot-submit').addEventListener('click', function() {
+            const email = document.getElementById('forgot-email').value;
+            if (email) {
+                alert('A password reset link has been sent to ' + email);
+                // Here you would typically send an AJAX request to your server to handle the password reset
+                document.querySelector('.form.sign-in').style.display = 'block';
+                document.getElementById('forgot-password-form').style.display = 'none';
+            } else {
+                alert('Please enter your email address.');
+            }
         });
     </script>
 </body>

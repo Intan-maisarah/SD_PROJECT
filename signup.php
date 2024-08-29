@@ -37,7 +37,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST"){
         $headers = "From: System_message@main.com";
 
     if(mail($forward, $subject, $message, $headers)){
-        echo "A veryfication code has been sent to your email.";
+        echo "A verification code has been sent to your email.";
 
     }else{
         echo "Failed to send verification code to your email. ";
