@@ -31,11 +31,14 @@ session_start();
                         <button class="btn btn-primary rounded ml-4" onclick="window.location.href='signin.html'">Log In</button>
                     </div>
                     <div class="nav-item">
-                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='signinsignup.html?mode=signup'">Sign Up</button>
+                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='signup.html'">Sign Up</button>
                     </div>
                 <?php else: ?>
                     <div class="nav-item">
                         <button class="btn btn-primary rounded ml-4" onclick="window.location.href='logout.php'">Log Out</button>
+                    </div>
+                    <div class="nav-item">
+                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='view_profile.html'">Profile</button>
                     </div>
                 <?php endif; ?>
             </div>
@@ -47,7 +50,7 @@ session_start();
         <div class="hero-overlay"></div>
         <div class="hero-content">
             <h1>Let Us Handle All Your Printing Needs.</h1>
-            <p>PrintStudio is a print space located in Ibadan, Oyo state. PrintStudio is the preferred online printer.</p>
+            <p>Your on the go printing service!</p>
             <button class="btn btn-primary">Get Started</button>
         </div>
         <img src="imgs/sample-image.png" alt="Printing Materials" class="hero-image">
