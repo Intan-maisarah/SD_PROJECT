@@ -20,15 +20,15 @@ session_start();
             <div class="collapse navbar-collapse" id="navbarNav">
                 <nav>
                     <div id="marker"></div>
-                    <a href="#home">home</a>
-                    <a href="#services">services</a>
-                    <a href="#about">about</a>
-                    <a href="#contact">contact</a>
-                    <a href="#feedback">feedback</a>
+                    <a href="#home">Home</a>
+                    <a href="#services">Services</a>
+                    <a href="#about">About</a>
+                    <a href="#contact">Contact</a>
+                    <a href="#feedback">Feedback</a>
                 </nav>
                 <?php if (!isset($_SESSION['user_logged_in'])): ?>
                     <div class="nav-item">
-                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='signinsignup.html?mode=login'">Log In</button>
+                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='signin.html'">Log In</button>
                     </div>
                     <div class="nav-item">
                         <button class="btn btn-primary rounded ml-4" onclick="window.location.href='signinsignup.html?mode=signup'">Sign Up</button>
@@ -42,11 +42,45 @@ session_start();
         </div>
     </nav>
 
-    <section id="home">Home Section</section>
-    <section id="services">Services Section</section>
-    <section id="about">About Us Section</section>
-    <section id="contact">Contact Us Section</section>
-    <section id="feedback">Feedback Section</section>
+    <!-- Hero Section -->
+    <section class="hero-section" id="home">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>Let Us Handle All Your Printing Needs.</h1>
+            <p>PrintStudio is a print space located in Ibadan, Oyo state. PrintStudio is the preferred online printer.</p>
+            <button class="btn btn-primary">Get Started</button>
+        </div>
+        <img src="imgs/sample-image.png" alt="Printing Materials" class="hero-image">
+    </section>
+
+    <section id="services">
+        <div class="container">
+            <h2>Our Services</h2>
+            <!-- Service content here -->
+        </div>
+    </section>
+
+    <section id="about">
+        <div class="container">
+            <h2>About Us</h2>
+            <!-- About content here -->
+             
+        </div>
+    </section>
+
+    <section id="contact">
+        <div class="container">
+            <h2>Contact Us</h2>
+            <!-- Contact content here -->
+        </div>
+    </section>
+
+    <section id="feedback">
+        <div class="container">
+            <h2>Feedback</h2>
+            <!-- Feedback content here -->
+        </div>
+    </section>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
