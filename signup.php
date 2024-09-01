@@ -1,53 +1,114 @@
-<?php
+<!DOCTYPE html>
+<html lang="en">
 
-session_start();
-$servername = "serverhost";
-$username = "web1";
-$password = "web1";
-$dbname = "ipss";
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register</title>
+  <link rel="stylesheet" href="css/design.css">
+
+</head>
+
+<body>
+  <div class="cont">
+  
+    <div class="form-sign-up">
 
 
-$con= new mysqli("serverhost","web1","web1","ipss");
+      <header></header>
+      <hr>
+      
+      <form class="signup" action="" method="POST">
 
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+      
+     
 
-if($_SERVER["REQUEST_METHOD"] == "POST"){
-    $username = $con->real_escape_string($_POST['username']);
-    $password = $con->real_escape_string($_POST['password']);
-    $customer_name = $con->real_escape_string($_POST['customer_name']);
-    $contact = $con->real_escape_string($_POST['contact']);
-    $email = $con->real_escape_string($_POST['email']);
-    $state = $con->real_escape_string($_POST['state']);
-    $postcode = $con->real_escape_string($_POST['postcode']);
-    $city = $con->real_escape_string($_POST['city']);
-    $address = $con->real_escape_string($_POST['address']);
-    $veryficatio_code = $con->real_escape_string($_POST['verification_code']);
 
-    $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        <div class="form-sign-up">
 
-    $SQL = "INSERT INTO customer (username, password, customer_name, contact, email, state, postcode, city, address, verification_code)
-            VALUES ('$username', '$hashed_password', '$customer_name', '$contact', '$email', '$state', '$postcode', '$city', '$address', '$verification_code' )";
-    
-    if($con->QUERY($sql) === TRUE){
-        $forward = $email;
-        $subject = "Email verification";
-        $message = "Your verification code is: $verification_code";
-        $headers = "From: System_message@main.com";
+          <?php
 
-    if(mail($forward, $subject, $message, $headers)){
-        echo "A verification code has been sent to your email.";
+          session_start();
 
-    }else{
-        echo "Failed to send verification code to your email. ";
-    }
-    }
-   
-    if($con->query($sql) === TRUE){
-        echo "Your Record been saved";
-    }else{
-        echo "Error: " .$sql. "<br>" .$con->error;
-    }
-}
-?>
+          include "connection.php";
+
+          if (isset($_POST['register'])) {
+
+        
+            $username = $_POST['username'];
+            $email = $_POST['email'];
+            $pass = $_POST['password'];
+
+
+           
+
+        
+
+           
+
+            $check = "select * from users where email='{$email}'";
+
+            $res = mysqli_query($conn, $check);
+
+            $passwd = password_hash($pass, PASSWORD_DEFAULT);
+
+          
+
+
+
+
+            if (mysqli_num_rows($res) > 0) {
+
+                echo '<script>alert("This email is used, try another email")</script>'; 
+                header("Location: signup.php");
+                exit();
+
+
+
+            } else {
+
+              if ($pass) {
+
+                $sql = "insert into users(username,email,password) values('$username','$email','$passwd')";
+
+                $result = mysqli_query($conn, $sql);
+
+               
+
+
+               if ($result) {
+
+                echo '<script>alert("Youi are registered succesfully")</script>'; 
+                header("Location: index.php");
+                exit();
+
+
+                } else {
+                echo '<script>alert("Registered Error, Try another email")</script>'; 
+                header("Location: signup.php");
+                exit();
+                }
+
+              } else {
+                echo '<script>alert("Registered Error, Try another Password")</script>'; 
+                header("Location: signup.php");
+                exit();
+              }
+            }
+          } else {
+
+            ?>
+
+        </form>
+      </div>
+      <?php
+          }
+          ?>
+  </div>
+
+  <script>
+
+  </script>
+</body>
+
+</html>
