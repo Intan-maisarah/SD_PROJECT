@@ -1,88 +1,38 @@
 <?php
 session_start();
-?>
-<!DOCTYPE html>
-<html lang="en">
+include "connection.php"; 
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Login</title>
-  <link rel="stylesheet" href="css/design.css">
+if (isset($_POST['signin'])) {
 
-</head>
+    $username = mysqli_real_escape_string($conn, $_POST['username']);
+    $pass = $_POST['password'];
 
-<body>
+    $sql = "SELECT * FROM users WHERE username='$username'";
+    $res = mysqli_query($conn, $sql);
 
-  <div class="cont">
-    <div class="form-sign in">
-    <form class="signin" action="" method="POST">
+    if (mysqli_num_rows($res) > 0) {
 
+        $row = mysqli_fetch_assoc($res);
+        $password = $row['password'];
 
-    
-
-      <?php
-      include "connection.php"; 
-
-      if (isset($_POST['signin'])) {
-
-        $username = mysqli_real_escape_string($conn, $_POST['username']);
-        $pass = $_POST['password'];
-
-        $sql = "select * from users where username='$username'";
-
-        $res = mysqli_query($conn, $sql);
-
-        if (mysqli_num_rows($res) > 0) {
-
-          $row = mysqli_fetch_assoc($res);
-
-          $password = $row['password'];
-
-          $decrypt = password_verify($pass, $password);
-
-
-
-          if ($decrypt) {
+        if (password_verify($pass, $password)) {
+            // Correct password, set session variables
             $_SESSION['id'] = $row['id'];
             $_SESSION['username'] = $row['username'];
-            $_SESSION['password'] = $row['password'];
             header("Location: index.php");
             exit();
-    
-
-
-          } else {
-
-            echo '<script>alert("Wrong Password")</script>'; 
-            header("Location: signin.html");
-            exit();
-
-          }
-
         } else {
-
-            echo '<script>alert("Wrong Email or Password")</script>'; 
-            header("Location: signin.html");
-            exit();
-
+            // Incorrect password
+            echo '<script>alert("Wrong Password");window.location.href="signin.html";</script>';
         }
 
-
-      } else 
-  
-      {
-
-
-        ?>
-    </form>
-      <?php
-      }
-      ?>
-  </div>
-  <script>
-
-  </script>
-</body>
-
-</html>
+    } else {
+        // No user found with the entered username
+        echo '<script>alert("Wrong Username or Password");window.location.href="signin.html";</script>';
+    }
+} else {
+    // Redirect if the form was not submitted
+    header("Location: signin.html");
+    exit();
+}
+?>
