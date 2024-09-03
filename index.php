@@ -26,7 +26,7 @@ session_start();
                     <a href="#contact">Contact</a>
                     <a href="#feedback">Feedback</a>
                 </nav>
-                <?php if (!isset($_SESSION['user_logged_in'])): ?>
+                <?php if (!isset($_SESSION['signin'])): ?>
                     <div class="nav-item">
                         <button class="btn btn-primary rounded ml-4" onclick="window.location.href='signin.html'">Log In</button>
                     </div>

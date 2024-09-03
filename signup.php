@@ -1,30 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Register</title>
-  <link rel="stylesheet" href="css/design.css">
-
-</head>
-
-<body>
-  <div class="cont">
-  
-    <div class="form-sign-up">
-
-
-      <header></header>
-      <hr>
-      
-      <form class="signup" action="" method="POST">
-
-      
-     
-
-
-        <div class="form-sign-up">
 
           <?php
 
@@ -37,10 +11,14 @@
         
             $username = $_POST['username'];
             $email = $_POST['email'];
-            $pass = $_POST['password'];
+            $password = $_POST['password'];
+            $confirm_password = $_POST['confirm_password'];
 
 
-           
+            if ($password !== $confirm_password) {
+              echo '<script>alert("Passwords do not match. Please try again.");</script>';
+              exit();
+          }
 
         
 
@@ -50,7 +28,7 @@
 
             $res = mysqli_query($conn, $check);
 
-            $passwd = password_hash($pass, PASSWORD_DEFAULT);
+            /*$passwd = password_hash($pass, PASSWORD_DEFAULT); */
 
           
 
@@ -60,16 +38,16 @@
             if (mysqli_num_rows($res) > 0) {
 
                 echo '<script>alert("This email is used, try another email")</script>'; 
-                header("Location: signup.php");
+                header("Location: signup.html");
                 exit();
 
 
 
             } else {
 
-              if ($pass) {
+              if ($password) {
 
-                $sql = "insert into users(username,email,password) values('$username','$email','$passwd')";
+                $sql = "insert into users(username,email,password) values('$username','$email','$password')";
 
                 $result = mysqli_query($conn, $sql);
 
@@ -85,13 +63,13 @@
 
                 } else {
                 echo '<script>alert("Registered Error, Try another email")</script>'; 
-                header("Location: signup.php");
+                header("Location: signup.html");
                 exit();
                 }
 
               } else {
                 echo '<script>alert("Registered Error, Try another Password")</script>'; 
-                header("Location: signup.php");
+                header("Location: signup.html");
                 exit();
               }
             }
@@ -99,16 +77,6 @@
 
             ?>
 
-        </form>
-      </div>
       <?php
           }
           ?>
-  </div>
-
-  <script>
-
-  </script>
-</body>
-
-</html>

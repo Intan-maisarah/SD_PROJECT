@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 26, 2024 at 01:16 AM
+-- Generation Time: Sep 03, 2024 at 04:12 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -28,7 +28,8 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `customer` (
-  `id` varchar(50) NOT NULL DEFAULT '0',
+  `id` int(100) NOT NULL,
+  `username` varchar(30) NOT NULL,
   `password` varchar(100) NOT NULL,
   `customer_name` varchar(100) NOT NULL,
   `contact` varchar(30) NOT NULL,
@@ -36,9 +37,7 @@ CREATE TABLE `customer` (
   `state` varchar(100) NOT NULL,
   `postcode` varchar(100) NOT NULL,
   `city` varchar(100) NOT NULL,
-  `address` varchar(100) NOT NULL,
-  `verification_code` varchar(5) NOT NULL,
-  `username` varchar(30) NOT NULL
+  `address` varchar(100) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -77,17 +76,22 @@ CREATE TABLE `service` (
 --
 
 CREATE TABLE `users` (
-  `User_id` varchar(30) NOT NULL,
-  `password` varchar(12) NOT NULL
+  `id` int(255) NOT NULL,
+  `username` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `password` varchar(12) NOT NULL,
+  `confirm_password` int(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`User_id`, `password`) VALUES
-('ADMIN-1', 'ADMIN01'),
-('STAFF-1', 'STAFF01');
+INSERT INTO `users` (`id`, `username`, `email`, `password`, `confirm_password`) VALUES
+(1, '', '', 'ADMIN01', 0),
+(2, '', '', 'STAFF01', 0),
+(7, 'imaisarahm', 'imaisarahm@gmail.com', 'project1', 0),
+(8, 'nui', 'nu@gmail.com', 'nui89', 0);
 
 --
 -- Indexes for dumped tables
@@ -98,6 +102,28 @@ INSERT INTO `users` (`User_id`, `password`) VALUES
 --
 ALTER TABLE `customer`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `customer`
+--
+ALTER TABLE `customer`
+  MODIFY `id` int(100) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
