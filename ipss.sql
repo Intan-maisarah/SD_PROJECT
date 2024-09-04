@@ -2,10 +2,10 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Sep 03, 2024 at 04:12 PM
--- Server version: 10.4.32-MariaDB
--- PHP Version: 8.0.30
+-- Host: localhost
+-- Generation Time: Sep 04, 2024 at 02:16 PM
+-- Server version: 10.4.28-MariaDB
+-- PHP Version: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -79,19 +79,20 @@ CREATE TABLE `users` (
   `id` int(255) NOT NULL,
   `username` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
-  `password` varchar(12) NOT NULL,
-  `confirm_password` int(255) NOT NULL
+  `password` varchar(200) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `username`, `email`, `password`, `confirm_password`) VALUES
-(1, '', '', 'ADMIN01', 0),
-(2, '', '', 'STAFF01', 0),
-(7, 'imaisarahm', 'imaisarahm@gmail.com', 'project1', 0),
-(8, 'nui', 'nu@gmail.com', 'nui89', 0);
+INSERT INTO `users` (`id`, `username`, `email`, `password`) VALUES
+(1, '', '', 'ADMIN01'),
+(2, '', '', 'STAFF01'),
+(7, 'imaisarahm', 'imaisarahm@gmail.com', 'project1'),
+(8, 'nui', 'nu@gmail.com', 'nui89'),
+(9, 'dayangnurnazihah', 'dayangziha@gmail.com', '$2y$10$WlLtp6w..wW3dc.CS5d/FO257FtHcUfZmIefvvhkwqfU99XlllyTm'),
+(10, 'dayang', 'dayangnurnazihah.m@gmail.com', '$2y$10$h1kLDlSXvFJnkygui0UWIuSBf8lLQI5NiKEYZynNQS91ASdwY3ue6');
 
 --
 -- Indexes for dumped tables
@@ -123,7 +124,7 @@ ALTER TABLE `customer`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
