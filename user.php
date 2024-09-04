@@ -1,15 +1,17 @@
 <?php
 
-function validatePassword($username,$password){
-    $con=mysqli_connect("serverhost","web1","web1","ipss");
-    if($con){
-        echo mysqli_connect_error();
-        exit;
+include "connection.php"; 
+
+function getUserType($conn, $username) {
+    $sql = "SELECT userType FROM users WHERE username='$username'";
+    $res = mysqli_query($conn, $sql);
+    if (mysqli_num_rows($res) > 0) {
+        $row = mysqli_fetch_assoc($res);
+        return $row['userType'];
+    } else {
+        return null; // or handle the error
     }
 }
- 
-
-
 
 
 ?>

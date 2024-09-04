@@ -1,10 +1,12 @@
 <?php
 session_start();
 include "connection.php"; // Ensure this file contains the database connection setup
+include "user.php";
 
 if (isset($_POST['signin'])) {
     $username = mysqli_real_escape_string($conn, $_POST['username']);
     $password = $_POST['password'];
+    $UserType = $_POST['userType'];
 
     // Query to get the user with the provided username
     $sql = "SELECT * FROM users WHERE username='$username'";
@@ -19,8 +21,18 @@ if (isset($_POST['signin'])) {
             // Correct password, set session variables
             $_SESSION['signin'] = true;
             $_SESSION['username'] = $row['username'];
-            header("Location: index.php"); // Redirect to the home page or dashboard
+
+            $userType=getUserType($conn, $username);
+            if($userType == 'ADMIN'){
+                header("Location:Admin Dashboard\html\admin_page.html");
+                exit();
+            } else if($userType == 'STAFF'){
+                header("");
+            } else{
+                header("Location: index.php"); // Redirect to the home page or dashboard
             exit();
+            }
+
         } else {
             // Incorrect password
             echo '<script>alert("Wrong Password");window.location.href="signin.html";</script>';
