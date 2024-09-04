@@ -31,7 +31,7 @@ session_start();
                         <button class="btn btn-primary rounded ml-4" onclick="window.location.href='signin.html'">Log In</button>
                     </div>
                     <div class="nav-item">
-                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='signup.html'">Sign Up</button>
+                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='signup.php'">Sign Up</button>
                     </div>
                 <?php else: ?>
                     <div class="nav-item">
