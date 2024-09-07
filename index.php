@@ -46,14 +46,14 @@ session_start();
     </nav>
 
     <!-- Hero Section -->
-    <section class="hero-section" id="home">
+    <section class="hero-section" id="home" >
         <div class="hero-overlay"></div>
-        <div class="hero-content">
+        <div class="hero-content" >
             <h1>Let Us Handle All Your Printing Needs.</h1>
             <p>Your on the go printing service!</p>
-            <button class="btn btn-primary">Get Started</button>
+            <button class="btn btn-primary" onclick="window.location.href='signin.html'">Get Started</button>
         </div>
-        <img src="imgs/sample-image.png" alt="Printing Materials" class="hero-image">
+        
     </section>
 
     <section id="services">
@@ -84,6 +84,68 @@ session_start();
             <!-- Feedback content here -->
         </div>
     </section>
+
+
+ <!-- Footer -->
+<footer class="text-center text-white" style="background-color: #3f51b5">
+  <!-- Grid container -->
+  <div class="container">
+    <!-- Section: Links -->
+    <div class="row text-center d-flex justify-content-center pt-3"> <!-- Reduced padding -->
+      <!-- Grid column -->
+      <div class="col-md-2 mb-3">
+        <h6 class="text-uppercase font-weight-bold">
+          <a href="#!" class="text-white">About Us</a>
+        </h6>
+      </div>
+      <!-- Grid column -->
+
+      <!-- Grid column -->
+      <div class="col-md-2 mb-3">
+        <h6 class="text-uppercase font-weight-bold">
+          <a href="#!" class="text-white">Services</a>
+        </h6>
+      </div>
+      <!-- Grid column -->
+
+      <!-- Grid column -->
+      <div class="col-md-2 mb-3">
+        <h6 class="text-uppercase font-weight-bold">
+          <a href="#!" class="text-white">Contact Us</a>
+        </h6>
+      </div>
+      <!-- Grid column -->
+
+      <!-- Grid column -->
+      <div class="col-md-2 mb-3">
+        <h6 class="text-uppercase font-weight-bold">
+          <a href="#!" class="text-white">Feedback</a>
+        </h6>
+      </div>
+      <!-- Grid column -->
+    </div>
+    <!-- Section: Links -->
+
+    <hr class="my-4" /> <!-- Adjusted hr spacing -->
+
+    <!-- Section: Text -->
+    <div class="row d-flex justify-content-center" style="padding-bottom: 20px;"> <!-- Added padding -->
+      <div class="col-lg-8">
+        <p>
+        Our online printing service was inspired by the needs and creativity of students who constantly
+        juggle tight deadlines and demanding schedules. Recognizing their struggle to find convenient,
+        reliable printing options, we set out to create a service that fits seamlessly into their busy lives.
+        With 24/7 document uploads and a convenient 1km delivery range, our service is designed to
+        provide students with the flexibility they need, ensuring that their printing needs are met anytime, anywhere.
+        </p>
+      </div>
+    </div>
+    <!-- Section: Text -->
+  </div>
+  <!-- Grid container -->
+</footer>
+<!-- Footer -->
+
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>

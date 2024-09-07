@@ -24,7 +24,7 @@ body {
 
 .navbar-nav .nav-link:hover,
 .navbar-nav .nav-link.active {
-    color: #007bff;
+    color: rgb(230, 154, 171);
 }
 
 nav {
@@ -41,7 +41,7 @@ nav a {
     margin: 0px 20px;
     padding: 10px 0;
     font-weight: bold;
-    color: #333333;
+    color: rgb(177, 120, 129);
     transition: color 0.3s ease;
     cursor: pointer;
 }
@@ -54,7 +54,7 @@ nav #marker {
     position: absolute;
     bottom: -11px;
     left: 0;
-    background-color: #007bff;
+    background-color: rgb(162, 75, 130);
     width: 0;
     height: 4px;
     transition: 0.5s;
@@ -67,13 +67,17 @@ nav #marker {
 section {
     height: 100vh;
     padding: 80px 20px;
-    background-color: #f8f9fa;
+    
     border-bottom: 1px solid #eaeaea;
     box-sizing: border-box; 
 }
 
 #home {
-    background-color: pink;
+    background-image: url('images/background.jpeg') !important;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    height: 100vh; 
 }
 
 #services {
@@ -104,7 +108,7 @@ section {
 }
 
 .btn.btn-primary:hover {
-    background-color: #e0a800;
+    background-color: #985e9f;
 }
 
 .btn.rounded {
@@ -124,7 +128,6 @@ section {
 }
 
 .hero-section {
-    background-color: #6c63ff;
     color: white;
     display: flex;
     align-items: center;
@@ -165,14 +168,7 @@ section {
     background-color: #e0a800;
 }
 
-.hero-image {
-    position: absolute;
-    right: 0;
-    bottom: 0;
-    max-width: 50%;
-    height: auto;
-    z-index: 1;
-}
+
 
 .hero-overlay {
     position: absolute;
@@ -190,11 +186,7 @@ section {
         padding: 20px;
     }
 
-    .hero-image {
-        position: static;
-        max-width: 80%;
-        margin: 20px auto 0;
-    }
+    
 
     .hero-section .hero-content {
         padding: 10px;
