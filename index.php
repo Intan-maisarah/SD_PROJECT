@@ -7,6 +7,7 @@ session_start();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Infinity Printing</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/ipasss.css">
 </head>
@@ -64,26 +65,76 @@ session_start();
     </section>
 
     <section id="about">
-        <div class="container">
-            <h2>About Us</h2>
-            <!-- About content here -->
-             
-        </div>
-    </section>
+    <div class="container">
+        <h2>About Us</h2>
+        <h6>Address: Gurney Mall, Lot 1-30, Jln Maktab, 54000 Kuala Lumpur</h6>
 
-    <section id="contact">
-        <div class="container">
-            <h2>Contact Us</h2>
-            <!-- Contact content here -->
-        </div>
-    </section>
+        <!-- Google Maps Embed -->
 
-    <section id="feedback">
-        <div class="container">
-            <h2>Feedback</h2>
-            <!-- Feedback content here -->
+        <div class="map-container" style="width: 100%; height: 400px; margin-top: 20px;">
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d434.727282914923!2d101.7217383527438!3d3.1720723536050173!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31cc37a3f442ec45%3A0xc85fb666f112d900!2sInfinity%20Printing%20and%20Stationery!5e0!3m2!1sen!2smy!4v1725715700058!5m2!1sen!2smy"
+                width="100%" 
+                height="400" 
+                style="border:0;" 
+                allowfullscreen="" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
         </div>
-    </section>
+        <p>
+        Welcome to Infinity Printing & Stationery Service, your go-to solution for remote document printing and delivery.
+        Our platform allows you to easily upload your documents, track order statuses, and choose between convenient pickup appointments or delivery within a 1km range.
+        With a focus on reducing wait times and improving service quality, we offer a streamlined experience for customers, staff, and administrators alike. Whether you need quick access to printed materials or efficient management of your printing needs, Infinity Printing is here to serve you anytime, anywhere.</p>
+    </div>
+</section>
+
+<section id="contact">
+    <div class="container">
+        <h2>Contact Us</h2>
+        <!-- Contact content here -->
+
+        <!-- Instagram Account Link -->
+        <p>Follow us on Instagram:</p>
+        <a href="https://www.instagram.com/infinity.utmkl" target="_blank" style="text-decoration: none; color: inherit;">
+            <i class="fab fa-instagram" style="font-size: 24px; margin-right: 8px;"></i> @infinity.utmkl
+        </a>
+
+        <!-- Email Address -->
+        <p>Email us at:</p>
+        <a href="mailto:infinity.utmkl@gmail.com" style="text-decoration: none; color: inherit;">
+            <i class="fas fa-envelope" style="font-size: 20px; margin-right: 8px;"></i> infinity.utmkl@gmail.com
+        </a>
+        
+        <!-- Phone Number -->
+        <p>Call us:</p>
+        <a href="tel:+60142272646" style="text-decoration: none; color: inherit;">
+            <i class="fas fa-phone-alt" style="font-size: 20px; margin-right: 8px;"></i> +6014 2272-647
+        </a>
+    </div>
+</section>
+
+<section id="feedback">
+    <div class="container">
+        <h2>Feedback</h2>
+        <!-- Feedback Form -->
+        <form action="send_feedback.php" method="post">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="message">Feedback:</label>
+                <textarea id="message" name="message" class="form-control" rows="5" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Send Feedback</button>
+        </form>
+    </div>
+</section>
 
 
  <!-- Footer -->
