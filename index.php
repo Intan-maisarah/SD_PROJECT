@@ -65,29 +65,34 @@ session_start();
     </section>
 
     <section id="about">
-    <div class="container">
-        <h2>About Us</h2>
-        <h6>Address: Gurney Mall, Lot 1-30, Jln Maktab, 54000 Kuala Lumpur</h6>
+   <div class="container">
+    <h2>About Us</h2>
+    <h6 style="font-size: 1.2em; color: #777; margin-bottom: 40px;">
+      Address: Gurney Mall, Lot 1-30, Jln Maktab, 54000 Kuala Lumpur
+    </h6>
 
-        <!-- Google Maps Embed -->
-
-        <div class="map-container" style="width: 100%; height: 400px; margin-top: 20px;">
-            <iframe 
-                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d434.727282914923!2d101.7217383527438!3d3.1720723536050173!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31cc37a3f442ec45%3A0xc85fb666f112d900!2sInfinity%20Printing%20and%20Stationery!5e0!3m2!1sen!2smy!4v1725715700058!5m2!1sen!2smy"
-                width="100%" 
-                height="400" 
-                style="border:0;" 
-                allowfullscreen="" 
-                loading="lazy" 
-                referrerpolicy="no-referrer-when-downgrade">
-            </iframe>
-        </div>
-        <p>
-        Welcome to Infinity Printing & Stationery Service, your go-to solution for remote document printing and delivery.
-        Our platform allows you to easily upload your documents, track order statuses, and choose between convenient pickup appointments or delivery within a 1km range.
-        With a focus on reducing wait times and improving service quality, we offer a streamlined experience for customers, staff, and administrators alike. Whether you need quick access to printed materials or efficient management of your printing needs, Infinity Printing is here to serve you anytime, anywhere.</p>
+    <!-- Google Maps Embed -->
+    <div class="map-container" style="width: 100%; height: 400px; margin-bottom: 40px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+      <iframe 
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d434.727282914923!2d101.7217383527438!3d3.1720723536050173!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31cc37a3f442ec45%3A0xc85fb666f112d900!2sInfinity%20Printing%20and%20Stationery!5e0!3m2!1sen!2smy!4v1725715700058!5m2!1sen!2smy"
+        width="100%" 
+        height="400" 
+        style="border:0;" 
+        allowfullscreen="" 
+        loading="lazy" 
+        referrerpolicy="no-referrer-when-downgrade">
+      </iframe>
     </div>
+
+    <p style="font-size: 1.1em; color: #555; text-align: justify; padding: 0 20px;">
+      Welcome to <strong>Infinity Printing & Stationery Service</strong>, your go-to solution for remote document printing and delivery.
+      Our platform allows you to easily upload your documents, track order statuses, and choose between convenient pickup appointments or delivery within a 1km range.
+      With a focus on reducing wait times and improving service quality, we offer a streamlined experience for customers, staff, and administrators alike. 
+      Whether you need quick access to printed materials or efficient management of your printing needs, Infinity Printing is here to serve you anytime, anywhere.
+    </p>
+  </div>
 </section>
+
 
 <section id="contact">
     <div class="container">
