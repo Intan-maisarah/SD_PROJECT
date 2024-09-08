@@ -24,12 +24,12 @@ if (isset($_POST['signin'])) {
 
             $userType=getUserType($conn, $username);
             if($userType == 'ADMIN'){
-                header("Location:Admin Dashboard\html\admin_page.html");
+                header("Location:admin_dashboard/html/admin-page.html");
                 exit();
             } else if($userType == 'STAFF'){
                 header("");
             } else{
-                header("Location: index.php"); // Redirect to the home page or dashboard
+                header("Location: index.php");
             exit();
             }
 

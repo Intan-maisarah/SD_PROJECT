@@ -6,7 +6,7 @@ body {
 
 .navbar {
     padding: 10px 0;
-    background: #ffffff;
+    background: rgb(252, 250, 249);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     position: fixed;
     top: 0;
@@ -22,9 +22,13 @@ body {
     align-items: center;
 }
 
-.navbar-nav .nav-link:hover,
+
 .navbar-nav .nav-link.active {
-    color: rgb(230, 154, 171);
+    color: #0e263e; 
+}
+
+.navbar-nav .nav-link:hover {
+    color: #0d243c; 
 }
 
 nav {
@@ -41,7 +45,7 @@ nav a {
     margin: 0px 20px;
     padding: 10px 0;
     font-weight: bold;
-    color: rgb(177, 120, 129);
+    color: #183a4d; 
     transition: color 0.3s ease;
     cursor: pointer;
 }
@@ -54,7 +58,7 @@ nav #marker {
     position: absolute;
     bottom: -11px;
     left: 0;
-    background-color: rgb(162, 75, 130);
+    background-color: #5e97c2; 
     width: 0;
     height: 4px;
     transition: 0.5s;
@@ -67,7 +71,6 @@ nav #marker {
 section {
     height: 100vh;
     padding: 80px 20px;
-    
     border-bottom: 1px solid #eaeaea;
     box-sizing: border-box; 
 }
@@ -81,19 +84,19 @@ section {
 }
 
 #services {
-    background-color: rgb(148, 65, 65);
+    background-color: #81d4fa; 
 }
 
 #about {
-    background-color: pink;
+    background-color: #b3e5fc; 
 }
 
 #contact {
-    background-color: rgb(148, 65, 65);
+    background-color: #4fc3f7; 
 }
 
 #feedback {
-    background-color: pink;
+    background-color: #b3e5fc; 
 }
 
 .btn {
@@ -102,13 +105,13 @@ section {
 }
 
 .btn.btn-primary {
-    background-color: pink;
+    background-color: #0b3349; 
     color: white;
     border: none;
 }
 
 .btn.btn-primary:hover {
-    background-color: #985e9f;
+    background-color: #0277bd; 
 }
 
 .btn.rounded {
@@ -156,19 +159,17 @@ section {
 }
 
 .hero-section .btn {
-    background-color: #ffc107;
+    background-color: #29b6f6; /* Bright blue for hero buttons */
     border: none;
-    color: #333;
+    color: white;
     font-weight: bold;
     padding: 10px 20px;
     text-transform: uppercase;
 }
 
 .hero-section .btn:hover {
-    background-color: #e0a800;
+    background-color: #0288d1; /* Darker blue on hover */
 }
-
-
 
 .hero-overlay {
     position: absolute;
@@ -176,7 +177,7 @@ section {
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.4);
+    background-color: rgba(0, 0, 0, 0.1);
     z-index: 1;
 }
 
@@ -185,8 +186,6 @@ section {
         text-align: center;
         padding: 20px;
     }
-
-    
 
     .hero-section .hero-content {
         padding: 10px;
