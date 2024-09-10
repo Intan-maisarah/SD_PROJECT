@@ -1,6 +1,10 @@
 <?php
 session_start();
 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 include "connection.php";
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
@@ -70,7 +74,7 @@ if (isset($_POST['register'])) {
 
                     $mail->send();
                     echo '<script>alert("Registration successful. Please check your email to verify your account.");</script>';
-                    header("Location: index.php");
+                    header("Location: signin.php");
                     exit();
                 } catch (Exception $e) {
                     error_log('Message could not be sent. Mailer Error: ' . $mail->ErrorInfo);
@@ -222,16 +226,68 @@ if (isset($_POST['register'])) {
         var checkbox = document.getElementById('agreeCheckbox');
 
         if (password.length < 8) {
-            event.preventDefault();
-            alert('Password must be at least 8 characters long.');
-        } else if (password !== confirmPassword) {
-            event.preventDefault();
-            alert('Passwords do not match. Please try again.');
-        } else if (!checkbox.checked) {
+                errorMessage += 'Password must be at least 8 characters long.\n';
+            }
+
+            // Check for at least one uppercase letter
+            if (!/[A-Z]/.test(password)) {
+                errorMessage += 'Password must include at least one uppercase letter.\n';
+            }
+
+            // Check for at least one number
+            if (!/[0-9]/.test(password)) {
+                errorMessage += 'Password must include at least one number.\n';
+            }
+
+            // Check for at least one special character
+            if (!/[@$!%*?&#]/.test(password)) {
+                errorMessage += 'Password must include at least one special character.\n';
+            }
+
+            if (errorMessage) {
+                alert(errorMessage);
+                return false; // Prevent form submission
+            }
+            return true; // Allow form submission
+
+       if (!checkbox.checked) {
             event.preventDefault();
             alert('You must agree to the terms of service before registering.');
         }
     });
+    </script>
+
+    <script>
+        function validatePassword() {
+            var password = document.getElementById('new_password').value;
+            var errorMessage = '';
+
+            // Check password length
+            if (password.length < 8) {
+                errorMessage += 'Password must be at least 8 characters long.\n';
+            }
+
+            // Check for at least one uppercase letter
+            if (!/[A-Z]/.test(password)) {
+                errorMessage += 'Password must include at least one uppercase letter.\n';
+            }
+
+            // Check for at least one number
+            if (!/[0-9]/.test(password)) {
+                errorMessage += 'Password must include at least one number.\n';
+            }
+
+            // Check for at least one special character
+            if (!/[@$!%*?&#]/.test(password)) {
+                errorMessage += 'Password must include at least one special character.\n';
+            }
+
+            if (errorMessage) {
+                alert(errorMessage);
+                return false; // Prevent form submission
+            }
+            return true; // Allow form submission
+        }
     </script>
 </body>
 </html>
