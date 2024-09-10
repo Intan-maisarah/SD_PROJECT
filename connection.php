@@ -1,4 +1,7 @@
 <?php
+
+//connection.php
+
 $servername = "localhost";
 $username = "project";
 $password = "project1";
