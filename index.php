@@ -123,7 +123,7 @@ session_start();
     <div class="container">
         <h2>Feedback</h2>
         <!-- Feedback Form -->
-        <form action="send_feedback.php" method="post">
+        <form id="feedbackForm">
             <div class="form-group">
                 <label for="name">Name:</label>
                 <input type="text" id="name" name="name" class="form-control" required>
@@ -187,5 +187,35 @@ session_start();
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="assets/ipasss.js"></script>
+    <script>
+    document.getElementById('feedbackForm').addEventListener('submit', function (event) {
+        event.preventDefault(); // Prevent the default form submission
+        
+        // Collect form data
+        var formData = new FormData(this);
+        
+        // Send form data using AJAX
+        var xhr = new XMLHttpRequest();
+        xhr.open('POST', 'send_feedback.php', true);
+        
+        // Handle the response
+        xhr.onload = function () {
+            if (xhr.status === 200) {
+                // If successful, display the pop-up message
+                alert('Thank you for your feedback!');
+                
+                // Clear the form fields after successful submission
+                document.getElementById('feedbackForm').reset();
+            } else {
+                // If an error occurs, display an error message
+                alert('Failed to send feedback. Please try again.');
+            }
+        };
+        
+        // Send the request
+        xhr.send(formData);
+    });
+</script>
+
 </body>
 </html>

@@ -1,12 +1,5 @@
 <?php
 session_start();
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-// Set up error logging to a custom file
-ini_set('log_errors', 1);
-ini_set('error_log', '/Applications/xampp/htdocs/SD_PROJECT/error_log.txt');
 
 include "connection.php";
 use PHPMailer\PHPMailer\PHPMailer;
@@ -15,7 +8,9 @@ use PHPMailer\PHPMailer\Exception;
 // Include PHPMailer files
 require 'vendor/autoload.php';
 
-// Registration logic
+// Initialize error message variable
+$error_message = '';
+
 if (isset($_POST['register'])) {
     $username = $_POST['username'];
     $email = $_POST['email'];
@@ -24,79 +19,70 @@ if (isset($_POST['register'])) {
 
     // Check if passwords match
     if ($password !== $confirm_password) {
-        error_log("Passwords do not match for email: $email");
-        echo '<script>alert("Passwords do not match. Please try again.");</script>';
-        exit();
-    }
-
-    // Check if email already exists
-    $check = "SELECT * FROM users WHERE email=?";
-    $stmt = $conn->prepare($check);
-    $stmt->bind_param('s', $email);
-    $stmt->execute();
-    $res = $stmt->get_result();
-
-    if ($res->num_rows > 0) {
-        error_log("Email already in use: $email");
-        echo '<script>alert("This email is already in use, try another email.");</script>';
-        header("Location: signup.php");
-        exit();
+        $error_message = 'Passwords do not match. Please try again.';
+    } elseif (strlen($password) < 8) {
+        $error_message = 'Password must be at least 8 characters long.';
     } else {
-        // Hash the password before storing it
-        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        // Check if email already exists
+        $check = "SELECT * FROM users WHERE email=?";
+        $stmt = $conn->prepare($check);
+        $stmt->bind_param('s', $email);
+        $stmt->execute();
+        $res = $stmt->get_result();
 
-        // Insert user into the database with a verification token
-        $verification_token = bin2hex(random_bytes(16));
-        $sql = "INSERT INTO users(username, email, password, verification_token, is_verified) VALUES(?, ?, ?, ?, 0)";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param('ssss', $username, $email, $hashed_password, $verification_token);
-        $result = $stmt->execute();
-
-        if ($result) {
-            // Send verification email
-            $mail = new PHPMailer(true);
-
-            try {
-                // Server settings
-                $mail->isSMTP();
-                $mail->Host = 'smtp.gmail.com'; // Set the SMTP server to send through
-                $mail->SMTPAuth = true;
-                $mail->Username = 'dayangziha@gmail.com'; // SMTP username
-                $mail->Password = 'fknw ujbi ecku tqmn'; // SMTP password
-                $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
-                $mail->Port = 587; // TCP port to connect to
-
-                // Recipients
-                $mail->setFrom('no-reply@infinityprinting.com', 'Infinity Printing');
-                $mail->addAddress($email);
-
-                // Content
-                $mail->isHTML(true);
-                $mail->Subject = 'Verify Your Email Address';
-                $mail->Body    = '<p>Hi ' . htmlspecialchars($username) . ',</p>
-                                  <p>Thank you for registering. Please click the link below to verify your email address:</p>
-                                  <p><a href="http://localhost/SD_PROJECT/verify_email.php?token=' . $verification_token . '">Verify Email</a></p>';
-
-                $mail->send();
-                echo '<script>alert("Registration successful. Please check your email to verify your account.");</script>';
-                header("Location: index.php");
-                exit();
-            } catch (Exception $e) {
-                error_log('Message could not be sent. Mailer Error: ' . $mail->ErrorInfo);
-                echo '<script>alert("Message could not be sent. Mailer Error: ' . $mail->ErrorInfo . '");</script>';
-                header("Location: signup.php");
-                exit();
-            }
+        if ($res->num_rows > 0) {
+            $error_message = 'This email is already in use. Please try another email or log in if you already have an account.';
         } else {
-            error_log('Registration error for email: ' . $email);
-            echo '<script>alert("Registration error. Please try again.");</script>';
-            header("Location: signup.php");
-            exit();
+            // Hash the password before storing it
+            $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+            // Insert user into the database with a verification token
+            $verification_token = bin2hex(random_bytes(16));
+            $sql = "INSERT INTO users(username, email, password, verification_token, is_verified) VALUES(?, ?, ?, ?, 0)";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param('ssss', $username, $email, $hashed_password, $verification_token);
+            $result = $stmt->execute();
+
+            if ($result) {
+                // Send verification email
+                $mail = new PHPMailer(true);
+
+                try {
+                    // Server settings
+                    $mail->isSMTP();
+                    $mail->Host = 'smtp.gmail.com';
+                    $mail->SMTPAuth = true;
+                    $mail->Username = 'dayangziha@gmail.com';
+                    $mail->Password = 'fknw ujbi ecku tqmn';
+                    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+                    $mail->Port = 587;
+
+                    // Recipients
+                    $mail->setFrom('no-reply@infinityprinting.com', 'Infinity Printing');
+                    $mail->addAddress($email);
+
+                    // Content
+                    $mail->isHTML(true);
+                    $mail->Subject = 'Verify Your Email Address';
+                    $mail->Body    = '<p>Hi ' . htmlspecialchars($username) . ',</p>
+                                      <p>Thank you for registering. Please click the link below to verify your email address:</p>
+                                      <p><a href="http://localhost/SD_PROJECT/verify_email.php?token=' . $verification_token . '">Verify Email</a></p>';
+
+                    $mail->send();
+                    echo '<script>alert("Registration successful. Please check your email to verify your account.");</script>';
+                    header("Location: index.php");
+                    exit();
+                } catch (Exception $e) {
+                    error_log('Message could not be sent. Mailer Error: ' . $mail->ErrorInfo);
+                    $error_message = 'Message could not be sent. Mailer Error: ' . $mail->ErrorInfo;
+                }
+            } else {
+                $error_message = 'Registration error. Please try again.';
+            }
         }
     }
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -121,48 +107,56 @@ if (isset($_POST['register'])) {
                             <div class="row justify-content-center">
                                 <div class="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
                                     <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Sign up</p>
-                                    <form action="signup.php" method="POST" class="mx-1 mx-md-4">
+                                    <?php if (!empty($error_message)): ?>
+                                    <div class="alert alert-danger" role="alert">
+                                        <?php echo htmlspecialchars($error_message); ?>
+                                    </div>
+                                    <?php endif; ?>
+                                    <form id="signupForm" action="signup.php" method="POST" class="mx-1 mx-md-4">
                                         <div class="d-flex flex-row align-items-center mb-4">
                                             <i class="fas fa-user fa-lg me-3 fa-fw"></i>
                                             <div data-mdb-input-init class="form-outline flex-fill mb-0">
-                                                <input type="text" name="username" id="form3Example1c" class="form-control" />
+                                                <input type="text" name="username" id="form3Example1c" class="form-control" required />
                                                 <label class="form-label" for="form3Example1c">Your Username</label>
                                             </div>
                                         </div>
                                         <div class="d-flex flex-row align-items-center mb-4">
                                             <i class="fas fa-envelope fa-lg me-3 fa-fw"></i>
                                             <div data-mdb-input-init class="form-outline flex-fill mb-0">
-                                                <input type="email" name="email" id="form3Example3c" class="form-control" />
+                                                <input type="email" name="email" id="form3Example3c" class="form-control" required />
                                                 <label class="form-label" for="form3Example3c">Your Email</label>
                                             </div>
                                         </div>
                                         <div class="d-flex flex-row align-items-center mb-4">
                                             <i class="fas fa-lock fa-lg me-3 fa-fw"></i>
                                             <div data-mdb-input-init class="form-outline flex-fill mb-0">
-                                                <input type="password" name="password" id="form3Example4c" class="form-control" />
+                                                <input type="password" name="password" id="form3Example4c" class="form-control" required />
                                                 <label class="form-label" for="form3Example4c">Password</label>
                                             </div>
                                         </div>
                                         <div class="d-flex flex-row align-items-center mb-4">
                                             <i class="fas fa-key fa-lg me-3 fa-fw"></i>
                                             <div data-mdb-input-init class="form-outline flex-fill mb-0">
-                                                <input type="password" name="confirm_password" id="form3Example4cd" class="form-control" />
+                                                <input type="password" name="confirm_password" id="form3Example4cd" class="form-control" required />
                                                 <label class="form-label" for="form3Example4cd">Repeat your password</label>
                                             </div>
                                         </div>
                                         <div class="form-check d-flex justify-content-center mb-5">
-                                            <input class="form-check-input me-2" type="checkbox" value="" id="form2Example3c" />
-                                            <label class="form-check-label" for="form2Example3">
-                                                I agree all statements in <a href="#!">Terms of service</a>
+                                            <input class="form-check-input me-2" type="checkbox" value="" id="agreeCheckbox" required />
+                                            <label class="form-check-label" for="agreeCheckbox">
+                                                I agree to all statements in <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Terms of service</a>
                                             </label>
                                         </div>
                                         <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
                                             <button type="submit" data-mdb-button-init data-mdb-ripple-init name="register" class="btn btn-primary btn-lg">Register</button>
                                         </div>
                                     </form>
+                                    <div class="text-center">
+                                        <p>Already have an account? <a href="signin.php">Sign in</a></p>
+                                    </div>
                                 </div>
                                 <div class="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-2">
-                                    <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-registration/draw1.webp"
+                                    <img src="assets/images/laptop.png"
                                         class="img-fluid" alt="Sample image">
                                 </div>
                             </div>
@@ -173,8 +167,71 @@ if (isset($_POST['register'])) {
         </div>
     </section>
 
+    <!-- Terms of Service Modal -->
+    <div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="termsModalLabel">Terms of Service</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Terms of Service</strong></p>
+                    <p>Welcome to Infinity Printing!</p>
+                    <p>By accessing or using our website and services, you agree to comply with and be bound by the following terms and conditions. If you do not agree to these terms, please do not use our services.</p>
+                    <h3>1. Use of Service</h3>
+                    <p>You agree to use our services only for lawful purposes and in accordance with our guidelines. You may not use our services to engage in any activity that is illegal, harmful, or disruptive.</p>
+                    <h3>2. User Accounts</h3>
+                    <p>To use certain features of our service, you may need to create an account. You are responsible for maintaining the confidentiality of your account information and for all activities that occur under your account.</p>
+                    <h3>3. Prohibited Activities</h3>
+                    <p>You agree not to:
+                        <ul>
+                            <li>Engage in any fraudulent or deceptive practices.</li>
+                            <li>Upload or transmit any malicious software or viruses.</li>
+                            <li>Infringe upon the intellectual property rights of others.</li>
+                            <li>Use our service to harass or harm others.</li>
+                        </ul>
+                    </p>
+                    <h3>4. Payment and Billing</h3>
+                    <p>All payments must be made in accordance with the billing terms outlined on our website. We reserve the right to modify our pricing at any time.</p>
+                    <h3>5. Termination</h3>
+                    <p>We may terminate or suspend your account and access to our services if you violate these terms or engage in behavior that we consider inappropriate or harmful.</p>
+                    <h3>6. Limitation of Liability</h3>
+                    <p>Our liability is limited to the maximum extent permitted by law. We are not responsible for any indirect, incidental, or consequential damages arising from your use of our services.</p>
+                    <h3>7. Changes to Terms</h3>
+                    <p>We may update these Terms of Service from time to time. Any changes will be posted on this page, and your continued use of our services constitutes your acceptance of the updated terms.</p>
+                    <h3>8. Contact Us</h3>
+                    <p>If you have any questions or concerns about these Terms of Service, please contact us at <a href="mailto:support@infinityprinting.com">support@infinityprinting.com</a>.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- MDB Bootstrap JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.0.0/mdb.min.js"></script>
-  
+    <!-- Bootstrap JS (if required by MDB) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+    document.getElementById('signupForm').addEventListener('submit', function(event) {
+        var password = document.getElementById('form3Example4c').value;
+        var confirmPassword = document.getElementById('form3Example4cd').value;
+        var checkbox = document.getElementById('agreeCheckbox');
+
+        if (password.length < 8) {
+            event.preventDefault();
+            alert('Password must be at least 8 characters long.');
+        } else if (password !== confirmPassword) {
+            event.preventDefault();
+            alert('Passwords do not match. Please try again.');
+        } else if (!checkbox.checked) {
+            event.preventDefault();
+            alert('You must agree to the terms of service before registering.');
+        }
+    });
+    </script>
 </body>
 </html>

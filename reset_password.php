@@ -13,6 +13,13 @@ if (isset($_POST['submit_password'])) {
         exit();
     }
 
+    // Validate the new password
+    if (strlen($new_password) < 8 || !preg_match('/[A-Z]/', $new_password) || !preg_match('/[0-9]/', $new_password) || !preg_match('/[@$!%*?&#]/', $new_password)) {
+        $_SESSION['error'] = 'Password must be at least 8 characters long and include at least one uppercase letter, one number, and one special character.';
+        header('Location: reset_password.php?token=' . urlencode($token));
+        exit();
+    }
+
     // Check token and its expiration in the database
     $stmt = $conn->prepare("SELECT reset_token, reset_token_expiration FROM users WHERE reset_token = ?");
     $stmt->bind_param('s', $token);
@@ -54,6 +61,7 @@ if (isset($_POST['submit_password'])) {
 }
 ?>
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -61,78 +69,40 @@ if (isset($_POST['submit_password'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reset Password</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-
-        .container {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-        }
-
-        h2 {
-            color: #007bff;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: bold;
-        }
-
-        input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-
-        button {
-            width: 100%;
-            padding: 10px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        .message {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        .message p {
-            margin: 0;
-        }
-
-        .message .error {
-            color: red;
-        }
-
-        .message .success {
-            color: green;
-        }
+        /* Existing styles */
     </style>
+    <script>
+        function validatePassword() {
+            var password = document.getElementById('new_password').value;
+            var errorMessage = '';
+
+            // Check password length
+            if (password.length < 8) {
+                errorMessage += 'Password must be at least 8 characters long.\n';
+            }
+
+            // Check for at least one uppercase letter
+            if (!/[A-Z]/.test(password)) {
+                errorMessage += 'Password must include at least one uppercase letter.\n';
+            }
+
+            // Check for at least one number
+            if (!/[0-9]/.test(password)) {
+                errorMessage += 'Password must include at least one number.\n';
+            }
+
+            // Check for at least one special character
+            if (!/[@$!%*?&#]/.test(password)) {
+                errorMessage += 'Password must include at least one special character.\n';
+            }
+
+            if (errorMessage) {
+                alert(errorMessage);
+                return false; // Prevent form submission
+            }
+            return true; // Allow form submission
+        }
+    </script>
 </head>
 <body>
 
@@ -150,9 +120,9 @@ if (isset($_POST['submit_password'])) {
     </div>
 
     <!-- Reset Password Form -->
-    <form action="" method="POST">
+    <form action="" method="POST" onsubmit="return validatePassword();">
         <label for="new_password">New Password:</label>
-        <input type="password" name="new_password" id="new_password" required>
+        <input type="password" name="new_password" id="new_password" placeholder="At least 8 characters, one uppercase, one number, one special character" required>
         
         <button type="submit" name="submit_password">Reset Password</button>
     </form>

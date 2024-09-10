@@ -1,26 +1,44 @@
 <?php
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
+require 'vendor/autoload.php';
+
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Collect form data
     $name = htmlspecialchars($_POST['name']);
     $email = htmlspecialchars($_POST['email']);
     $message = htmlspecialchars($_POST['message']);
     
-    // Your email address
-    $to = 'infinity.utmkl@gmail.com'; 
-    $subject = 'New Feedback from ' . $name;
-    $body = "Name: $name\n";
-    $body .= "Email: $email\n\n";
-    $body .= "Message:\n$message";
-    
-    // Additional headers
-    $headers = "From: $email\r\n";
-    $headers .= "Reply-To: $email\r\n";
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        http_response_code(400); // Bad request
+        exit('Invalid email format');
+    }
 
-    // Send email
-    if (mail($to, $subject, $body, $headers)) {
-        echo "Thank you for your feedback!";
-    } else {
-        echo "Sorry, there was an error sending your feedback. Please try again later.";
+    $mail = new PHPMailer(true);
+
+    try {
+        $mail->isSMTP();
+        $mail->Host = 'smtp.gmail.com';
+        $mail->SMTPAuth = true;
+        $mail->Username = 'dayangziha@gmail.com';
+        $mail->Password = 'fknw ujbi ecku tqmn';
+        $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+        $mail->Port = 587;
+
+        $mail->setFrom($email, $name);
+        $mail->addAddress('dayangziha@gmail.com');
+        $mail->addReplyTo($email, $name);
+
+        $mail->isHTML(false);
+        $mail->Subject = 'New Feedback from ' . $name;
+        $mail->Body    = "Name: $name\nEmail: $email\n\nMessage:\n$message";
+
+        $mail->send();
+        http_response_code(200); // Success
+        echo 'Feedback sent successfully';
+    } catch (Exception $e) {
+        http_response_code(500); // Internal server error
+        echo 'Message could not be sent. Mailer Error: ' . $mail->ErrorInfo;
     }
 }
 ?>

@@ -32,7 +32,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         // Execute the query and check if the update is successful
         if ($updateStmt->execute()) {
-            echo "<script>alert('Your password has been updated successfully!'); window.location.href='signin.php';</script>";
+            echo "<script>alert('Your password has been updated successfully!'); window.location.href='index.php';</script>";
         } else {
             echo "<script>alert('Failed to update the password. Please try again later.');</script>";
         }
