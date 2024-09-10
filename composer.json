@@ -1,0 +1,18 @@
+{
+    "name": "dayangziha/sd_project",
+    "description": "Password reset function",
+    "require": {
+        "phpmailer/phpmailer": "^6.9"
+    },
+    "autoload": {
+        "psr-4": {
+            "Dayangziha\\SdProject\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "dayangnurnazihah",
+            "email": "dayangziha@gmail.com"
+        }
+    ]
+}

@@ -14,7 +14,7 @@ session_start();
 <body>
     <nav class="navbar navbar-expand-lg navbar-light fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="#"><img src="imgs/logo.svg" alt="Logo"></a>
+            <a class="navbar-brand" href="#"><img src="assets/images/logo.png" alt="Logo"style="width: 100px; height: auto;"></a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -29,7 +29,7 @@ session_start();
                 </nav>
                 <?php if (!isset($_SESSION['signin'])): ?>
                     <div class="nav-item">
-                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='signin.html'">Log In</button>
+                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='signin.php'">Log In</button>
                     </div>
                     <div class="nav-item">
                         <button class="btn btn-primary rounded ml-4" onclick="window.location.href='signup.php'">Sign Up</button>
@@ -52,7 +52,7 @@ session_start();
         <div class="hero-content" >
             <h1>Let Us Handle All Your Printing Needs.</h1>
             <p>Your on the go printing service!</p>
-            <button class="btn btn-primary" onclick="window.location.href='signin.html'">Get Started</button>
+            <button class="btn btn-primary" onclick="window.location.href='signin.php'">Get Started</button>
         </div>
         
     </section>
@@ -142,65 +142,45 @@ session_start();
 </section>
 
 
- <!-- Footer -->
-<footer class="text-center text-white" style="background-color: #3f51b5">
-  <!-- Grid container -->
+<!-- Footer -->
+<footer class="text-white" style="background-color: #74b3ce; padding: 40px 0;">
   <div class="container">
-    <!-- Section: Links -->
-    <div class="row text-center d-flex justify-content-center pt-3"> <!-- Reduced padding -->
-      <!-- Grid column -->
-      <div class="col-md-2 mb-3">
-        <h6 class="text-uppercase font-weight-bold">
-          <a href="#!" class="text-white">About Us</a>
-        </h6>
-      </div>
-      <!-- Grid column -->
-
-      <!-- Grid column -->
-      <div class="col-md-2 mb-3">
-        <h6 class="text-uppercase font-weight-bold">
-          <a href="#!" class="text-white">Services</a>
-        </h6>
-      </div>
-      <!-- Grid column -->
-
-      <!-- Grid column -->
-      <div class="col-md-2 mb-3">
-        <h6 class="text-uppercase font-weight-bold">
-          <a href="#!" class="text-white">Contact Us</a>
-        </h6>
-      </div>
-      <!-- Grid column -->
-
-      <!-- Grid column -->
-      <div class="col-md-2 mb-3">
-        <h6 class="text-uppercase font-weight-bold">
-          <a href="#!" class="text-white">Feedback</a>
-        </h6>
-      </div>
-      <!-- Grid column -->
-    </div>
-    <!-- Section: Links -->
-
-    <hr class="my-4" /> <!-- Adjusted hr spacing -->
-
-    <!-- Section: Text -->
-    <div class="row d-flex justify-content-center" style="padding-bottom: 20px;"> <!-- Added padding -->
-      <div class="col-lg-8">
+    <div class="row">
+      <!-- Left side: Short paragraph -->
+      <div class="col-md-6">
         <p>
-        Our online printing service was inspired by the needs and creativity of students who constantly
-        juggle tight deadlines and demanding schedules. Recognizing their struggle to find convenient,
-        reliable printing options, we set out to create a service that fits seamlessly into their busy lives.
-        With 24/7 document uploads and a convenient 1km delivery range, our service is designed to
-        provide students with the flexibility they need, ensuring that their printing needs are met anytime, anywhere.
+          Our online printing service was inspired by the needs and creativity of students who constantly
+          juggle tight deadlines and demanding schedules. With 24/7 document uploads and a convenient 1km
+          delivery range, we provide the flexibility students need, ensuring their printing requirements are met
+          anytime, anywhere.
         </p>
       </div>
+
+      <!-- Right side: List of icons with information, aligned left -->
+      <div class="col-md-6">
+        <ul class="list-unstyled">
+          <li class="d-flex align-items-center mb-2">
+            <img src="assets/images/location.png" alt="Location Icon" style="width: 24px; height: auto; margin-right: 10px;">
+            <span>Gurney Mall, Lot 1-30, Jln Maktab, 54000 Kuala Lumpur</span>
+          </li>
+          <li class="d-flex align-items-center mb-2">
+            <img src="assets/images/call.png" alt="Phone Icon" style="width: 24px; height: auto; margin-right: 10px;">
+            <span>+6014 2272-647</span>
+          </li>
+          <li class="d-flex align-items-center mb-2">
+            <img src="assets/images/mail.png" alt="Mail Icon" style="width: 24px; height: auto; margin-right: 10px;">
+            <span>infinity.utmkl@gmail.com</span>
+          </li>
+          <li class="d-flex align-items-center">
+            <img src="assets/images/bhours.png" alt="Business Hours Icon" style="width: 24px; height: auto; margin-right: 10px;">
+            <span>Mon-Fri: 9 AM - 6 PM</span>
+          </li>
+        </ul>
+      </div>
     </div>
-    <!-- Section: Text -->
   </div>
-  <!-- Grid container -->
 </footer>
-<!-- Footer -->
+
 
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
