@@ -27,10 +27,10 @@ if (isset($_POST['signin'])) {
 
             $userType = getUserType($conn, $username);
             if ($userType == 'ADMIN') {
-                header("Location: admin_dashboard/html/admin-page.html");
+                header("Location: Admin_Dashboard/html/admin_page.html");
                 exit();
             } else if ($userType == 'STAFF') {
-                header("Location: admin_dashboard/html/admin-page.html"); 
+                header("Location: Admin_Dashboard/html/admin_page.html"); 
                 exit();
             } else {
                 header("Location: index.php");

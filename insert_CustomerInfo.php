@@ -16,7 +16,7 @@ if (isset($_POST['InsertButton'])) {
     $address = $_POST['address'];
 
     // Prepare and bind
-    $stmt = $conn->prepare("SELECT * FROM customer WHERE username = ?");
+    $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -28,7 +28,7 @@ if (isset($_POST['InsertButton'])) {
         exit();
     } else {
         // Insert the data into the customer table
-        $stmt = $conn->prepare("INSERT INTO customer (username, name, email, contact, address) VALUES (?, ?, ?, ?, ?)");
+        $stmt = $conn->prepare("UPDATE INTO users (username, name, email, contact, address) VALUES (?, ?, ?, ?, ?)");
         $stmt->bind_param("sssss", $username, $name, $email, $contact, $address);
         $result = $stmt->execute();
 

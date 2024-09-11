@@ -14,6 +14,7 @@ require 'vendor/autoload.php';
 
 // Initialize error message variable
 $error_message = '';
+$success_message = '';
 
 if (isset($_POST['register'])) {
     $username = $_POST['username'];
@@ -50,38 +51,43 @@ if (isset($_POST['register'])) {
             if ($result) {
                 // Send verification email
                 $mail = new PHPMailer(true);
-
+            
                 try {
                     // Server settings
                     $mail->isSMTP();
                     $mail->Host = 'smtp.gmail.com';
                     $mail->SMTPAuth = true;
-                    $mail->Username = 'dayangziha@gmail.com';
-                    $mail->Password = 'fknw ujbi ecku tqmn';
+                    $mail->Username = 'dayangziha@gmail.com'; // Replace with your email
+                    $mail->Password = 'fknw ujbi ecku tqmn'; // Use environment variables for security
                     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                     $mail->Port = 587;
-
+            
                     // Recipients
                     $mail->setFrom('no-reply@infinityprinting.com', 'Infinity Printing');
                     $mail->addAddress($email);
-
+            
                     // Content
                     $mail->isHTML(true);
                     $mail->Subject = 'Verify Your Email Address';
                     $mail->Body    = '<p>Hi ' . htmlspecialchars($username) . ',</p>
                                       <p>Thank you for registering. Please click the link below to verify your email address:</p>
                                       <p><a href="http://localhost/SD_PROJECT/verify_email.php?token=' . $verification_token . '">Verify Email</a></p>';
-
+            
                     $mail->send();
-                    echo '<script>alert("Registration successful. Please check your email to verify your account.");</script>';
+
+                    // Set session variable for success message
+                    echo "<script>
+                    alert('Verification link has been sent to your email');
+                    window.location.href = 'signin.php';
+                    </script>";
+            
+                    // Redirect after successful email send
                     header("Location: signin.php");
                     exit();
                 } catch (Exception $e) {
                     error_log('Message could not be sent. Mailer Error: ' . $mail->ErrorInfo);
-                    $error_message = 'Message could not be sent. Mailer Error: ' . $mail->ErrorInfo;
+                    $error_message = 'Message could not be sent. Please try again later.';
                 }
-            } else {
-                $error_message = 'Registration error. Please try again.';
             }
         }
     }
@@ -152,7 +158,7 @@ if (isset($_POST['register'])) {
                                             </label>
                                         </div>
                                         <div class="d-flex justify-content-center mx-4 mb-3 mb-lg-4">
-                                            <button type="submit" data-mdb-button-init data-mdb-ripple-init name="register" class="btn btn-primary btn-lg">Register</button>
+                                            <button type="submit" name="register" class="btn btn-primary btn-lg">Register</button>
                                         </div>
                                     </form>
                                     <div class="text-center">
@@ -160,8 +166,7 @@ if (isset($_POST['register'])) {
                                     </div>
                                 </div>
                                 <div class="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-2">
-                                    <img src="assets/images/laptop.png"
-                                        class="img-fluid" alt="Sample image">
+                                    <img src="assets/images/laptop.png" class="img-fluid" alt="Sample image">
                                 </div>
                             </div>
                         </div>
@@ -214,55 +219,43 @@ if (isset($_POST['register'])) {
         </div>
     </div>
 
+    <!-- Verification Email Sent Modal -->
+    <div class="modal fade" id="emailSentModal" tabindex="-1" aria-labelledby="emailSentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="emailSentModalLabel">Email Verification</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    A verification link has been sent to your email. Please check your inbox to complete the registration process.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- MDB Bootstrap JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.0.0/mdb.min.js"></script>
-    <!-- Bootstrap JS (if required by MDB) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.0.0/mdb.min.js"></script>
 
     <script>
-    document.getElementById('signupForm').addEventListener('submit', function(event) {
-        var password = document.getElementById('form3Example4c').value;
-        var confirmPassword = document.getElementById('form3Example4cd').value;
-        var checkbox = document.getElementById('agreeCheckbox');
+    document.addEventListener('DOMContentLoaded', function() {
+        // Check if the session variable is set
+        <?php if (isset($_SESSION['email_sent']) && $_SESSION['email_sent']): ?>
+        var emailSentModal = new bootstrap.Modal(document.getElementById('emailSentModal'));
+        emailSentModal.show();
+        <?php unset($_SESSION['email_sent']); // Clear the session variable ?>
+        <?php endif; ?>
 
-        if (password.length < 8) {
-                errorMessage += 'Password must be at least 8 characters long.\n';
-            }
-
-            // Check for at least one uppercase letter
-            if (!/[A-Z]/.test(password)) {
-                errorMessage += 'Password must include at least one uppercase letter.\n';
-            }
-
-            // Check for at least one number
-            if (!/[0-9]/.test(password)) {
-                errorMessage += 'Password must include at least one number.\n';
-            }
-
-            // Check for at least one special character
-            if (!/[@$!%*?&#]/.test(password)) {
-                errorMessage += 'Password must include at least one special character.\n';
-            }
-
-            if (errorMessage) {
-                alert(errorMessage);
-                return false; // Prevent form submission
-            }
-            return true; // Allow form submission
-
-       if (!checkbox.checked) {
-            event.preventDefault();
-            alert('You must agree to the terms of service before registering.');
-        }
-    });
-    </script>
-
-    <script>
-        function validatePassword() {
-            var password = document.getElementById('new_password').value;
+        document.getElementById('signupForm').addEventListener('submit', function(event) {
+            var password = document.getElementById('form3Example4c').value;
+            var confirmPassword = document.getElementById('form3Example4cd').value;
+            var checkbox = document.getElementById('agreeCheckbox');
             var errorMessage = '';
 
-            // Check password length
             if (password.length < 8) {
                 errorMessage += 'Password must be at least 8 characters long.\n';
             }
@@ -282,12 +275,19 @@ if (isset($_POST['register'])) {
                 errorMessage += 'Password must include at least one special character.\n';
             }
 
+            if (password !== confirmPassword) {
+                errorMessage += 'Passwords do not match.\n';
+            }
+
             if (errorMessage) {
                 alert(errorMessage);
-                return false; // Prevent form submission
+                event.preventDefault(); // Prevent form submission
+            } else if (!checkbox.checked) {
+                event.preventDefault();
+                alert('You must agree to the terms of service before registering.');
             }
-            return true; // Allow form submission
-        }
+        });
+    });
     </script>
 </body>
 </html>

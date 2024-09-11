@@ -39,7 +39,7 @@ session_start();
                         <button class="btn btn-primary rounded ml-4" onclick="window.location.href='logout.php'">Log Out</button>
                     </div>
                     <div class="nav-item">
-                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='view_profile.html'">Profile</button>
+                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='view_profile.php'">Profile</button>
                     </div>
                 <?php endif; ?>
             </div>
@@ -57,67 +57,70 @@ session_start();
         
     </section>
 
-    <section id="services">
+    <!--<section id="services">
         <div class="container">
             <h2>Our Services</h2>
-            <!-- Service content here -->
+             Service content here 
         </div>
-    </section>
+    </section>-->
 
     <section id="about">
-   <div class="container">
+  <div class="container">
     <h2>About Us</h2>
-    <h6 style="font-size: 1.2em; color: #777; margin-bottom: 40px;">
-      Address: Gurney Mall, Lot 1-30, Jln Maktab, 54000 Kuala Lumpur
-    </h6>
+    <h6>Address: Gurney Mall, Lot 1-30, Jln Maktab, 54000 Kuala Lumpur</h6>
 
-    <!-- Google Maps Embed -->
-    <div class="map-container" style="width: 100%; height: 400px; margin-bottom: 40px; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
-      <iframe 
-        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d434.727282914923!2d101.7217383527438!3d3.1720723536050173!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31cc37a3f442ec45%3A0xc85fb666f112d900!2sInfinity%20Printing%20and%20Stationery!5e0!3m2!1sen!2smy!4v1725715700058!5m2!1sen!2smy"
-        width="100%" 
-        height="400" 
-        style="border:0;" 
-        allowfullscreen="" 
-        loading="lazy" 
-        referrerpolicy="no-referrer-when-downgrade">
-      </iframe>
+    <div class="about-content">
+      <div class="map-container">
+        <iframe 
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d434.727282914923!2d101.7217383527438!3d3.1720723536050173!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31cc37a3f442ec45%3A0xc85fb666f112d900!2sInfinity%20Printing%20and%20Stationery!5e0!3m2!1sen!2smy!4v1725715700058!5m2!1sen!2smy"
+          width="100%" 
+          height="100%" 
+          style="border:0;" 
+          allowfullscreen="" 
+          loading="lazy" 
+          referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+      <div class="text-content">
+        <p>
+          Welcome to <strong>Infinity Printing & Stationery Service</strong>, your go-to solution for remote document printing and delivery.
+          Our platform allows you to easily upload your documents, track order statuses, and choose between convenient pickup appointments or delivery within a 1km range.
+          With a focus on reducing wait times and improving service quality, we offer a streamlined experience for customers, staff, and administrators alike. 
+          Whether you need quick access to printed materials or efficient management of your printing needs, Infinity Printing is here to serve you anytime, anywhere.
+        </p>
+      </div>
     </div>
-
-    <p style="font-size: 1.1em; color: #555; text-align: justify; padding: 0 20px;">
-      Welcome to <strong>Infinity Printing & Stationery Service</strong>, your go-to solution for remote document printing and delivery.
-      Our platform allows you to easily upload your documents, track order statuses, and choose between convenient pickup appointments or delivery within a 1km range.
-      With a focus on reducing wait times and improving service quality, we offer a streamlined experience for customers, staff, and administrators alike. 
-      Whether you need quick access to printed materials or efficient management of your printing needs, Infinity Printing is here to serve you anytime, anywhere.
-    </p>
   </div>
 </section>
 
 
+
+
 <section id="contact">
-    <div class="container">
-        <h2>Contact Us</h2>
-        <!-- Contact content here -->
+    <div class="contact-section">
+    <div class="contact-header">
+            <h2>Contact Us</h2>
+        </div>
+        <!-- Full-screen background image -->
+        <img src="assets/images/contactreal.jpg" alt="Contact Us Image" class="contact-img">
 
-        <!-- Instagram Account Link -->
-        <p>Follow us on Instagram:</p>
-        <a href="https://www.instagram.com/infinity.utmkl" target="_blank" style="text-decoration: none; color: inherit;">
-            <i class="fab fa-instagram" style="font-size: 24px; margin-right: 8px;"></i> @infinity.utmkl
-        </a>
-
-        <!-- Email Address -->
-        <p>Email us at:</p>
-        <a href="mailto:infinity.utmkl@gmail.com" style="text-decoration: none; color: inherit;">
-            <i class="fas fa-envelope" style="font-size: 20px; margin-right: 8px;"></i> infinity.utmkl@gmail.com
-        </a>
-        
-        <!-- Phone Number -->
-        <p>Call us:</p>
-        <a href="tel:+60142272646" style="text-decoration: none; color: inherit;">
-            <i class="fas fa-phone-alt" style="font-size: 20px; margin-right: 8px;"></i> +6014 2272-647
-        </a>
+        <!-- Interactive Popups -->
+        <div class="popup-container">
+            <div class="contact-popup" id="phone-popup">
+                <p>Call us:</p>
+                <a href="tel:+60142272646">+6014 2272-646</a>
+            </div>
+            <div class="contact-popup" id="email-popup">
+                <p>Email us:</p>
+                <a href="mailto:infinity.utmkl@gmail.com">infinity.utmkl@gmail.com</a>
+            </div>
+        </div>
     </div>
 </section>
+
+
+
+
 
 <section id="feedback">
     <div class="container">
@@ -215,7 +218,31 @@ session_start();
         // Send the request
         xhr.send(formData);
     });
+
+    document.addEventListener('DOMContentLoaded', function () {
+    let phonePopup = document.getElementById('phone-popup');
+    let emailPopup = document.getElementById('email-popup');
+    let contactSection = document.querySelector('.contact-section');
+
+    // Show the phone popup when the logo area is clicked (adjust click areas as needed)
+    contactSection.addEventListener('click', function (event) {
+        let isPhoneArea = event.clientX < window.innerWidth * 0.3; // Adjust the percentage based on logo position
+        let isEmailArea = event.clientX > window.innerWidth * 0.5; // Adjust the percentage based on logo position
+
+        if (isPhoneArea) {
+            phonePopup.style.display = 'block';
+            emailPopup.style.display = 'none';
+        } else if (isEmailArea) {
+            emailPopup.style.display = 'block';
+            phonePopup.style.display = 'none';
+        }
+    });
+});
+
+
 </script>
+
+
 
 </body>
 </html>
