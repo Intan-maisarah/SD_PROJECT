@@ -62,7 +62,7 @@ $conn->close();
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex,nofollow" />
-  <title>Admin Profile</title>
+  <title>Staff Profile</title>
   <link rel="canonical" href="https://www.wrappixel.com/templates/xtreme-admin-lite/" />
   <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon.png" />
   <link href="../dist/css/style.css" rel="stylesheet" />
@@ -213,7 +213,7 @@ $conn->close();
     <header class="topbar" data-navbarbg="skin5">
       <nav class="navbar top-navbar navbar-expand-md navbar-dark">
         <div class="navbar-header" data-logobg="skin5">
-          <a class="navbar-brand" href="admin_page.php">
+          <a class="navbar-brand" href="staff_page.php">
             <b class="logo-icon">
               <img src="../../assets/images/logo.png" alt="homepage" style="width: 60px; height: auto;" />
             </b>
@@ -261,12 +261,12 @@ $conn->close();
                   <a href="#" class="" id="Userdd" role="button" data-bs-toggle="dropdown" aria-haspopup="true"
                     aria-expanded="false">
                     <h5 class="m-b-0 user-name font-medium">
-                      ADMIN <i class="mdi mdi-chevron-down fs-4"></i>
+                      STAFF <i class="mdi mdi-chevron-down fs-4"></i>
                     </h5>
                     <span class="op-5 user-email"><?php echo htmlspecialchars($email); ?></span>
                   </a>
                   <div class="dropdown-menu dropdown-menu-end" aria-labelledby="Userdd">
-                    <a class="dropdown-item" href="admin_profile.php"><i class="mdi mdi-account m-r-5 m-l-5"></i> My
+                    <a class="dropdown-item" href="staff_profile.php"><i class="mdi mdi-account m-r-5 m-l-5"></i> My
                       Profile</a>
                     <a class="dropdown-item" href="javascript:void(0)"><i class="mdi mdi-wallet m-r-5 m-l-5"></i> My
                       Balance</a>
@@ -300,11 +300,11 @@ $conn->close();
             </li>
             <!-- User Profile-->
             <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="admin_page.php" aria-expanded="false"><i
+              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="staff_page.php" aria-expanded="false"><i
                   class="mdi mdi-view-dashboard"></i><span class="hide-menu">Dashboard</span></a>
             </li>
             <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="pages_profile.php"
+              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="staff_profile.php"
                 aria-expanded="false"><i class="mdi mdi-account-network"></i><span class="hide-menu">Profile</span></a>
             </li>
             <li class="sidebar-item">
@@ -324,7 +324,7 @@ $conn->close();
           <div class="col-lg-12">
             <div class="card">
               <div class="card-body">
-                <h4 class="card-title">Admin Profile</h4>
+                <h4 class="card-title">Staff Profile</h4>
                 <div class="row">
                   <div class="col-md-3 col-sm-12">
                     <div class="profile-sidebar">
@@ -336,7 +336,7 @@ $conn->close();
                         <div class="profile-usertitle-job"> <?php echo htmlspecialchars($username); ?> </div>
                       </div>
                       <div class="profile-userbuttons">
-                        <a href="update_AdminProfile.php" class="btn btn-circle btn-primary">Edit Profile</a>
+                        <a href="update_StaffProfile.php" class="btn btn-circle btn-primary">Edit Profile</a>
                       </div>
                       <!--<div class="profile-usermenu">
                         <ul class="nav">

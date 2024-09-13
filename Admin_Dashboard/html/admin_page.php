@@ -1,3 +1,41 @@
+<?php
+// Start session to access session variables
+session_start();
+
+// Check if the user is logged in by checking if the session variable is set
+if (!isset($_SESSION['user_id'])) {
+    die("User not logged in.");
+}
+
+// Include the database connection
+require '../../connection.php';
+
+// Fetch the logged-in user's ID from the session
+$user_id = $_SESSION['user_id'];
+
+// Initialize the $staffEmail variable
+$adminEmail = '';
+
+// Prepare and execute a query to get the user's email
+$sql = "SELECT email FROM users WHERE id = ?";
+$stmt = $conn->prepare($sql);
+$stmt->bind_param('i', $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+
+// Fetch the result and set the email
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $adminEmail = $row['email'];
+} else {
+    $adminEmail = "Email not found";
+}
+
+// Close the statement and connection
+$stmt->close();
+$conn->close();
+?>
+
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
 
@@ -146,7 +184,7 @@
                     <h5 class="m-b-0 user-name font-medium">
                       ADMIN <i class="mdi mdi-chevron-down fs-4"></i>
                     </h5>
-                    <span class="op-5 user-email">ADMIN@gmail.com</span>
+                    <span class="op-5 user-email"><?php echo htmlspecialchars($adminEmail); ?></span>
                   </a>
                   <div class="dropdown-menu dropdown-menu-end" aria-labelledby="Userdd">
                     <a class="dropdown-item" href="pages_profile.php"><i class="mdi mdi-account m-r-5 m-l-5"></i> My

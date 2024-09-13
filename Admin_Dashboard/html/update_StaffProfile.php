@@ -339,12 +339,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                   <a href="#" class="" id="Userdd" role="button" data-bs-toggle="dropdown" aria-haspopup="true"
                     aria-expanded="false">
                     <h5 class="m-b-0 user-name font-medium">
-                      ADMIN <i class="mdi mdi-chevron-down fs-4"></i>
+                      STAFF <i class="mdi mdi-chevron-down fs-4"></i>
                     </h5>
                     <span class="op-5 user-email"><?php echo htmlspecialchars($email); ?></span>
                   </a>
                   <div class="dropdown-menu dropdown-menu-end" aria-labelledby="Userdd">
-                    <a class="dropdown-item" href="update_AdminProfile.php"><i class="mdi mdi-account m-r-5 m-l-5"></i> My
+                    <a class="dropdown-item" href="update_StaffProfile.php"><i class="mdi mdi-account m-r-5 m-l-5"></i> My
                       Profile</a>
                     <a class="dropdown-item" href="javascript:void(0)"><i class="mdi mdi-wallet m-r-5 m-l-5"></i> My
                       Balance</a>
@@ -378,11 +378,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </li>
             <!-- User Profile-->
             <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="admin_page.php" aria-expanded="false"><i
+              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="staff_page.php" aria-expanded="false"><i
                   class="mdi mdi-view-dashboard"></i><span class="hide-menu">Dashboard</span></a>
             </li>
             <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="pages_profile.php"
+              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="staff_profile.php"
                 aria-expanded="false"><i class="mdi mdi-account-network"></i><span class="hide-menu">Profile</span></a>
             </li>
             <li class="sidebar-item">
@@ -412,7 +412,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
               </div>
               <div class="profile-userbuttons">
-                <a href="change_passwordAdmin.php" class="btn btn-primary">Change Password</a>
+                <a href="change_passwordStaff.php" class="btn btn-primary">Change Password</a>
               </div>
               <div class="profile-usermenu">
                 <ul>
