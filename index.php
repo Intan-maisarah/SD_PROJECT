@@ -1,5 +1,9 @@
 <?php
 session_start(); 
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+include 'services.php'; // This should include the PHP code that populates $services
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -14,7 +18,7 @@ session_start();
 <body>
     <nav class="navbar navbar-expand-lg navbar-light fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="#"><img src="assets/images/logo.png" alt="Logo"style="width: 100px; height: auto;"></a>
+            <a class="navbar-brand" href="#"><img src="assets/images/logo.png" alt="Logo" style="width: 100px; height: auto;"></a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
@@ -54,15 +58,30 @@ session_start();
             <p>Your on the go printing service!</p>
             <button class="btn btn-primary" onclick="window.location.href='signin.php'">Get Started</button>
         </div>
-        
     </section>
 
-    <!--<section id="services">
+    <section id="services">
         <div class="container">
             <h2>Our Services</h2>
-             Service content here 
+            <div class="service-container">
+            <?php
+            if (!empty($services)) {
+                foreach ($services as $service) {
+                    echo '<div class="service-item">';
+                    echo '<h2>' . htmlspecialchars($service["service_name"]) . '</h2>';
+                    echo '<p>' . htmlspecialchars($service["service_description"]) . '</p>';
+                    if (!empty($service["image"])) {
+                        echo '<img src="' . htmlspecialchars($service["image"]) . '" alt="' . htmlspecialchars($service["service_name"]) . '">';
+                    }
+                    echo '</div>';
+                }
+            } else {
+                echo '<p>No services available at the moment.</p>';
+            }
+            ?>
+            </div>
         </div>
-    </section>-->
+    </section>
 
     <section id="about">
   <div class="container">
@@ -148,47 +167,44 @@ session_start();
     </div>
 </section>
 
+    <!-- Footer -->
+    <footer class="text-white" style="background-color: #74b3ce; padding: 40px 0;">
+        <div class="container">
+            <div class="row">
+                <!-- Left side: Short paragraph -->
+                <div class="col-md-6">
+                    <p>
+                        Our online printing service was inspired by the needs and creativity of students who constantly
+                        juggle tight deadlines and demanding schedules. With 24/7 document uploads and a convenient 1km
+                        delivery range, we provide the flexibility students need, ensuring their printing requirements are met
+                        anytime, anywhere.
+                    </p>
+                </div>
 
-<!-- Footer -->
-<footer class="text-white" style="background-color: #74b3ce; padding: 40px 0;">
-  <div class="container">
-    <div class="row">
-      <!-- Left side: Short paragraph -->
-      <div class="col-md-6">
-        <p>
-          Our online printing service was inspired by the needs and creativity of students who constantly
-          juggle tight deadlines and demanding schedules. With 24/7 document uploads and a convenient 1km
-          delivery range, we provide the flexibility students need, ensuring their printing requirements are met
-          anytime, anywhere.
-        </p>
-      </div>
-
-      <!-- Right side: List of icons with information, aligned left -->
-      <div class="col-md-6">
-        <ul class="list-unstyled">
-          <li class="d-flex align-items-center mb-2">
-            <img src="assets/images/location.png" alt="Location Icon" style="width: 24px; height: auto; margin-right: 10px;">
-            <span>Gurney Mall, Lot 1-30, Jln Maktab, 54000 Kuala Lumpur</span>
-          </li>
-          <li class="d-flex align-items-center mb-2">
-            <img src="assets/images/call.png" alt="Phone Icon" style="width: 24px; height: auto; margin-right: 10px;">
-            <span>+6014 2272-647</span>
-          </li>
-          <li class="d-flex align-items-center mb-2">
-            <img src="assets/images/mail.png" alt="Mail Icon" style="width: 24px; height: auto; margin-right: 10px;">
-            <span>infinity.utmkl@gmail.com</span>
-          </li>
-          <li class="d-flex align-items-center">
-            <img src="assets/images/bhours.png" alt="Business Hours Icon" style="width: 24px; height: auto; margin-right: 10px;">
-            <span>Mon-Fri: 9 AM - 6 PM</span>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</footer>
-
-
+                <!-- Right side: List of icons with information, aligned left -->
+                <div class="col-md-6">
+                    <ul class="list-unstyled">
+                        <li class="d-flex align-items-center mb-2">
+                            <img src="assets/images/location.png" alt="Location Icon" style="width: 24px; height: auto; margin-right: 10px;">
+                            <span>Gurney Mall, Lot 1-30, Jln Maktab, 54000 Kuala Lumpur</span>
+                        </li>
+                        <li class="d-flex align-items-center mb-2">
+                            <img src="assets/images/call.png" alt="Phone Icon" style="width: 24px; height: auto; margin-right: 10px;">
+                            <span>+6014 2272-647</span>
+                        </li>
+                        <li class="d-flex align-items-center mb-2">
+                            <img src="assets/images/mail.png" alt="Mail Icon" style="width: 24px; height: auto; margin-right: 10px;">
+                            <span>infinity.utmkl@gmail.com</span>
+                        </li>
+                        <li class="d-flex align-items-center">
+                            <img src="assets/images/bhours.png" alt="Business Hours Icon" style="width: 24px; height: auto; margin-right: 10px;">
+                            <span>Mon-Fri: 9 AM - 6 PM</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
@@ -224,29 +240,24 @@ session_start();
     });
 
     document.addEventListener('DOMContentLoaded', function () {
-    let phonePopup = document.getElementById('phone-popup');
-    let emailPopup = document.getElementById('email-popup');
-    let contactSection = document.querySelector('.contact-section');
+        let phonePopup = document.getElementById('phone-popup');
+        let emailPopup = document.getElementById('email-popup');
+        let contactSection = document.querySelector('.contact-section');
 
-    // Show the phone popup when the logo area is clicked (adjust click areas as needed)
-    contactSection.addEventListener('click', function (event) {
-        let isPhoneArea = event.clientX < window.innerWidth * 0.3; // Adjust the percentage based on logo position
-        let isEmailArea = event.clientX > window.innerWidth * 0.5; // Adjust the percentage based on logo position
+        // Show the phone popup when the logo area is clicked (adjust click areas as needed)
+        contactSection.addEventListener('click', function (event) {
+            let isPhoneArea = event.clientX < window.innerWidth * 0.3; // Adjust the percentage based on logo position
+            let isEmailArea = event.clientX > window.innerWidth * 0.5; // Adjust the percentage based on logo position
 
-        if (isPhoneArea) {
-            phonePopup.style.display = 'block';
-            emailPopup.style.display = 'none';
-        } else if (isEmailArea) {
-            emailPopup.style.display = 'block';
-            phonePopup.style.display = 'none';
-        }
+            if (isPhoneArea) {
+                phonePopup.classList.toggle('show');
+                emailPopup.classList.remove('show');
+            } else if (isEmailArea) {
+                emailPopup.classList.toggle('show');
+                phonePopup.classList.remove('show');
+            }
+        });
     });
-});
-
-
-</script>
-
-
-
+    </script>
 </body>
 </html>

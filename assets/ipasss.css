@@ -11,6 +11,7 @@ body {
     position: fixed;
     top: 0;
     width: 100%;
+    height: 8% !important;
     z-index: 1000;
 }
 
@@ -85,9 +86,68 @@ section {
     height: 100vh; 
 }
 
+/* IPASS CSS */
+
+/* Services Section */
 #services {
-    background-color: #81d4fa; 
+    padding: 60px 0;
+    background-color: #f8f9fa; /* Light background color for contrast */
 }
+
+#services .container {
+    max-width: 1200px; /* Limit container width */
+    margin: 0 auto;
+}
+
+#services h2 {
+    text-align: center;
+    margin-bottom: 40px;
+    font-size: 2.5rem;
+    color: #333;
+}
+
+.service-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Space between service items */
+    justify-content: center; /* Center items horizontally */
+}
+
+.service-item {
+    flex: 1 1 calc(33.333% - 20px); /* 3 items per row with gap */
+    max-width: calc(33.333% - 20px); /* Ensure box does not exceed container */
+    border: 1px solid #ddd; /* Outlined border */
+    border-radius: 8px; /* Rounded corners */
+    overflow: hidden; /* Ensure content doesn't overflow */
+    background-color: #fff; /* White background for service items */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Light shadow for 3D effect */
+    padding: 20px; /* Padding inside the box */
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+    transition: transform 0.3s ease; /* Smooth scaling on hover */
+}
+
+.service-item:hover {
+    transform: scale(1.05); /* Slightly enlarge on hover */
+}
+
+.service-item img {
+    width: 100%;
+    height: auto;
+    border-bottom: 1px solid #ddd; /* Divider between image and text */
+    margin-bottom: 15px; /* Space below the image */
+}
+
+.service-item h2 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.service-item p {
+    font-size: 1rem;
+    color: #666;
+}
+
 
 #about {
     padding: 60px 20px;
