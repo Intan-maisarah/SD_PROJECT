@@ -95,6 +95,7 @@ if (isset($_POST['signin'])) {
                         class="img-fluid" alt="Sample image">
                 </div>
                 <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+                <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Sign In</p>
                     <form action="signin.php" method="POST">
                     
 
@@ -113,11 +114,7 @@ if (isset($_POST['signin'])) {
                         </div>
 
                         <div class="d-flex justify-content-between align-items-center">
-                            <!-- Checkbox -->
-                            <div class="form-check mb-0">
-                                <input class="form-check-input me-2" type="checkbox" value="" id="form2Example3" />
-                                <label class="form-check-label" for="form2Example3">Remember me</label>
-                            </div>
+                           
                             <a href="#forgotPasswordModal" class="text-body" data-mdb-toggle="modal">Forgot password?</a>
                         </div>
 

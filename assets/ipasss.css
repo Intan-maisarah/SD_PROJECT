@@ -262,8 +262,15 @@ section {
     left: 65%; /* Adjust based on logo position */
 }
 
+#bhours-popup {
+    position: absolute;
+    top: 35%; /* Adjust based on logo position */
+    left: 45%; /* Adjust based on logo position */
+}
+
 /* Optionally, add hover or click events */
 .contact-section:hover #phone-popup,
+.contact-section:hover #bhours-popup,
 .contact-section:hover #email-popup {
     display: block;
 }

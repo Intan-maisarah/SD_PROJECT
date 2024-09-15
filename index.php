@@ -114,6 +114,10 @@ session_start();
                 <p>Email us:</p>
                 <a href="mailto:infinity.utmkl@gmail.com">infinity.utmkl@gmail.com</a>
             </div>
+            <div class="contact-popup" id="bhours-popup" >
+                <p>Business hours:</p>
+                <a href="">9am - 6pm</a>
+            </div>
         </div>
     </div>
 </section>

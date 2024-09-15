@@ -85,7 +85,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <div class="container-xl px-4 mt-4">
     <nav class="nav nav-borders">
         <a class="nav-link" href="view_profile.php" target="_self">Profile</a>
-        <a class="nav-link active ms-0" href="change_password.php" target="_self">Security</a>
+        <a class="nav-link active ms-0" href="change_password.php" target="_self">Password</a>
         <a class="nav-link ms-auto" href="index.php" target="_self">Home</a>
     </nav>   
     <hr class="mt-0 mb-4">

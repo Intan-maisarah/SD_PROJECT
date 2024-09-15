@@ -22,12 +22,19 @@ if (isset($_POST['register'])) {
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
 
+    // Check if email is valid
+    if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        $error_message = 'Invalid email format.';
+    } 
     // Check if passwords match
-    if ($password !== $confirm_password) {
+    elseif ($password !== $confirm_password) {
         $error_message = 'Passwords do not match. Please try again.';
-    } elseif (strlen($password) < 8) {
+    } 
+    // Check password length
+    elseif (strlen($password) < 8) {
         $error_message = 'Password must be at least 8 characters long.';
-    } else {
+    } 
+    else {
         // Check if email already exists
         $check = "SELECT * FROM users WHERE email=?";
         $stmt = $conn->prepare($check);
@@ -93,6 +100,7 @@ if (isset($_POST['register'])) {
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
