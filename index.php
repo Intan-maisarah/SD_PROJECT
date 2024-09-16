@@ -25,7 +25,7 @@ include 'services.php'; // This should include the PHP code that populates $serv
             <div class="collapse navbar-collapse" id="navbarNav">
                 <nav>
                     <div id="marker"></div>
-                    <a href="#home">Home</a>
+                    <a href="#home" class="active">Home</a>
                     <a href="#services">Services</a>
                     <a href="#about">About</a>
                     <a href="#contact">Contact</a>
@@ -135,7 +135,7 @@ include 'services.php'; // This should include the PHP code that populates $serv
             </div>
             <div class="contact-popup" id="bhours-popup" >
                 <p>Business hours:</p>
-                <a href="">9am - 6pm</a>
+                <a href="">Mon-Fri: 9am - 6pm</a>
             </div>
         </div>
     </div>
@@ -256,6 +256,51 @@ include 'services.php'; // This should include the PHP code that populates $serv
                 emailPopup.classList.toggle('show');
                 phonePopup.classList.remove('show');
             }
+        });
+    });
+    document.addEventListener("DOMContentLoaded", function() {
+        const marker = document.getElementById("marker");
+        const navLinks = document.querySelectorAll("nav a");
+        const sections = document.querySelectorAll("section"); // Ensure all your sections have the correct IDs like #home, #services, etc.
+
+        // Function to move the marker
+        function moveMarker(element) {
+            marker.style.width = element.offsetWidth + "px";
+            marker.style.left = element.offsetLeft + "px";
+        }
+
+        // IntersectionObserver callback
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Get the active section ID
+                    const sectionId = entry.target.id;
+
+                    // Find the corresponding nav link
+                    const activeLink = document.querySelector(`nav a[href="#${sectionId}"]`);
+
+                    // Remove active class from all links and add to the current one
+                    navLinks.forEach(link => link.classList.remove("active"));
+                    activeLink.classList.add("active");
+
+                    // Move the marker
+                    moveMarker(activeLink);
+                }
+            });
+        }, {
+            threshold: 0.5  // Trigger when 50% of the section is visible
+        });
+
+        // Observe each section
+        sections.forEach(section => observer.observe(section));
+
+        // Add click event listeners to each navigation link for click-based marker movement
+        navLinks.forEach(link => {
+            link.addEventListener("click", function() {
+                navLinks.forEach(nav => nav.classList.remove("active"));
+                this.classList.add("active");
+                moveMarker(this);
+            });
         });
     });
     </script>

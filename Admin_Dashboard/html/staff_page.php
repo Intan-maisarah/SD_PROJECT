@@ -233,6 +233,10 @@ $conn->close();
                 aria-expanded="false"><i class="mdi mdi-account-network"></i><span class="hide-menu">Profile</span></a>
             </li>
             <li class="sidebar-item">
+              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="customer.php"
+                aria-expanded="false"><i class="mdi mdi-account-network"></i><span class="hide-menu">Customer</span></a>
+            </li>
+            <li class="sidebar-item">
               <a class="sidebar-link waves-effect waves-dark sidebar-link" href="table_basic.html"
                 aria-expanded="false"><i class="mdi mdi-border-all"></i><span class="hide-menu">Table</span></a>
             </li>

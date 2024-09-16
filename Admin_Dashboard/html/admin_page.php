@@ -49,7 +49,7 @@ $conn->close();
   <meta name="description"
     content="Xtreme Admin Lite is powerful and clean admin dashboard template, inpired from Bootstrap Framework" />
   <meta name="robots" content="noindex,nofollow" />
-  <title>Xtreme Free Bootstrap Admin Template by WrapPixel</title>
+  <title>Admin</title>
   <link rel="canonical" href="https://www.wrappixel.com/templates/xtreme-admin-lite/" />
   <!-- Favicon icon -->
   <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon.png" />
@@ -231,6 +231,10 @@ $conn->close();
             <li class="sidebar-item">
               <a class="sidebar-link waves-effect waves-dark sidebar-link" href="table_basic.html"
                 aria-expanded="false"><i class="mdi mdi-border-all"></i><span class="hide-menu">Staff</span></a>
+            </li>
+            <li class="sidebar-item">
+              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="customer.php"
+                aria-expanded="false"><i class="mdi mdi-border-all"></i><span class="hide-menu">Customer</span></a>
             </li>
             <li class="sidebar-item">
               <a class="sidebar-link waves-effect waves-dark sidebar-link" href="table_basic.html"
