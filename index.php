@@ -86,19 +86,19 @@ include 'services.php'; // This should include the PHP code that populates $serv
     <section id="about">
   <div class="container">
     <h2>About Us</h2>
-    <h6>Address: Gurney Mall, Lot 1-30, Jln Maktab, 54000 Kuala Lumpur</h6>
+    
 
     <div class="about-content">
       <div class="map-container">
-        <iframe 
-          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d434.727282914923!2d101.7217383527438!3d3.1720723536050173!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31cc37a3f442ec45%3A0xc85fb666f112d900!2sInfinity%20Printing%20and%20Stationery!5e0!3m2!1sen!2smy!4v1725715700058!5m2!1sen!2smy"
+        <img 
+          src="assets/images/kedai2.jpg"
           width="100%" 
           height="100%" 
           style="border:0;" 
           allowfullscreen="" 
           loading="lazy" 
           referrerpolicy="no-referrer-when-downgrade">
-        </iframe>
+        </img>
       </div>
       <div class="text-content">
         <p>
@@ -121,7 +121,7 @@ include 'services.php'; // This should include the PHP code that populates $serv
             <h2>Contact Us</h2>
         </div>
         <!-- Full-screen background image -->
-        <img src="assets/images/contactreal.jpg" alt="Contact Us Image" class="contact-img">
+       <img src="assets/images/contactreal.jpg" alt="Contact Us Image" class="contact-img">
 
         <!-- Interactive Popups -->
         <div class="popup-container">
@@ -137,8 +137,19 @@ include 'services.php'; // This should include the PHP code that populates $serv
                 <p>Business hours:</p>
                 <a href="">Mon-Fri: 9am - 6pm</a>
             </div>
+            <div class="contact-popup" id="location-popup" style="width: 400px; height 200px;">
+                <p>Address</p>
+                <a href="">Gurney Mall, Lot 1-30, Jln Maktab, 54000 Kuala Lumpur</a>
+                <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3983.7067498168067!2d101.71907067497126!3d3.1717060968036224!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31cc37a3f442ec45%3A0xc85fb666f112d900!2sInfinity%20Printing%20and%20Stationery!5e0!3m2!1sen!2smy!4v1726538289728!5m2!1sen!2smy" 
+                width="300" height="200" style="border:0;" 
+                allowfullscreen="" loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade">
+              </iframe>
+            </div>
         </div>
     </div>
+   
 </section>
 
 
