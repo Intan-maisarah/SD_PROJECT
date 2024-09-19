@@ -13,7 +13,6 @@ require '../../connection.php';
 // Fetch the logged-in user's ID from the session
 $user_id = $_SESSION['user_id'];
 
-// Initialize the $staffEmail variable
 $adminEmail = '';
 
 // Prepare and execute a query to get the user's email
@@ -63,6 +62,93 @@ $conn->close();
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <style>
+    .preloader {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  flex-direction: column;
+}
+
+/* Printer styling */
+.printer {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+.printer-top {
+  width: 80px;
+  height: 20px;
+  background: #666;
+  border-radius: 10px 10px 0 0;
+  position: absolute;
+  top: 0;
+  left: 20px;
+}
+
+.paper-input-slot {
+  width: 80px;
+  height: 10px;
+  background: #444;
+  border-radius: 3px;
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}
+
+.printer-body {
+  width: 120px;
+  height: 60px;
+  background: #333;
+  border-radius: 5px;
+  position: absolute;
+  top: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.paper {
+  width: 80px;
+  height: 50px;
+  background: #fff;
+  border: 2px solid #333;
+  border-radius: 3px;
+  position: relative;
+  animation: paper-print 2s infinite;
+}
+
+.printer-tray {
+  width: 100px;
+  height: 10px;
+  background: #333;
+  border-radius: 0 0 5px 5px;
+  position: absolute;
+  bottom: 0;
+  left: 10px;
+}
+
+/* Animation for the paper printing effect */
+@keyframes paper-print {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(20px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+  </style>
 </head>
 
 <body>
@@ -70,11 +156,15 @@ $conn->close();
   <!-- Preloader - style you can find in spinners.css -->
   <!-- ============================================================== -->
   <div class="preloader">
-    <div class="lds-ripple">
-      <div class="lds-pos"></div>
-      <div class="lds-pos"></div>
+  <div class="printer">
+    <div class="printer-top"></div>
+    <div class="paper-input-slot"></div>
+    <div class="printer-body">
+      <div class="paper"></div>
     </div>
+    <div class="printer-tray"></div>
   </div>
+</div>
   <!-- ============================================================== -->
   <!-- Main wrapper - style you can find in pages.scss -->
   <!-- ============================================================== -->
@@ -163,92 +253,7 @@ $conn->close();
     <!-- End Topbar header -->
     <!-- ============================================================== -->
     <!-- ============================================================== -->
-    <!-- Left Sidebar - style you can find in sidebar.scss  -->
-    <!-- ============================================================== -->
-    <aside class="left-sidebar" data-sidebarbg="skin6">
-      <!-- Sidebar scroll-->
-      <div class="scroll-sidebar">
-        <!-- Sidebar navigation-->
-        <nav class="sidebar-nav">
-          <ul id="sidebarnav">
-            <!-- User Profile-->
-            <li>
-              <!-- User Profile-->
-              <div class="user-profile d-flex no-block dropdown m-t-20">
-                <div class="user-pic">
-                  <img src="../assets/images/users/1.jpg" alt="users" class="rounded-circle" width="40" />
-                </div>
-                <div class="user-content hide-menu m-l-10">
-                  <a href="#" class="" id="Userdd" role="button" data-bs-toggle="dropdown" aria-haspopup="true"
-                    aria-expanded="false">
-                    <h5 class="m-b-0 user-name font-medium">
-                      ADMIN <i class="mdi mdi-chevron-down fs-4"></i>
-                    </h5>
-                    <span class="op-5 user-email"><?php echo htmlspecialchars($adminEmail); ?></span>
-                  </a>
-                  <div class="dropdown-menu dropdown-menu-end" aria-labelledby="Userdd">
-                    <a class="dropdown-item" href="pages_profile.php"><i class="mdi mdi-account m-r-5 m-l-5"></i> My
-                      Profile</a>
-                    <a class="dropdown-item" href="javascript:void(0)"><i class="mdi mdi-wallet m-r-5 m-l-5"></i> My
-                      Balance</a>
-                    <a class="dropdown-item" href="javascript:void(0)"><i class="mdi mdi-email m-r-5 m-l-5"></i>
-                      Inbox</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="javascript:void(0)"><i class="mdi mdi-settings m-r-5 m-l-5"></i>
-                      Account
-                      Setting</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="../../logout.php"><i class="mdi mdi-power m-r-5 m-l-5"></i>
-                      Logout</a>
-                  </div>
-                </div>
-              </div>
-              <!-- End User Profile-->
-            </li>
-            <li class="p-15 m-t-10">
-              <a href="javascript:void(0)" class="
-                    btn
-                    d-block
-                    w-100
-                    create-btn
-                    text-white
-                    no-block
-                    d-flex
-                    align-items-center
-                  "><i class="mdi mdi-plus-box"></i>
-                <span class="hide-menu m-l-5">Create New</span>
-              </a>
-            </li>
-            <!-- User Profile-->
-            <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="admin_page.html" aria-expanded="false"><i
-                  class="mdi mdi-view-dashboard"></i><span class="hide-menu">Dashboard</span></a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="pages_profile.php"
-                aria-expanded="false"><i class="mdi mdi-account-network"></i><span class="hide-menu">Profile</span></a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="table_basic.html"
-                aria-expanded="false"><i class="mdi mdi-border-all"></i><span class="hide-menu">Staff</span></a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="customer.php"
-                aria-expanded="false"><i class="mdi mdi-border-all"></i><span class="hide-menu">Customer</span></a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="table_basic.html"
-                aria-expanded="false"><i class="mdi mdi-border-all"></i><span class="hide-menu">Table</span></a>
-            </li>
-            </li>
-          </ul>
-        </nav>
-        <!-- End Sidebar navigation -->
-      </div>
-      <!-- End Sidebar scroll-->
-    </aside>
-    <!-- ============================================================== -->
-    <!-- End Left Sidebar - style you can find in sidebar.scss  -->
+    <?php include "sidebarAdmin.php";?>
     <!-- ============================================================== -->
     <!-- ============================================================== -->
     <!-- Page wrapper  -->
@@ -357,313 +362,10 @@ $conn->close();
         <!-- Sales chart -->
         <!-- ============================================================== -->
         <!-- ============================================================== -->
-        <!-- Table -->
-        <!-- ============================================================== -->
-        <div class="row">
-          <!-- column -->
-          <div class="col-12">
-            <div class="card">
-              <div class="card-body">
-                <!-- title -->
-                <div class="d-md-flex">
-                  <div>
-                    <h4 class="card-title">Top Selling Products</h4>
-                    <h5 class="card-subtitle">
-                      Overview of Top Selling Items
-                    </h5>
-                  </div>
-                  <div class="ms-auto">
-                    <div class="dl">
-                      <select class="form-select shadow-none">
-                        <option value="0" selected>Monthly</option>
-                        <option value="1">Daily</option>
-                        <option value="2">Weekly</option>
-                        <option value="3">Yearly</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <!-- title -->
-              </div>
-              <div class="table-responsive">
-                <table class="table v-middle">
-                  <thead>
-                    <tr class="bg-light">
-                      <th class="border-top-0">Products</th>
-                      <th class="border-top-0">License</th>
-                      <th class="border-top-0">Support Agent</th>
-                      <th class="border-top-0">Technology</th>
-                      <th class="border-top-0">Tickets</th>
-                      <th class="border-top-0">Sales</th>
-                      <th class="border-top-0">Earnings</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>
-                        <div class="d-flex align-items-center">
-                          <div class="m-r-10">
-                            <a class="
-                                  btn btn-circle
-                                  d-flex
-                                  btn-info
-                                  text-white
-                                ">EA</a>
-                          </div>
-                          <div class="">
-                            <h4 class="m-b-0 font-16">Elite Admin</h4>
-                          </div>
-                        </div>
-                      </td>
-                      <td>Single Use</td>
-                      <td>John Doe</td>
-                      <td>
-                        <label class="label label-danger">Angular</label>
-                      </td>
-                      <td>46</td>
-                      <td>356</td>
-                      <td>
-                        <h5 class="m-b-0">$2850.06</h5>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex align-items-center">
-                          <div class="m-r-10">
-                            <a class="
-                                  btn btn-circle
-                                  d-flex
-                                  btn-orange
-                                  text-white
-                                ">MA</a>
-                          </div>
-                          <div class="">
-                            <h4 class="m-b-0 font-16">Monster Admin</h4>
-                          </div>
-                        </div>
-                      </td>
-                      <td>Single Use</td>
-                      <td>Venessa Fern</td>
-                      <td>
-                        <label class="label label-info">Vue Js</label>
-                      </td>
-                      <td>46</td>
-                      <td>356</td>
-                      <td>
-                        <h5 class="m-b-0">$2850.06</h5>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex align-items-center">
-                          <div class="m-r-10">
-                            <a class="
-                                  btn btn-circle
-                                  d-flex
-                                  btn-success
-                                  text-white
-                                ">MP</a>
-                          </div>
-                          <div class="">
-                            <h4 class="m-b-0 font-16">Material Pro Admin</h4>
-                          </div>
-                        </div>
-                      </td>
-                      <td>Single Use</td>
-                      <td>John Doe</td>
-                      <td>
-                        <label class="label label-success">Bootstrap</label>
-                      </td>
-                      <td>46</td>
-                      <td>356</td>
-                      <td>
-                        <h5 class="m-b-0">$2850.06</h5>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex align-items-center">
-                          <div class="m-r-10">
-                            <a class="
-                                  btn btn-circle
-                                  d-flex
-                                  btn-purple
-                                  text-white
-                                ">AA</a>
-                          </div>
-                          <div class="">
-                            <h4 class="m-b-0 font-16">Ample Admin</h4>
-                          </div>
-                        </div>
-                      </td>
-                      <td>Single Use</td>
-                      <td>John Doe</td>
-                      <td>
-                        <label class="label label-purple">React</label>
-                      </td>
-                      <td>46</td>
-                      <td>356</td>
-                      <td>
-                        <h5 class="m-b-0">$2850.06</h5>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- ============================================================== -->
-        <!-- Table -->
+        
         <!-- ============================================================== -->
         <!-- ============================================================== -->
-        <!-- Recent comment and chats -->
-        <!-- ============================================================== -->
-        <div class="row">
-          <!-- column -->
-          <div class="col-lg-6">
-            <div class="card">
-              <div class="card-body">
-                <h4 class="card-title">Recent Comments</h4>
-              </div>
-              <div class="comment-widgets scrollable">
-                <!-- Comment Row -->
-                <div class="d-flex flex-row comment-row m-t-0">
-                  <div class="p-2">
-                    <img src="../assets/images/users/1.jpg" alt="user" width="50" class="rounded-circle" />
-                  </div>
-                  <div class="comment-text w-100">
-                    <h6 class="font-medium">James Anderson</h6>
-                    <span class="m-b-15 d-block">Lorem Ipsum is simply dummy text of the printing and
-                      type setting industry.
-                    </span>
-                    <div class="comment-footer">
-                      <span class="text-muted float-end">April 14, 2024</span>
-                      <span class="label label-rounded label-primary">Pending</span>
-                      <span class="action-icons">
-                        <a href="javascript:void(0)"><i class="mdi mdi-pencil-box-outline fs-4"></i></a>
-                        <a href="javascript:void(0)"><i class="mdi mdi-check fs-4"></i></a>
-                        <a href="javascript:void(0)"><i class="mdi mdi-heart-outline fs-4"></i></a>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <!-- Comment Row -->
-                <div class="d-flex flex-row comment-row">
-                  <div class="p-2">
-                    <img src="../assets/images/users/4.jpg" alt="user" width="50" class="rounded-circle" />
-                  </div>
-                  <div class="comment-text active w-100">
-                    <h6 class="font-medium">Michael Jorden</h6>
-                    <span class="m-b-15 d-block">Lorem Ipsum is simply dummy text of the printing and
-                      type setting industry.
-                    </span>
-                    <div class="comment-footer">
-                      <span class="text-muted float-end">April 14, 2024</span>
-                      <span class="label label-success label-rounded">Approved</span>
-                      <span class="action-icons active">
-                        <a href="javascript:void(0)"><i class="mdi mdi-pencil-box-outline fs-4"></i></a>
-                        <a href="javascript:void(0)"><i class="mdi mdi-window-close fs-4"></i></a>
-                        <a href="javascript:void(0)"><i class="mdi mdi-heart-outline fs-4 text-danger"></i></a>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <!-- Comment Row -->
-                <div class="d-flex flex-row comment-row">
-                  <div class="p-2">
-                    <img src="../assets/images/users/5.jpg" alt="user" width="50" class="rounded-circle" />
-                  </div>
-                  <div class="comment-text w-100">
-                    <h6 class="font-medium">Johnathan Doeting</h6>
-                    <span class="m-b-15 d-block">Lorem Ipsum is simply dummy text of the printing and
-                      type setting industry.
-                    </span>
-                    <div class="comment-footer">
-                      <span class="text-muted float-end">April 14, 2024</span>
-                      <span class="label label-rounded label-danger">Rejected</span>
-                      <span class="action-icons">
-                        <a href="javascript:void(0)"><i class="mdi mdi-pencil-box-outline fs-4"></i></a>
-                        <a href="javascript:void(0)"><i class="mdi mdi-check fs-4"></i></a>
-                        <a href="javascript:void(0)"><i class="mdi mdi-heart-outline fs-4"></i></a>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- column -->
-          <div class="col-lg-6">
-            <div class="card">
-              <div class="card-body">
-                <h4 class="card-title">Temp Guide</h4>
-                <div class="d-flex align-items-center flex-row m-t-30">
-                  <div class="display-5 text-info">
-                    <i class="mdi mdi-weather-lightning-rainy"></i>
-                    <span>73<sup>°</sup></span>
-                  </div>
-                  <div class="m-l-10">
-                    <h3 class="m-b-0">Saturday</h3>
-                    <small>Ahmedabad, India</small>
-                  </div>
-                </div>
-                <table class="table no-border mini-table m-t-20">
-                  <tbody>
-                    <tr>
-                      <td class="text-muted">Wind</td>
-                      <td class="font-medium">ESE 17 mph</td>
-                    </tr>
-                    <tr>
-                      <td class="text-muted">Humidity</td>
-                      <td class="font-medium">83%</td>
-                    </tr>
-                    <tr>
-                      <td class="text-muted">Pressure</td>
-                      <td class="font-medium">28.56 in</td>
-                    </tr>
-                    <tr>
-                      <td class="text-muted">Cloud Cover</td>
-                      <td class="font-medium">78%</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <ul class="row list-style-none text-center m-t-30">
-                  <li class="col-3">
-                    <h4 class="text-info">
-                      <i class="mdi mdi-weather-sunny fs-3"></i>
-                    </h4>
-                    <span class="d-block text-muted">09:30</span>
-                    <h3 class="m-t-5">70<sup>°</sup></h3>
-                  </li>
-                  <li class="col-3">
-                    <h4 class="text-info">
-                      <i class="mdi mdi-weather-partlycloudy fs-3"></i>
-                    </h4>
-                    <span class="d-block text-muted">11:30</span>
-                    <h3 class="m-t-5">72<sup>°</sup></h3>
-                  </li>
-                  <li class="col-3">
-                    <h4 class="text-info">
-                      <i class="mdi mdi-weather-pouring fs-3"></i>
-                    </h4>
-                    <span class="d-block text-muted">13:30</span>
-                    <h3 class="m-t-5">75<sup>°</sup></h3>
-                  </li>
-                  <li class="col-3">
-                    <h4 class="text-info">
-                      <i class="mdi mdi-weather-hail fs-3"></i>
-                    </h4>
-                    <span class="d-block text-muted">15:30</span>
-                    <h3 class="m-t-5">76<sup>°</sup></h3>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- ============================================================== -->
-        <!-- Recent comment and chats -->
+        
         <!-- ============================================================== -->
       </div>
       <!-- ============================================================== -->

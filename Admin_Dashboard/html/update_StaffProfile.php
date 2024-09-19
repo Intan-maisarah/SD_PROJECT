@@ -24,13 +24,13 @@ $result = $stmt->get_result();
 if ($result->num_rows > 0) {
   $row = $result->fetch_assoc();
   $name = $row['name'] ?? "N/A";
-  $username = $row['username'] ?? "N/A";
+  $usernames = $row['username'] ?? "N/A";
   $email = $row['email'] ?? "N/A";
   $contact = $row['contact'] ?? "N/A";
   $address = $row["address"] ?? "N/A";
 } else {
     $name = "N/A";
-    $username = "N/A";
+    $usernames = "N/A";
     $email = "N/A";
     $contact = "N/A";
     $address = "N/A";
@@ -224,6 +224,93 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
+    <style>
+    .preloader {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  flex-direction: column;
+}
+
+/* Printer styling */
+.printer {
+  position: relative;
+  width: 120px;
+  height: 120px;
+}
+
+.printer-top {
+  width: 80px;
+  height: 20px;
+  background: #666;
+  border-radius: 10px 10px 0 0;
+  position: absolute;
+  top: 0;
+  left: 20px;
+}
+
+.paper-input-slot {
+  width: 80px;
+  height: 10px;
+  background: #444;
+  border-radius: 3px;
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}
+
+.printer-body {
+  width: 120px;
+  height: 60px;
+  background: #333;
+  border-radius: 5px;
+  position: absolute;
+  top: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.paper {
+  width: 80px;
+  height: 50px;
+  background: #fff;
+  border: 2px solid #333;
+  border-radius: 3px;
+  position: relative;
+  animation: paper-print 2s infinite;
+}
+
+.printer-tray {
+  width: 100px;
+  height: 10px;
+  background: #333;
+  border-radius: 0 0 5px 5px;
+  position: absolute;
+  bottom: 0;
+  left: 10px;
+}
+
+/* Animation for the paper printing effect */
+@keyframes paper-print {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(20px);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+  </style>
 </head>
 
 <body>
@@ -231,11 +318,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <!-- Preloader - style you can find in spinners.css -->
   <!-- ============================================================== -->
   <div class="preloader">
-    <div class="lds-ripple">
-      <div class="lds-pos"></div>
-      <div class="lds-pos"></div>
+  <div class="printer">
+    <div class="printer-top"></div>
+    <div class="paper-input-slot"></div>
+    <div class="printer-body">
+      <div class="paper"></div>
     </div>
+    <div class="printer-tray"></div>
   </div>
+</div>
   <!-- ============================================================== -->
   <!-- Main wrapper - style you can find in pages.scss -->
   <!-- ============================================================== -->
@@ -319,87 +410,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <!-- End Topbar header -->
     <!-- ============================================================== -->
     <!-- ============================================================== -->
-    <!-- Left Sidebar - style you can find in sidebar.scss  -->
-    <!-- ============================================================== -->
+    <?php include "sidebarStaff.php";?>
 
-    <aside class="left-sidebar" data-sidebarbg="skin6">
-      <!-- Sidebar scroll-->
-      <div class="scroll-sidebar">
-        <!-- Sidebar navigation-->
-        <nav class="sidebar-nav">
-          <ul id="sidebarnav">
-            <!-- User Profile-->
-            <li>
-              <!-- User Profile-->
-              <div class="user-profile d-flex no-block dropdown m-t-20">
-                <div class="user-pic">
-                  <img src="../assets/images/users/1.jpg" alt="users" class="rounded-circle" width="40" />
-                </div>
-                <div class="user-content hide-menu m-l-10">
-                  <a href="#" class="" id="Userdd" role="button" data-bs-toggle="dropdown" aria-haspopup="true"
-                    aria-expanded="false">
-                    <h5 class="m-b-0 user-name font-medium">
-                      STAFF <i class="mdi mdi-chevron-down fs-4"></i>
-                    </h5>
-                    <span class="op-5 user-email"><?php echo htmlspecialchars($email); ?></span>
-                  </a>
-                  <div class="dropdown-menu dropdown-menu-end" aria-labelledby="Userdd">
-                    <a class="dropdown-item" href="update_StaffProfile.php"><i class="mdi mdi-account m-r-5 m-l-5"></i> My
-                      Profile</a>
-                    <a class="dropdown-item" href="javascript:void(0)"><i class="mdi mdi-wallet m-r-5 m-l-5"></i> My
-                      Balance</a>
-                    <a class="dropdown-item" href="javascript:void(0)"><i class="mdi mdi-email m-r-5 m-l-5"></i>
-                      Inbox</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="javascript:void(0)"><i class="mdi mdi-settings m-r-5 m-l-5"></i>
-                      Account
-                      Setting</a>
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="../../logout.php"><i class="mdi mdi-power m-r-5 m-l-5"></i>
-                      Logout</a>
-                  </div>
-                </div>
-              </div>
-              <!-- End User Profile-->
-            </li>
-            <li class="p-15 m-t-10">
-              <a href="javascript:void(0)" class="
-                    btn
-                    d-block
-                    w-100
-                    create-btn
-                    text-white
-                    no-block
-                    d-flex
-                    align-items-center
-                  "><i class="mdi mdi-plus-box"></i>
-                <span class="hide-menu m-l-5">Create New</span>
-              </a>
-            </li>
-            <!-- User Profile-->
-            <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="staff_page.php" aria-expanded="false"><i
-                  class="mdi mdi-view-dashboard"></i><span class="hide-menu">Dashboard</span></a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="staff_profile.php"
-                aria-expanded="false"><i class="mdi mdi-account-network"></i><span class="hide-menu">Profile</span></a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="customer.php"
-                aria-expanded="false"><i class="mdi mdi-account-network"></i><span class="hide-menu">Customer</span></a>
-            </li>
-            <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="table_basic.html"
-                aria-expanded="false"><i class="mdi mdi-border-all"></i><span class="hide-menu">Table</span></a>
-            </li>
-            </li>
-          </ul>
-        </nav>
-        <!-- End Sidebar navigation -->
-      </div>
-      <!-- End Sidebar scroll-->
-    </aside>
 
     <div class="page-wrapper">
       <div class="container-fluid">
@@ -412,7 +424,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                   <?php echo htmlspecialchars($name); ?>
                 </div>
                 <div class="profile-usertitle-job">
-                  <?php echo htmlspecialchars($username); ?>
+                  <?php echo htmlspecialchars($usernames); ?>
                 </div>
               </div>
               <div class="profile-userbuttons">

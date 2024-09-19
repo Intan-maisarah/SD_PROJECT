@@ -86,7 +86,6 @@ include 'services.php'; // This should include the PHP code that populates $serv
     <section id="about">
   <div class="container">
     <h2>About Us</h2>
-    
 
     <div class="about-content">
       <div class="map-container">

@@ -1,61 +1,6 @@
 <?php
-ob_start();
+session_start();
 ?>
-
-<?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-
-// Ensure the session is started and check if user ID is set
-if (!isset($_SESSION['user_id'])) {
-    echo "User not logged in.<br>";
-    exit;
-}
-
-// Include the database connection
-require '../../connection.php';
-
-// Fetch the logged-in user's ID from the session
-$user_id = $_SESSION['user_id'];
-$adminEmail = '';
-$usertype = '';
-
-// Prepare and execute a query to get the user's email and usertype
-$sql = "SELECT email, usertype FROM users WHERE id = ?";
-$stmt = $conn->prepare($sql);
-if (!$stmt) {
-    echo "Prepare statement failed: " . $conn->error . "<br>";
-    exit;
-}
-$stmt->bind_param('i', $user_id);
-$stmt->execute();
-$result = $stmt->get_result();
-if (!$result) {
-    echo "Get result failed: " . $stmt->error . "<br>";
-    exit;
-}
-
-if ($result->num_rows > 0) {
-    $row = $result->fetch_assoc();
-    $adminEmail = $row['email'];
-    $usertype = $row['usertype'];
-} else {
-    echo "User not found.<br>";
-    exit;
-}
-
-// Close statement and connection
-$stmt->close();
-$conn->close();
-
-
-?>
-
-
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
 
@@ -66,12 +11,11 @@ $conn->close();
   <meta name="keywords" content="admin, dashboard, printing service" />
   <meta name="description" content="Admin page for staff management" />
   <meta name="robots" content="noindex,nofollow" />
-  <title>Customer Management</title>
+  <title>Staff Management</title>
   <!-- Favicon icon -->
   <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon.png" />
   <!-- Custom CSS -->
   <link href="../dist/css/style.min.css" rel="stylesheet" />
-
   <style>
     .preloader {
   position: fixed;
@@ -159,7 +103,6 @@ $conn->close();
   }
 }
   </style>
- 
 </head>
 
 <body>
@@ -176,9 +119,6 @@ $conn->close();
     <div class="printer-tray"></div>
   </div>
 </div>
-
-
-  
   <!-- ============================================================== -->
   <!-- Main wrapper -->
   <!-- ============================================================== -->
@@ -214,105 +154,14 @@ $conn->close();
     <!-- ============================================================== -->
     <!-- Sidebar -->
     <!-- ============================================================== -->
-    <?php
-    if ($usertype === 'ADMIN') {
-        include 'sidebarAdmin.php';
-    } else {
-        include 'sidebarStaff.php';
-    }
-    ?>
+    <?php include 'sidebarAdmin.php'; ?>
     
     <!-- ============================================================== -->
     <!-- Page wrapper -->
     <!-- ============================================================== -->
-    <div class="page-wrapper">
-   <!--php coding for customer-->
-   <?php
-// Connect to the database
-include('../../connection.php'); // Include your database connection file
 
-// Check if action is set in the URL
-$action = isset($_GET['action']) ? $_GET['action'] : 'view';
-
-switch($action) {
-    case 'view':
-        // View customers
-        $query = "SELECT * FROM users WHERE userType = 'user'";
-        $result = mysqli_query($conn, $query);
-
-        echo "<h2>Customer List</h2>";
-        echo "<table border='1'>";
-        echo "<tr><th>ID</th><th>Name</th><th>Email</th><th>Phone Number</th><th>Address</th><th>Actions</th></tr>";
-        
-        while($row = mysqli_fetch_assoc($result)) {
-            echo "<tr>";
-            echo "<td>" . $row['id'] . "</td>";
-            echo "<td>" . $row['name'] . "</td>";
-            echo "<td>" . $row['email'] . "</td>";
-            echo "<td>" . $row['contact'] . "</td>";
-            echo "<td>" . $row['address'] . "</td>";
-            echo "<td>
-                    <a href='customer.php?action=edit&id=" . $row['id'] . "'>Edit</a> | 
-                    <a href='customer.php?action=delete&id=" . $row['id'] . "' onclick='return confirm(\"Are you sure?\")'>Delete</a>
-                  </td>";
-            echo "</tr>";
-        }
-        
-        echo "</table>";
-        break;
-
-    case 'edit':
-        // Edit customer
-        if(isset($_GET['id'])) {
-            $id = $_GET['id'];
-            if($_SERVER['REQUEST_METHOD'] == 'POST') {
-                // Update customer data
-                $name = $_POST['name'];
-                $email = $_POST['email'];
-                $contact = $_POST['contact'];
-                $address = $_POST['address'];
-                $updateQuery = "UPDATE users SET name='$name', email='$email', contact='$contact',address='$address' WHERE id='$id'";
-                mysqli_query($conn, $updateQuery);
-                header("Location: customer.php?action=view");
-            } else {
-                // Fetch current customer data for editing
-                $query = "SELECT * FROM users WHERE id='$id'";
-                $result = mysqli_query($conn, $query);
-                $customer = mysqli_fetch_assoc($result);
-                ?>
-                <h2>Edit Customer</h2>
-                <form method="POST" action="">
-                    <label for="name">Name:</label>
-                    <input type="text" name="name" value="<?php echo $customer['name']; ?>" required><br>
-                    <label for="email">Email:</label>
-                    <input type="email" name="email" value="<?php echo $customer['email']; ?>" required><br>
-                    <label for="email">Phone Number:</label>
-                    <input type="number" name="contact" value="<?php echo $customer['contact']; ?>" required><br>
-                    <label for="email">Address:</label>
-                    <input type="text" name="address" value="<?php echo $customer['address']; ?>" required><br>
-                    <input type="submit" value="Update">
-                </form>
-                <?php
-            }
-        }
-        break;
-
-    case 'delete':
-        // Delete customer
-        if(isset($_GET['id'])) {
-            $id = $_GET['id'];
-            $deleteQuery = "DELETE FROM users WHERE id='$id'";
-            mysqli_query($conn, $deleteQuery);
-            header("Location: customer.php?action=view"); // Redirect to view after deleting
-        }
-        break;
-
-    default:
-        // Default action is to view customers
-        header("Location: customer.php?action=view");
-        break;
-}
-?>
+   <!--php coding for staff-->
+   
 
     <!-- ============================================================== -->
     <!-- Footer -->
@@ -320,7 +169,6 @@ switch($action) {
     <footer class="footer text-center">
       All Rights Reserved by Your Company. Designed and Developed by <a href="https://www.wrappixel.com">WrapPixel</a>.
     </footer>
-  </div>
   </div>
 
   <!-- ============================================================== -->
@@ -336,7 +184,3 @@ switch($action) {
 </body>
 
 </html>
-
-<?php
-ob_end_flush();
-?>

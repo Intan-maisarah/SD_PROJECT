@@ -81,13 +81,10 @@ if (isset($_POST['register'])) {
                                       <p><a href="http://localhost/SD_PROJECT/verify_email.php?token=' . $verification_token . '">Verify Email</a></p>';
             
                     $mail->send();
-
-                    // Set session variable for success message
-                    echo "<script>
-                    alert('Verification link has been sent to your email');
-                    window.location.href = 'signin.php';
-                    </script>";
             
+                    // Set session variable to trigger alert
+                    $_SESSION['email_sent'] = true;
+                    
                     // Redirect after successful email send
                     header("Location: signin.php");
                     exit();
@@ -96,6 +93,7 @@ if (isset($_POST['register'])) {
                     $error_message = 'Message could not be sent. Please try again later.';
                 }
             }
+            
         }
     }
 }
@@ -227,23 +225,7 @@ if (isset($_POST['register'])) {
         </div>
     </div>
 
-    <!-- Verification Email Sent Modal -->
-    <div class="modal fade" id="emailSentModal" tabindex="-1" aria-labelledby="emailSentModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="emailSentModalLabel">Email Verification</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    A verification link has been sent to your email. Please check your inbox to complete the registration process.
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
-                </div>
-            </div>
-        </div>
-    </div>
+    
 
     <!-- MDB Bootstrap JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
@@ -251,12 +233,13 @@ if (isset($_POST['register'])) {
 
     <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Check if the session variable is set
-        <?php if (isset($_SESSION['email_sent']) && $_SESSION['email_sent']): ?>
-        var emailSentModal = new bootstrap.Modal(document.getElementById('emailSentModal'));
-        emailSentModal.show();
-        <?php unset($_SESSION['email_sent']); // Clear the session variable ?>
-        <?php endif; ?>
+        document.addEventListener('DOMContentLoaded', function() {
+    // Check if the session variable is set
+    <?php if (isset($_SESSION['email_sent']) && $_SESSION['email_sent']): ?>
+    alert('Verification link has been sent to your email. Please check your inbox.');
+    <?php unset($_SESSION['email_sent']); // Clear the session variable ?>
+    <?php endif; ?>
+});
 
         document.getElementById('signupForm').addEventListener('submit', function(event) {
             var password = document.getElementById('form3Example4c').value;
