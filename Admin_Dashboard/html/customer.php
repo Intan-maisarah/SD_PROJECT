@@ -238,65 +238,189 @@ switch($action) {
     case 'view':
         // View customers
         $query = "SELECT * FROM users WHERE userType = 'user'";
-        $result = mysqli_query($conn, $query);
+$result = mysqli_query($conn, $query);
 
-        echo "<h2>Customer List</h2>";
-        echo "<table border='1'>";
-        echo "<tr><th>ID</th><th>Name</th><th>Email</th><th>Phone Number</th><th>Address</th><th>Actions</th></tr>";
-        
-        while($row = mysqli_fetch_assoc($result)) {
-            echo "<tr>";
-            echo "<td>" . $row['id'] . "</td>";
-            echo "<td>" . $row['name'] . "</td>";
-            echo "<td>" . $row['email'] . "</td>";
-            echo "<td>" . $row['contact'] . "</td>";
-            echo "<td>" . $row['address'] . "</td>";
-            echo "<td>
-                    <a href='customer.php?action=edit&id=" . $row['id'] . "'>Edit</a> | 
-                    <a href='customer.php?action=delete&id=" . $row['id'] . "' onclick='return confirm(\"Are you sure?\")'>Delete</a>
-                  </td>";
-            echo "</tr>";
+echo "<h2>Customer List</h2>";
+
+// Apply CSS styling to the table
+echo "<style>
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          font-family: Arial, sans-serif;
         }
-        
-        echo "</table>";
+
+        th, td {
+          text-align: left;
+          padding: 12px;
+          border-bottom: 1px solid #ddd;
+        }
+
+        th {
+          background-color: #f2f2f2;
+          color: #333;
+          font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+          background-color: #f9f9f9;
+        }
+
+        tr:hover {
+          background-color: #f1f1f1;
+        }
+
+        a {
+          color: #1a73e8;
+          text-decoration: none;
+        }
+
+        a:hover {
+          text-decoration: underline;
+        }
+
+        @media screen and (max-width: 600px) {
+          table, th, td {
+            width: 100%;
+            display: block;
+          }
+
+          th, td {
+            text-align: left;
+            padding: 10px;
+          }
+
+          th {
+            background-color: #f0f0f0;
+          }
+        }
+      </style>";
+
+// Table structure
+echo "<table>";
+echo "<tr><th>ID</th><th>Name</th><th>Email</th><th>Phone Number</th><th>Address</th><th>Actions</th></tr>";
+
+// Fetch and display customer data
+while ($row = mysqli_fetch_assoc($result)) {
+    echo "<tr>";
+    echo "<td>" . $row['id'] . "</td>";
+    echo "<td>" . $row['name'] . "</td>";
+    echo "<td>" . $row['email'] . "</td>";
+    echo "<td>" . $row['contact'] . "</td>";
+    echo "<td>" . $row['address'] . "</td>";
+    echo "<td>
+    <a href='customer.php?action=edit&id=" . $row['id'] . "' style='display: inline-block; padding: 8px 16px; text-align: center; text-decoration: none; background-color: #1a73e8; color: white; border-radius: 4px; margin-right: 8px;'>Edit</a>
+    <a href='customer.php?action=delete&id=" . $row['id'] . "' style='display: inline-block; padding: 8px 16px; text-align: center; text-decoration: none; background-color: #e53935; color: white; border-radius: 4px;' onclick='return confirm(\"Are you sure you want to delete?\")'>Delete</a>
+  </td>";
+echo "</tr>";
+}
+
+echo "</table>";
         break;
 
     case 'edit':
-        // Edit customer
-        if(isset($_GET['id'])) {
-            $id = $_GET['id'];
-            if($_SERVER['REQUEST_METHOD'] == 'POST') {
-                // Update customer data
-                $name = $_POST['name'];
-                $email = $_POST['email'];
-                $contact = $_POST['contact'];
-                $address = $_POST['address'];
-                $updateQuery = "UPDATE users SET name='$name', email='$email', contact='$contact',address='$address' WHERE id='$id'";
-                mysqli_query($conn, $updateQuery);
-                header("Location: customer.php?action=view");
-            } else {
-                // Fetch current customer data for editing
-                $query = "SELECT * FROM users WHERE id='$id'";
-                $result = mysqli_query($conn, $query);
-                $customer = mysqli_fetch_assoc($result);
-                ?>
-                <h2>Edit Customer</h2>
-                <form method="POST" action="">
-                    <label for="name">Name:</label>
-                    <input type="text" name="name" value="<?php echo $customer['name']; ?>" required><br>
-                    <label for="email">Email:</label>
-                    <input type="email" name="email" value="<?php echo $customer['email']; ?>" required><br>
-                    <label for="email">Phone Number:</label>
-                    <input type="number" name="contact" value="<?php echo $customer['contact']; ?>" required><br>
-                    <label for="email">Address:</label>
-                    <input type="text" name="address" value="<?php echo $customer['address']; ?>" required><br>
-                    <input type="submit" value="Update">
-                </form>
-                <?php
-            }
-        }
-        break;
+ // Edit customer
+     if (isset($_GET['id'])) {
+      $id = $_GET['id'];
+      if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+          // Update customer data
+          $name = $_POST['name'];
+          $email = $_POST['email'];
+          $contact = $_POST['contact'];
+          $address = $_POST['address'];
+          $updateQuery = "UPDATE users SET name='$name', email='$email', contact='$contact', address='$address' WHERE id='$id'";
+          mysqli_query($conn, $updateQuery);
+          header("Location: customer.php?action=view");
+      } else {
+          // Fetch current customer data for editing
+          $query = "SELECT * FROM users WHERE id='$id'";
+          $result = mysqli_query($conn, $query);
+          $customer = mysqli_fetch_assoc($result);
+          ?>
 
+          <!-- Add styling to the edit customer table -->
+          <style>
+              table {
+                  width: 100%;
+                  border-collapse: collapse;
+                  font-family: Arial, sans-serif;
+                  margin-top: 20px;
+              }
+
+              th, td {
+                  text-align: left;
+                  padding: 12px;
+                  border-bottom: 1px solid #ddd;
+              }
+
+              th {
+                  background-color: #f2f2f2;
+                  color: #333;
+                  font-weight: bold;
+              }
+
+              tr:nth-child(even) {
+                  background-color: #f9f9f9;
+              }
+
+              tr:hover {
+                  background-color: #f1f1f1;
+              }
+
+              input[type="text"], input[type="email"], input[type="number"] {
+                  width: 95%;
+                  padding: 10px;
+                  border: 1px solid #ccc;
+                  border-radius: 4px;
+              }
+
+              input[type="submit"] {
+                  background-color: #28a745;
+                  color: white;
+                  padding: 10px 15px;
+                  border: none;
+                  border-radius: 4px;
+                  cursor: pointer;
+              }
+
+              input[type="submit"]:hover {
+                  background-color: #218838;
+              }
+          </style>
+
+          <h2>Edit Customer</h2>
+
+          <!-- Display the customer details inside a table -->
+          <form method="POST" action="">
+              <table>
+                  <tr>
+                      <th>Name</th>
+                      <td><input type="text" name="name" value="<?php echo $customer['name']; ?>" required></td>
+                  </tr>
+                  <tr>
+                      <th>Email</th>
+                      <td><input type="email" name="email" value="<?php echo $customer['email']; ?>" required></td>
+                  </tr>
+                  <tr>
+                      <th>Phone Number</th>
+                      <td><input type="number" name="contact" value="<?php echo $customer['contact']; ?>" required></td>
+                  </tr>
+                  <tr>
+                      <th>Address</th>
+                      <td><input type="text" name="address" value="<?php echo $customer['address']; ?>" required></td>
+                  </tr>
+                  <tr>
+                      <td colspan="2" style="text-align: center;">
+                          <input type="submit" value="Update">
+                      </td>
+                  </tr>
+              </table>
+          </form>
+
+          <?php
+      }
+  }
+  break;
     case 'delete':
         // Delete customer
         if(isset($_GET['id'])) {
