@@ -123,6 +123,10 @@ $conn->close();
                 aria-expanded="false"><i class="mdi mdi-printer"></i><span class="hide-menu">Printing</span></a>
             </li>
             <li class="sidebar-item">
+              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="services.php"
+                aria-expanded="false"><i class="mdi mdi-printer"></i><span class="hide-menu">Services</span></a>
+            </li>
+            <li class="sidebar-item">
               <a class="sidebar-link waves-effect waves-dark sidebar-link" href="table_basic.html"
                 aria-expanded="false"><i class="mdi mdi-border-all"></i><span class="hide-menu">Table</span></a>
             </li>
