@@ -1,4 +1,8 @@
 <?php
+ob_start();
+?>
+
+<?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
@@ -46,6 +50,95 @@ if ($result->num_rows > 0) {
 
 // Close statement and connection
 $stmt->close();
+// Prepare to fetch print specifications
+$action = isset($_GET['action']) ? $_GET['action'] : 'view';
+
+switch ($action) {
+    case 'view':
+        $query = "SELECT * FROM specification";
+        $result = $conn->query($query);
+        
+        if (!$result) {
+            echo "Query failed: " . $conn->error . "<br>";
+            exit;
+        }
+        break;
+
+    case 'toggle':
+        if (isset($_GET['id'])) {
+            $id = $_GET['id'];
+            // Toggle status
+            $stmt = $conn->prepare("UPDATE specification SET status = CASE WHEN status = 'available' THEN 'unavailable' ELSE 'available' END WHERE id = ?");
+            $stmt->bind_param('i', $id);
+            $stmt->execute();
+            $stmt->close();
+            header("Location: printspec.php?action=view");
+            exit;
+        }
+        break;
+
+        case 'add':
+          if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+              // Form submission logic to insert into the database
+              $spec_name = $_POST['spec_name'];
+              $spec_type = $_POST['spec_type'];
+              $price = $_POST['price'];
+              $status = $_POST['status'];
+  
+              // Insert into the database
+              $stmt = $conn->prepare("INSERT INTO specification (spec_name, spec_type, price, status) VALUES (?, ?, ?, ?)");
+              $stmt->bind_param('ssss', $spec_name, $spec_type, $price, $status);
+              $stmt->execute();
+              $stmt->close();
+  
+              // Redirect to view page
+              header("Location: printspec.php?action=view");
+              exit;
+          }
+          break;
+
+    case 'edit':
+        if (isset($_GET['id'])) {
+            $id = $_GET['id'];
+            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                $spec_name = $_POST['spec_name'];
+                $spec_type = $_POST['spec_type'];
+                $price = $_POST['price'];
+                $status = $_POST['status'];
+
+                $stmt = $conn->prepare("UPDATE specification SET spec_name=?, spec_type=?, price=?, status=? WHERE id=?");
+                $stmt->bind_param('ssssi', $spec_name, $spec_type, $price, $status, $id);
+                $stmt->execute();
+                $stmt->close();
+                header("Location: printspec.php?action=view");
+                exit;
+            } else {
+                $stmt = $conn->prepare("SELECT * FROM specification WHERE id = ?");
+                $stmt->bind_param('i', $id);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $spec = $result->fetch_assoc();
+            }
+        }
+        break;
+
+    case 'delete':
+        if (isset($_GET['id'])) {
+            $id = $_GET['id'];
+            $stmt = $conn->prepare("DELETE FROM specification WHERE id = ?");
+            $stmt->bind_param('i', $id);
+            $stmt->execute();
+            $stmt->close();
+            header("Location: printspec.php?action=view");
+            exit;
+        }
+        break;
+
+    default:
+        header("Location: printspec.php?action=view");
+        exit;
+}
+
 $conn->close();
 
 
@@ -55,95 +148,20 @@ $conn->close();
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
 
-
+<head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <!-- Tell the browser to be responsive to screen width -->
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="keywords"
-    content="wrappixel, admin dashboard, html css dashboard, web dashboard, bootstrap 5 admin, bootstrap 5, css3 dashboard, bootstrap 5 dashboard, Xtreme lite admin bootstrap 5 dashboard, frontend, responsive bootstrap 5 admin template, Xtreme admin lite design, Xtreme admin lite dashboard bootstrap 5 dashboard template" />
-  <meta name="description"
-    content="Xtreme Admin Lite is powerful and clean admin dashboard template, inpired from Bootstrap Framework" />
+  <meta name="keywords" content="admin, dashboard, printing service" />
+  <meta name="description" content="Admin page for staff management" />
   <meta name="robots" content="noindex,nofollow" />
-  <title>Printing</title>
-  <link rel="canonical" href="https://www.wrappixel.com/templates/xtreme-admin-lite/" />
+  <title>Printing Management</title>
   <!-- Favicon icon -->
   <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon.png" />
   <!-- Custom CSS -->
-  <link href="../assets/libs/chartist/dist/chartist.min.css" rel="stylesheet" />
-  <!-- Custom CSS -->
   <link href="../dist/css/style.min.css" rel="stylesheet" />
-  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-  <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-    <style>
-       .spec-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
 
-.spec-table th, .spec-table td {
-    padding: 10px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-}
-
-.spec-table th {
-    background-color: #f4f4f4;
-    font-weight: bold;
-}
-
-.spec-table tbody tr:hover {
-    background-color: #f1f1f1;
-}
-
-.spec-table td {
-    vertical-align: top; /* Aligns content to the top of cells */
-}
-
-.available {
-    color: green;
-    font-weight: bold;
-}
-
-.not-available {
-    color: red;
-    font-weight: bold;
-}
-
-.btn-toggle, .btn-edit, .btn-delete {
-    padding: 5px 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-right: 5px;
-}
-
-.btn-toggle {
-    background-color: #007bff;
-    color: white;
-}
-
-.btn-edit {
-    background-color: #28a745;
-    color: white;
-}
-.btn-delete {
-    background-color: red;
-    color: white;
-}
-
-.btn-toggle:hover, .btn-edit:hover {
-    opacity: 0.9;
-}
-
-
-    </style>
-    <style>
+  <style>
     .preloader {
   position: fixed;
   left: 0;
@@ -230,13 +248,14 @@ $conn->close();
   }
 }
   </style>
+ 
 </head>
 
 <body>
   <!-- ============================================================== -->
   <!-- Preloader - style you can find in spinners.css -->
   <!-- ============================================================== -->
-  <div class="preloader">
+  <!--<div class="preloader">
   <div class="printer">
     <div class="printer-top"></div>
     <div class="paper-input-slot"></div>
@@ -245,193 +264,475 @@ $conn->close();
     </div>
     <div class="printer-tray"></div>
   </div>
-</div>
+</div>-->
+
+
+  
   <!-- ============================================================== -->
-  <!-- Main wrapper - style you can find in pages.scss -->
+  <!-- Main wrapper -->
   <!-- ============================================================== -->
-  <div id="main-wrapper" data-layout="vertical" data-navbarbg="skin5" data-sidebartype="full"
-    data-sidebar-position="absolute" data-header-position="absolute" data-boxed-layout="full">
+  <div id="main-wrapper" data-layout="vertical" data-navbarbg="skin5" data-sidebartype="full" data-header-position="absolute">
+    
     <!-- ============================================================== -->
-    <!-- Topbar header - style you can find in pages.scss -->
+    <!-- Topbar header -->
     <!-- ============================================================== -->
     <header class="topbar" data-navbarbg="skin5">
       <nav class="navbar top-navbar navbar-expand-md navbar-dark">
         <div class="navbar-header" data-logobg="skin5">
-          <!-- ============================================================== -->
-          <!-- Logo -->
-          <!-- ============================================================== -->
           <a class="navbar-brand" href="admin_page.html">
-            <!-- Logo icon -->
             <b class="logo-icon">
-              <!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
-              <!-- Dark Logo icon -->
-              <img src="../../assets/images/logo.png" alt="homepage" style="width: 60px; height: auto;"/>
-             
+              <img src="../../assets/images/logo.png" alt="homepage" style="width: 60px; height: auto;" />
             </b>
-            <!--End Logo icon -->
-            <!-- Logo text -->
           </a>
-          <!-- ============================================================== -->
-          <!-- End Logo -->
-          <!-- ============================================================== -->
-          <!-- This is for the sidebar toggle which is visible on mobile only -->
-          <a class="nav-toggler waves-effect waves-light d-block d-md-none" href="javascript:void(0)"><i
-              class="ti-menu ti-close"></i></a>
         </div>
-        <!-- ============================================================== -->
-        <!-- End Logo -->
-        <!-- ============================================================== -->
         <div class="navbar-collapse collapse" id="navbarSupportedContent" data-navbarbg="skin5">
-          <!-- ============================================================== -->
-          <!-- toggle and nav items -->
-          <!-- ============================================================== -->
-          <ul class="navbar-nav float-start me-auto">
-            <!-- ============================================================== -->
-            <!-- Search -->
-            <!-- ============================================================== -->
-            <li class="nav-item search-box">
-              <a class="nav-link waves-effect waves-dark" href="javascript:void(0)"><i
-                  class="mdi mdi-magnify fs-4"></i></a>
-              <form class="app-search position-absolute">
-                <input type="text" class="form-control" placeholder="Search &amp; enter" />
-                <a class="srh-btn"><i class="mdi mdi-close"></i></a>
-              </form>
-            </li>
-          </ul>
-          <!-- ============================================================== -->
-          <!-- Right side toggle and nav items -->
-          <!-- ============================================================== -->
           <ul class="navbar-nav float-end">
-            <!-- ============================================================== -->
-            <!-- User profile and search -->
-            <!-- ============================================================== -->
             <li class="nav-item dropdown">
-              <a class="
-                    nav-link
-                    dropdown-toggle
-                    text-muted
-                    waves-effect waves-dark
-                    pro-pic
-                  " href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark pro-pic" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                 <img src="../assets/images/users/1.jpg" alt="user" class="rounded-circle" width="31" />
               </a>
               <ul class="dropdown-menu dropdown-menu-end user-dd animated" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="pages_profile.php"><i class="mdi mdi-account m-r-5 m-l-5"></i> My
-                  Profile</a>
-                <a class="dropdown-item" href="javascript:void(0)"><i class="mdi mdi-wallet m-r-5 m-l-5"></i> My
-                  Balance</a>
-                <a class="dropdown-item" href="javascript:void(0)"><i class="mdi mdi-email m-r-5 m-l-5"></i> Inbox</a>
+                <a class="dropdown-item" href="pages_profile.php"><i class="mdi mdi-account m-r-5 m-l-5"></i> My Profile</a>
               </ul>
             </li>
-            <!-- ============================================================== -->
-            <!-- User profile and search -->
-            <!-- ============================================================== -->
           </ul>
         </div>
       </nav>
     </header>
+    
     <!-- ============================================================== -->
-    <!-- End Topbar header -->
+    <!-- Sidebar -->
     <!-- ============================================================== -->
-    <!-- ============================================================== -->
-   <?php
+    <?php
     if ($usertype === 'ADMIN') {
         include 'sidebarAdmin.php';
     } else {
         include 'sidebarStaff.php';
     }
     ?>
+    
     <!-- ============================================================== -->
-    <!-- ============================================================== -->
-    <!-- Page wrapper  -->
+    <!-- Page wrapper -->
     <!-- ============================================================== -->
     <div class="page-wrapper">
-    <table class="spec-table">
+   <!--php coding for spec-->
+   <?php
+// Connect to the database
+include('../../connection.php'); // Include your database connection file
 
-    <!--php coding for fetching spec from database-->
+// Check if action is set in the URL
+$action = isset($_GET['action']) ? $_GET['action'] : 'view';
 
-    <!--example of what it should look like-->
-    <thead>
-        <tr>
-            <th>Specification</th>
-            <th>Type</th>
-            <th>Availability</th>
-            <th>Action</th>
-        </tr>
-    </thead>
-    <tbody>
-        <!-- Specification Group -->
-        <tr>
-            <td rowspan="3">Paper Size</td> <!-- Rowspan to group types under this specification -->
-            <td>A4</td>
-            <td><span class="available">Available</span></td>
-            <td>
-                <button class="btn-toggle">Toggle Availability</button>
-                <button class="btn-edit">Edit</button>
-                <button class="btn-delete">Delete</button>
-            </td>
-        </tr>
-        <tr>
-            <td>A3</td>
-            <td><span class="not-available">Not Available</span></td>
-            <td>
-                <button class="btn-toggle">Toggle Availability</button>
-                <button class="btn-edit">Edit</button>
-                <button class="btn-delete">Delete</button>
-            </td>
-        </tr>
-        <tr>
-            <td>A2</td>
-            <td><span class="available">Available</span></td>
-            <td>
-                <button class="btn-toggle">Toggle Availability</button>
-                <button class="btn-edit">Edit</button>
-                <button class="btn-delete">Delete</button>
-            </td>
-        </tr>
+switch($action) {
+    case 'view':
+        // View customers
+        $query = "SELECT * FROM specification";
+$result = mysqli_query($conn, $query);
 
-        <!-- Another Specification Group -->
-        <tr>
-            <td rowspan="2">Color</td> <!-- Rowspan for another specification group -->
-            <td>Black & White</td>
-            <td><span class="available">Available</span></td>
-            <td>
-                <button class="btn-toggle">Toggle Availability</button>
-                <button class="btn-edit">Edit</button>
-                <button class="btn-delete">Delete</button>
-            </td>
-        </tr>
-        <tr>
-            <td>Color</td>
-            <td><span class="not-available">Not Available</span></td>
-            <td>
-                <button class="btn-toggle">Toggle Availability</button>
-                <button class="btn-edit">Edit</button>
-                <button class="btn-delete">Delete</button>
-            </td>
-        </tr>
-    </tbody>
-</table>
-<br>
-<button class="btn-edit">Add Specification</button>
-<!--end of example-->
+echo "<h2>Print Specification</h2>";
 
-      <!-- footer -->
-      <!-- ============================================================== -->
-      <footer class="footer text-center">
-        All Rights Reserved by Xtreme Admin. Designed and Developed by
-        <a href="https://www.wrappixel.com">WrapPixel</a>.
-      </footer>
-      <!-- ============================================================== -->
-      <!-- End footer -->
-      <!-- ============================================================== -->
+// Apply CSS styling to the table
+echo "<style>
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          font-family: Arial, sans-serif;
+        }
+
+        th, td {
+          text-align: left;
+          padding: 12px;
+          border-bottom: 1px solid #ddd;
+        }
+
+        th {
+          background-color: #f2f2f2;
+          color: #333;
+          font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+          background-color: #f9f9f9;
+        }
+
+        tr:hover {
+          background-color: #f1f1f1;
+        }
+
+        a {
+          color: #1a73e8;
+          text-decoration: none;
+        }
+
+        a:hover {
+          text-decoration: underline;
+        }
+
+        @media screen and (max-width: 600px) {
+          table, th, td {
+            width: 100%;
+            display: block;
+          }
+
+          th, td {
+            text-align: left;
+            padding: 10px;
+          }
+
+          th {
+            background-color: #f0f0f0;
+          }
+        }
+      </style>";
+
+// Table structure
+echo "<table>";
+echo "<tr><th>ID</th><th>Specification Name</th><th>Specification Type</th><th>Price</th><th>Status</th><th>Actions</th></tr>";
+
+while ($row = mysqli_fetch_assoc($result)) {
+    echo "<tr>";
+    echo "<td>" . $row['id'] . "</td>";
+    echo "<td>" . $row['spec_name'] . "</td>";
+    echo "<td>" . $row['spec_type'] . "</td>";
+    echo "<td>" . $row['price'] . "</td>";
+    echo "<td>" . $row['status'] . "</td>";
+    echo "<td>
+    <a href='printspec.php?action=edit&id=" . $row['id'] . "' style='display: inline-block; padding: 8px 16px; text-align: center; text-decoration: none; background-color: #1a73e8; color: white; border-radius: 4px; margin-right: 8px;'>Edit</a>
+    <a href='printspec.php?action=delete&id=" . $row['id'] . "' style='display: inline-block; padding: 8px 16px; text-align: center; text-decoration: none; background-color: #e53935; color: white; border-radius: 4px;' onclick='return confirm(\"Are you sure you want to delete?\")'>Delete</a>
+  </td>";
+echo "</tr>";
+}
+
+echo "</table>";
+echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; padding: 8px;  margin-left: 30px; color: white;'>Add Print Specification</a><br><br>";
+        break;
+
+        case 'edit':
+          if (isset($_GET['spec_name'])) {
+              $spec_name = $_GET['spec_name'];
+      
+              // Fetch the existing specification from the database
+              $fetchQuery = "SELECT * FROM specification WHERE spec_name = '$spec_name'";
+              $result = mysqli_query($conn, $fetchQuery);
+      
+              if ($result && mysqli_num_rows($result) > 0) {
+                  $spec = mysqli_fetch_assoc($result);
+              } else {
+                  echo "Specification not found!";
+                  exit;
+              }
+      
+              // Handle form submission for editing the specification
+              if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                  $spec_type = $_POST['spec_type'];
+                  $price = $_POST['price'];
+                  $status = $_POST['status'];
+      
+                  // Update query to edit the specification
+                  $updateQuery = "UPDATE specification SET spec_type = '$spec_type', price = '$price', status = '$status' WHERE spec_name = '$spec_name'";
+                  if (mysqli_query($conn, $updateQuery)) {
+                      // If update is successful, redirect to view the list of specifications
+                      header("Location: printspec.php?action=view");
+                      exit;
+                  } else {
+                      // Display error if update fails
+                      echo "Error updating specification: " . mysqli_error($conn);
+                  }
+              }
+      
+              // Display the form for editing the specification
+              ?>
+              <style>
+                  table {
+                      width: 100%;
+                      border-collapse: collapse;
+                      font-family: Arial, sans-serif;
+                      margin-top: 20px;
+                  }
+      
+                  th, td {
+                      text-align: left;
+                      padding: 12px;
+                      border-bottom: 1px solid #ddd;
+                  }
+      
+                  th {
+                      background-color: #f2f2f2;
+                      color: #333;
+                      font-weight: bold;
+                  }
+      
+                  tr:nth-child(even) {
+                      background-color: #f9f9f9;
+                  }
+      
+                  tr:hover {
+                      background-color: #f1f1f1;
+                  }
+      
+                  input[type="text"], input[type="number"], textarea {
+                      width: 95%;
+                      padding: 10px;
+                      border: 1px solid #ccc;
+                      border-radius: 4px;
+                  }
+      
+                  input[type="submit"] {
+                      background-color: #28a745;
+                      color: white;
+                      padding: 10px 15px;
+                      border: none;
+                      border-radius: 4px;
+                      cursor: pointer;
+                  }
+      
+                  input[type="submit"]:hover {
+                      background-color: #218838;
+                  }
+              </style>
+      
+              <h2>Edit Specification</h2>
+      
+              <!-- Form to edit specification details -->
+              <form method="POST" action="">
+                  <table>
+                      <tr>
+                          <th>Specification Name</th>
+                          <td><input type="text" name="spec_name" value="<?php echo htmlspecialchars($spec['spec_name']); ?>" readonly></td>
+                      </tr>
+                      <tr>
+                          <th>Specification Type</th>
+                          <td><input type="text" name="spec_type" value="<?php echo htmlspecialchars($spec['spec_type']); ?>" required></td>
+                      </tr>
+                      <tr>
+                          <th>Price</th>
+                          <td><input type="number" step="0.01" name="price" value="<?php echo htmlspecialchars($spec['price']); ?>" required></td>
+                      </tr>
+                      <tr>
+                          <th>Status</th>
+                          <td>
+                              <select name="status" required>
+                                  <option value="available" <?php if ($spec['status'] == 'available') echo 'selected'; ?>>Available</option>
+                                  <option value="unavailable" <?php if ($spec['status'] == 'unavailable') echo 'selected'; ?>>Unavailable</option>
+                              </select>
+                          </td>
+                      </tr>
+                      <tr>
+                          <td colspan="2" style="text-align: center;">
+                              <input type="submit" value="Update Specification">
+                          </td>
+                      </tr>
+                  </table>
+              </form>
+      
+              <?php
+          } else {
+              echo "No specification name provided!";
+          }
+          break;
+      
+
+          
+    case 'delete':
+        // Delete customer
+        if(isset($_GET['id'])) {
+            $id = $_GET['id'];
+            $deleteQuery = "DELETE FROM specification WHERE id='$id'";
+            mysqli_query($conn, $deleteQuery);
+            header("Location: printspec.php?action=view"); // Redirect to view after deleting
+        }
+        break;
+
+        case 'add':
+          if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+              // Handle form submission for adding new specification and types
+              $spec_name = $_POST['spec_name'];
+              $types = $_POST['spec_type']; // Array of spec_types
+              $prices = $_POST['price']; // Array of prices
+              $statuses = $_POST['status']; // Array of statuses
+  
+              // Insert each spec_type as a new row in the same table
+              foreach ($types as $index => $spec_type) {
+                  $price = $prices[$index];
+                  $status = $statuses[$index];
+  
+                  $insertQuery = "INSERT INTO specification (spec_name, spec_type, price, status) VALUES ('$spec_name', '$spec_type', '$price', '$status')";
+                  if (!mysqli_query($conn, $insertQuery)) {
+                      echo "Error adding specification: " . mysqli_error($conn);
+                      exit;
+                  }
+              }
+  
+              // Redirect to view the list of specifications
+              header("Location: printspec.php?action=view");
+              exit;
+          } else {
+              // Display the form for adding a new specification
+              ?>
+              
+              <!-- Add styling to the add specification form -->
+              <style>
+                  table {
+                      width: 100%;
+                      border-collapse: collapse;
+                      font-family: Arial, sans-serif;
+                      margin-top: 20px;
+                  }
+  
+                  th, td {
+                      text-align: left;
+                      padding: 12px;
+                      border-bottom: 1px solid #ddd;
+                  }
+  
+                  th {
+                      background-color: #f2f2f2;
+                      color: #333;
+                      font-weight: bold;
+                  }
+  
+                  tr:nth-child(even) {
+                      background-color: #f9f9f9;
+                  }
+  
+                  tr:hover {
+                      background-color: #f1f1f1;
+                  }
+  
+                  input[type="text"], input[type="number"], textarea {
+                      width: 95%;
+                      padding: 10px;
+                      border: 1px solid #ccc;
+                      border-radius: 4px;
+                  }
+  
+                  input[type="submit"] {
+                      background-color: #28a745;
+                      color: white;
+                      padding: 10px 15px;
+                      border: none;
+                      border-radius: 4px;
+                      cursor: pointer;
+                  }
+  
+                  input[type="submit"]:hover {
+                      background-color: #218838;
+                  }
+  
+                  .remove-btn {
+                      background-color: #dc3545;
+                      color: white;
+                      padding: 5px 10px;
+                      border: none;
+                      border-radius: 4px;
+                      cursor: pointer;
+                      margin-left: 10px;
+                  }
+  
+                  .add-more {
+                      margin-top: 20px;
+                  }
+              </style>
+  
+              <h2>Add New Specification</h2>
+  
+              <form method="POST" action="">
+                  <table>
+                      <tr>
+                          <th>Specification Name</th>
+                          <td><input type="text" name="spec_name" required></td>
+                      </tr>
+                  </table>
+  
+                  <h3>Specification Types</h3>
+                  <div id="spec-type-section">
+                      <div class="spec-type-entry">
+                          <table>
+                              <tr>
+                                  <th>Specification Type</th>
+                                  <td><input type="text" name="spec_type[]" required></td>
+                              </tr>
+                              <tr>
+                                  <th>Price</th>
+                                  <td><input type="number" step="0.01" name="price[]" required></td>
+                              </tr>
+                              <tr>
+                                  <th>Status</th>
+                                  <td>
+                                      <select name="status[]">
+                                          <option value="available">Available</option>
+                                          <option value="unavailable">Unavailable</option>
+                                      </select>
+                                  </td>
+                              </tr>
+                          </table>
+                          <button type="button" class="remove-btn" onclick="removeType(this)">Remove Type</button>
+                      </div>
+                  </div>
+  
+                  <button type="button" class="add-more" onclick="addType()">Add More Types</button><br><br>
+  
+                  <input type="submit" value="Add Specification">
+              </form>
+  
+              <script>
+                  // Function to dynamically add more specification types
+                  function addType() {
+                      let section = document.getElementById('spec-type-section');
+                      let newTypeEntry = document.createElement('div');
+                      newTypeEntry.classList.add('spec-type-entry');
+                      newTypeEntry.innerHTML = `
+                          <table>
+                              <tr>
+                                  <th>Specification Type</th>
+                                  <td><input type="text" name="spec_type[]" required></td>
+                              </tr>
+                              <tr>
+                                  <th>Price</th>
+                                  <td><input type="number" step="0.01" name="price[]" required></td>
+                              </tr>
+                              <tr>
+                                  <th>Status</th>
+                                  <td>
+                                      <select name="status[]">
+                                          <option value="available">Available</option>
+                                          <option value="unavailable">Unavailable</option>
+                                      </select>
+                                  </td>
+                              </tr>
+                          </table>
+                          <button type="button" class="remove-btn" onclick="removeType(this)">Remove Type</button>
+                      `;
+                      section.appendChild(newTypeEntry);
+                  }
+  
+                  // Function to remove a specification type entry
+                  function removeType(button) {
+                      button.parentElement.remove();
+                  }
+              </script>
+  
+              <?php
+          }
+          break;
+      
+
+    default:
+        // Default action is to view customers
+        header("Location: printspec.php?action=view");
+        break;
+}
+?>
+
     <!-- ============================================================== -->
-    <!-- End Page wrapper  -->
+    <!-- Footer -->
     <!-- ============================================================== -->
+    <footer class="footer text-center">
+      All Rights Reserved by Your Company. Designed and Developed by <a href="https://www.wrappixel.com">WrapPixel</a>.
+    </footer>
   </div>
-  <!-- ============================================================== -->
-  <!-- End Wrapper -->
-  <!-- ============================================================== -->
+  </div>
+
   <!-- ============================================================== -->
   <!-- All Jquery -->
   <!-- ============================================================== -->
@@ -439,39 +740,13 @@ $conn->close();
   <!-- Bootstrap tether Core JavaScript -->
   <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../dist/js/app-style-switcher.js"></script>
-  <!--Wave Effects -->
   <script src="../dist/js/waves.js"></script>
-  <!--Menu sidebar -->
   <script src="../dist/js/sidebarmenu.js"></script>
-  <!--Custom JavaScript -->
   <script src="../dist/js/custom.js"></script>
-  <!--This page JavaScript -->
-  <!--chartis chart-->
-  <script src="../assets/libs/chartist/dist/chartist.min.js"></script>
-  <script src="../assets/libs/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js"></script>
-  <script src="../dist/js/pages/dashboards/dashboard1.js"></script>
-
-  <!--example for availability, will update in database for status of availability-->
-  <script>
-    document.querySelectorAll('.btn-toggle').forEach(button => {
-    button.addEventListener('click', function() {
-        // Handle the toggle action here (e.g., AJAX request to update in database)
-        const row = this.closest('tr');
-        const availabilitySpan = row.querySelector('td span');
-        
-        if (availabilitySpan.classList.contains('available')) {
-            availabilitySpan.textContent = 'Not Available';
-            availabilitySpan.classList.remove('available');
-            availabilitySpan.classList.add('not-available');
-        } else {
-            availabilitySpan.textContent = 'Available';
-            availabilitySpan.classList.remove('not-available');
-            availabilitySpan.classList.add('available');
-        }
-    });
-});
-
-  </script>
 </body>
 
 </html>
+
+<?php
+ob_end_flush();
+?>
