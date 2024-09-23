@@ -81,46 +81,103 @@ switch ($action) {
           if ($_SERVER['REQUEST_METHOD'] == 'POST') {
               // Form submission logic to insert into the database
               $spec_name = $_POST['spec_name'];
-              $spec_type = $_POST['spec_type'];
-              $price = $_POST['price'];
-              $status = $_POST['status'];
-  
-              // Insert into the database
+              
+              // Ensure spec_type, price, and status are arrays
+              $spec_types = isset($_POST['spec_type']) ? $_POST['spec_type'] : [];
+              $prices = isset($_POST['price']) ? $_POST['price'] : [];
+              $statuses = isset($_POST['status']) ? $_POST['status'] : [];
+        
+              // Check if arrays are populated
+              if (empty($spec_types) || empty($prices) || empty($statuses)) {
+                  echo "Please fill all fields.";
+                  return;
+              }
+        
+              // Prepare the statement for inserting data
               $stmt = $conn->prepare("INSERT INTO specification (spec_name, spec_type, price, status) VALUES (?, ?, ?, ?)");
-              $stmt->bind_param('ssss', $spec_name, $spec_type, $price, $status);
-              $stmt->execute();
-              $stmt->close();
-  
-              // Redirect to view page
-              header("Location: printspec.php?action=view");
-              exit;
+        
+              if ($stmt) {
+                  // Loop through the specification types and prices
+                  foreach ($spec_types as $index => $spec_type) {
+                      // Ensure the corresponding price and status exist
+                      $price = floatval($prices[$index]); // Ensure price is treated as float
+                      $status = $statuses[$index]; // Get the corresponding status
+      
+                      // Bind parameters for each row
+                      $stmt->bind_param('ssds', $spec_name, $spec_type, $price, $status);
+        
+                      // Execute the statement
+                      if (!$stmt->execute()) {
+                          echo "Error adding specification: " . $stmt->error;
+                      }
+                  }
+        
+                  // Close the statement
+                  $stmt->close();
+        
+                  // Redirect to view the list of specifications
+                  header("Location: printspec.php?action=view");
+                  exit;
+              } else {
+                  // Statement preparation error
+                  echo "Error preparing statement: " . $conn->error;
+              }
           }
           break;
+      
+      
 
-    case 'edit':
-        if (isset($_GET['id'])) {
-            $id = $_GET['id'];
-            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                $spec_name = $_POST['spec_name'];
-                $spec_type = $_POST['spec_type'];
-                $price = $_POST['price'];
-                $status = $_POST['status'];
-
-                $stmt = $conn->prepare("UPDATE specification SET spec_name=?, spec_type=?, price=?, status=? WHERE id=?");
-                $stmt->bind_param('ssssi', $spec_name, $spec_type, $price, $status, $id);
-                $stmt->execute();
-                $stmt->close();
-                header("Location: printspec.php?action=view");
-                exit;
+          case 'edit':
+            if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+                $id = intval($_GET['id']); // Ensure $id is an integer
+        
+                if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                    // Sanitize and validate inputs
+                    $spec_name = trim($_POST['spec_name']);
+                    $spec_type = trim($_POST['spec_type']);
+                    $price = floatval($_POST['price']); // Ensure price is a float
+                    $status = $_POST['status'];
+        
+                    // Prepare the statement for update
+                    $stmt = $conn->prepare("UPDATE specification SET spec_name=?, spec_type=?, price=?, status=? WHERE id=?");
+                    if ($stmt) {
+                        $stmt->bind_param('ssssi', $spec_name, $spec_type, $price, $status, $id);
+        
+                        // Execute the statement and check for errors
+                        if ($stmt->execute()) {
+                            header("Location: printspec.php?action=view");
+                            exit;
+                        } else {
+                            echo "Error updating specification: " . $stmt->error;
+                        }
+                        $stmt->close();
+                    } else {
+                        echo "Error preparing statement: " . $conn->error;
+                    }
+                } else {
+                    // Fetch the existing specification from the database
+                    $stmt = $conn->prepare("SELECT * FROM specification WHERE id = ?");
+                    if ($stmt) {
+                        $stmt->bind_param('i', $id);
+                        $stmt->execute();
+                        $result = $stmt->get_result();
+        
+                        if ($result && $result->num_rows > 0) {
+                            $spec = $result->fetch_assoc();
+                        } else {
+                            echo "Specification not found!";
+                            exit;
+                        }
+                    } else {
+                        echo "Error preparing statement: " . $conn->error;
+                    }
+                }
             } else {
-                $stmt = $conn->prepare("SELECT * FROM specification WHERE id = ?");
-                $stmt->bind_param('i', $id);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                $spec = $result->fetch_assoc();
+                echo "No specification ID provided!";
             }
-        }
-        break;
+            break;
+        
+        
 
     case 'delete':
         if (isset($_GET['id'])) {
@@ -408,15 +465,17 @@ echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; p
         break;
 
         case 'edit':
-          if (isset($_GET['spec_name'])) {
-              $spec_name = $_GET['spec_name'];
+          if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+              $id = intval($_GET['id']); // Ensure $id is an integer
       
               // Fetch the existing specification from the database
-              $fetchQuery = "SELECT * FROM specification WHERE spec_name = '$spec_name'";
-              $result = mysqli_query($conn, $fetchQuery);
+              $stmt = $conn->prepare("SELECT * FROM specification WHERE id = ?");
+              $stmt->bind_param('i', $id);
+              $stmt->execute();
+              $result = $stmt->get_result();
       
-              if ($result && mysqli_num_rows($result) > 0) {
-                  $spec = mysqli_fetch_assoc($result);
+              if ($result && $result->num_rows > 0) {
+                  $spec = $result->fetch_assoc();
               } else {
                   echo "Specification not found!";
                   exit;
@@ -429,14 +488,17 @@ echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; p
                   $status = $_POST['status'];
       
                   // Update query to edit the specification
-                  $updateQuery = "UPDATE specification SET spec_type = '$spec_type', price = '$price', status = '$status' WHERE spec_name = '$spec_name'";
-                  if (mysqli_query($conn, $updateQuery)) {
+                  $updateQuery = "UPDATE specification SET spec_type = ?, price = ?, status = ? WHERE id = ?";
+                  $stmt = $conn->prepare($updateQuery);
+                  $stmt->bind_param('sssi', $spec_type, $price, $status, $id);
+      
+                  if ($stmt->execute()) {
                       // If update is successful, redirect to view the list of specifications
                       header("Location: printspec.php?action=view");
                       exit;
                   } else {
                       // Display error if update fails
-                      echo "Error updating specification: " . mysqli_error($conn);
+                      echo "Error updating specification: " . $stmt->error;
                   }
               }
       
@@ -449,34 +511,28 @@ echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; p
                       font-family: Arial, sans-serif;
                       margin-top: 20px;
                   }
-      
                   th, td {
                       text-align: left;
                       padding: 12px;
                       border-bottom: 1px solid #ddd;
                   }
-      
                   th {
                       background-color: #f2f2f2;
                       color: #333;
                       font-weight: bold;
                   }
-      
                   tr:nth-child(even) {
                       background-color: #f9f9f9;
                   }
-      
                   tr:hover {
                       background-color: #f1f1f1;
                   }
-      
-                  input[type="text"], input[type="number"], textarea {
+                  input[type="text"], input[type="number"], select {
                       width: 95%;
                       padding: 10px;
                       border: 1px solid #ccc;
                       border-radius: 4px;
                   }
-      
                   input[type="submit"] {
                       background-color: #28a745;
                       color: white;
@@ -485,9 +541,12 @@ echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; p
                       border-radius: 4px;
                       cursor: pointer;
                   }
-      
                   input[type="submit"]:hover {
                       background-color: #218838;
+                  }
+                  h2 {
+                      margin-top: 20px;
+                      color: #333;
                   }
               </style>
       
@@ -519,17 +578,23 @@ echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; p
                       </tr>
                       <tr>
                           <td colspan="2" style="text-align: center;">
-                              <input type="submit" value="Update Specification">
+                              <input type="submit" value="Update Specification" style="padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                              <button onclick="window.history.back();" style="padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">
+                                  Back
+                              </button>
                           </td>
                       </tr>
+
                   </table>
               </form>
       
               <?php
           } else {
-              echo "No specification name provided!";
+              echo "No specification ID provided!";
           }
           break;
+      
+      
       
 
           
@@ -547,22 +612,30 @@ echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; p
           if ($_SERVER['REQUEST_METHOD'] == 'POST') {
               // Handle form submission for adding new specification and types
               $spec_name = $_POST['spec_name'];
-              $types = $_POST['spec_type']; // Array of spec_types
-              $prices = $_POST['price']; // Array of prices
-              $statuses = $_POST['status']; // Array of statuses
-  
-              // Insert each spec_type as a new row in the same table
-              foreach ($types as $index => $spec_type) {
-                  $price = $prices[$index];
-                  $status = $statuses[$index];
-  
-                  $insertQuery = "INSERT INTO specification (spec_name, spec_type, price, status) VALUES ('$spec_name', '$spec_type', '$price', '$status')";
-                  if (!mysqli_query($conn, $insertQuery)) {
-                      echo "Error adding specification: " . mysqli_error($conn);
-                      exit;
+              $spec_types = $_POST['spec_type']; // This will be an array
+              $prices = $_POST['price']; // This will be an array
+              $statuses = $_POST['status']; // This will be an array
+        
+              // Prepare the statement
+              $stmt = $conn->prepare("INSERT INTO specification (spec_name, spec_type, price, status) VALUES (?, ?, ?, ?)");
+      
+              // Loop through the specification types and prices
+              foreach ($spec_types as $index => $spec_type) {
+                $price = floatval($prices[$index]); // Get the corresponding price
+                  $status = $statuses[$index]; // Get the corresponding status
+                  
+                  // Bind parameters
+                  $stmt->bind_param('ssds', $spec_name, $spec_type, $price, $status);
+                  
+                  // Execute the statement
+                  if (!$stmt->execute()) {
+                      echo "Error adding specification: " . $stmt->error;
                   }
               }
-  
+              
+              // Close the statement
+              $stmt->close();
+              
               // Redirect to view the list of specifications
               header("Location: printspec.php?action=view");
               exit;
@@ -578,34 +651,34 @@ echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; p
                       font-family: Arial, sans-serif;
                       margin-top: 20px;
                   }
-  
+      
                   th, td {
                       text-align: left;
                       padding: 12px;
                       border-bottom: 1px solid #ddd;
                   }
-  
+      
                   th {
                       background-color: #f2f2f2;
                       color: #333;
                       font-weight: bold;
                   }
-  
+      
                   tr:nth-child(even) {
                       background-color: #f9f9f9;
                   }
-  
+      
                   tr:hover {
                       background-color: #f1f1f1;
                   }
-  
+      
                   input[type="text"], input[type="number"], textarea {
                       width: 95%;
                       padding: 10px;
                       border: 1px solid #ccc;
                       border-radius: 4px;
                   }
-  
+      
                   input[type="submit"] {
                       background-color: #28a745;
                       color: white;
@@ -614,11 +687,11 @@ echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; p
                       border-radius: 4px;
                       cursor: pointer;
                   }
-  
+      
                   input[type="submit"]:hover {
                       background-color: #218838;
                   }
-  
+      
                   .remove-btn {
                       background-color: #dc3545;
                       color: white;
@@ -628,14 +701,14 @@ echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; p
                       cursor: pointer;
                       margin-left: 10px;
                   }
-  
+      
                   .add-more {
                       margin-top: 20px;
                   }
               </style>
-  
+      
               <h2>Add New Specification</h2>
-  
+      
               <form method="POST" action="">
                   <table>
                       <tr>
@@ -643,7 +716,7 @@ echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; p
                           <td><input type="text" name="spec_name" required></td>
                       </tr>
                   </table>
-  
+      
                   <h3>Specification Types</h3>
                   <div id="spec-type-section">
                       <div class="spec-type-entry">
@@ -669,12 +742,20 @@ echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; p
                           <button type="button" class="remove-btn" onclick="removeType(this)">Remove Type</button>
                       </div>
                   </div>
-  
+      
                   <button type="button" class="add-more" onclick="addType()">Add More Types</button><br><br>
-  
-                  <input type="submit" value="Add Specification">
+      
+                  
+                  <td colspan="2" style="text-align: center;">
+                              <input type="submit" value="Add Specification" style="padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                              <button onclick="window.history.back();" style="padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">
+                                  Back
+                              </button>
+                          </td>
+                      </tr>
+
               </form>
-  
+      
               <script>
                   // Function to dynamically add more specification types
                   function addType() {
@@ -705,16 +786,17 @@ echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; p
                       `;
                       section.appendChild(newTypeEntry);
                   }
-  
+      
                   // Function to remove a specification type entry
                   function removeType(button) {
                       button.parentElement.remove();
                   }
               </script>
-  
+      
               <?php
           }
           break;
+      
       
 
     default:

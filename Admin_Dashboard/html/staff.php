@@ -244,6 +244,52 @@ $conn->close();
                             $result = mysqli_query($conn, $selectQuery);
                             $row = mysqli_fetch_assoc($result);
                             ?>
+
+<style>
+                  table {
+                      width: 100%;
+                      border-collapse: collapse;
+                      font-family: Arial, sans-serif;
+                      margin-top: 20px;
+                  }
+                  th, td {
+                      text-align: left;
+                      padding: 12px;
+                      border-bottom: 1px solid #ddd;
+                  }
+                  th {
+                      background-color: #f2f2f2;
+                      color: #333;
+                      font-weight: bold;
+                  }
+                  tr:nth-child(even) {
+                      background-color: #f9f9f9;
+                  }
+                  tr:hover {
+                      background-color: #f1f1f1;
+                  }
+                  input[type="text"], input[type="number"], select {
+                      width: 95%;
+                      padding: 10px;
+                      border: 1px solid #ccc;
+                      border-radius: 4px;
+                  }
+                  input[type="submit"] {
+                      background-color: #28a745;
+                      color: white;
+                      padding: 10px 15px;
+                      border: none;
+                      border-radius: 4px;
+                      cursor: pointer;
+                  }
+                  input[type="submit"]:hover {
+                      background-color: #218838;
+                  }
+                  h2 {
+                      margin-top: 20px;
+                      color: #333;
+                  }
+              </style>
                             <h2>Edit Staff</h2>
                             <form method="POST">
                             <label for="username">Username:</label><br>
@@ -295,6 +341,52 @@ $conn->close();
                         }
                     } else {
                         ?>
+
+<style>
+                  table {
+                      width: 100%;
+                      border-collapse: collapse;
+                      font-family: Arial, sans-serif;
+                      margin-top: 20px;
+                  }
+                  th, td {
+                      text-align: left;
+                      padding: 12px;
+                      border-bottom: 1px solid #ddd;
+                  }
+                  th {
+                      background-color: #f2f2f2;
+                      color: #333;
+                      font-weight: bold;
+                  }
+                  tr:nth-child(even) {
+                      background-color: #f9f9f9;
+                  }
+                  tr:hover {
+                      background-color: #f1f1f1;
+                  }
+                  input[type="text"], input[type="number"], select {
+                      width: 95%;
+                      padding: 10px;
+                      border: 1px solid #ccc;
+                      border-radius: 4px;
+                  }
+                  input[type="submit"] {
+                      background-color: #28a745;
+                      color: white;
+                      padding: 10px 15px;
+                      border: none;
+                      border-radius: 4px;
+                      cursor: pointer;
+                  }
+                  input[type="submit"]:hover {
+                      background-color: #218838;
+                  }
+                  h2 {
+                      margin-top: 20px;
+                      color: #333;
+                  }
+              </style>
                         <h2>Add Staff</h2>
                         <form method="POST">
                             <label for="username">Username:</label><br>

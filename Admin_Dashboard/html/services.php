@@ -1,7 +1,61 @@
-@ -1,186 +0,0 @@
 <?php
-session_start();
+ob_start();
 ?>
+
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+
+// Ensure the session is started and check if user ID is set
+if (!isset($_SESSION['user_id'])) {
+    echo "User not logged in.<br>";
+    exit;
+}
+
+// Include the database connection
+require '../../connection.php';
+
+// Fetch the logged-in user's ID from the session
+$user_id = $_SESSION['user_id'];
+$adminEmail = '';
+$usertype = '';
+
+// Prepare and execute a query to get the user's email and usertype
+$sql = "SELECT email, usertype FROM users WHERE id = ?";
+$stmt = $conn->prepare($sql);
+if (!$stmt) {
+    echo "Prepare statement failed: " . $conn->error . "<br>";
+    exit;
+}
+$stmt->bind_param('i', $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+if (!$result) {
+    echo "Get result failed: " . $stmt->error . "<br>";
+    exit;
+}
+
+if ($result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $adminEmail = $row['email'];
+    $usertype = $row['usertype'];
+} else {
+    echo "User not found.<br>";
+    exit;
+}
+
+// Close statement and connection
+$stmt->close();
+$conn->close();
+
+
+?>
+
+
 <!DOCTYPE html>
 <html dir="ltr" lang="en">
 
@@ -10,13 +64,14 @@ session_start();
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="keywords" content="admin, dashboard, printing service" />
-  <meta name="description" content="Admin page for services" />
+  <meta name="description" content="Admin page for staff management" />
   <meta name="robots" content="noindex,nofollow" />
-  <title>Services</title>
+  <title>Services Management</title>
   <!-- Favicon icon -->
   <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon.png" />
   <!-- Custom CSS -->
   <link href="../dist/css/style.min.css" rel="stylesheet" />
+
   <style>
     .preloader {
   position: fixed;
@@ -104,6 +159,7 @@ session_start();
   }
 }
   </style>
+ 
 </head>
 
 <body>
@@ -120,6 +176,9 @@ session_start();
     <div class="printer-tray"></div>
   </div>
 </div>
+
+
+  
   <!-- ============================================================== -->
   <!-- Main wrapper -->
   <!-- ============================================================== -->
@@ -162,11 +221,12 @@ session_start();
         include 'sidebarStaff.php';
     }
     ?>
+    
     <!-- ============================================================== -->
     <!-- Page wrapper -->
     <!-- ============================================================== -->
-
-   <!--php coding for staff-->
+    <div class="page-wrapper">
+   <!--php coding for customer-->
    
 
     <!-- ============================================================== -->
@@ -175,6 +235,7 @@ session_start();
     <footer class="footer text-center">
       All Rights Reserved by Your Company. Designed and Developed by <a href="https://www.wrappixel.com">WrapPixel</a>.
     </footer>
+  </div>
   </div>
 
   <!-- ============================================================== -->
@@ -190,3 +251,7 @@ session_start();
 </body>
 
 </html>
+
+<?php
+ob_end_flush();
+?>
