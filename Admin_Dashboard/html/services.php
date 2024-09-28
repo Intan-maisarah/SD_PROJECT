@@ -1,8 +1,13 @@
 <?php
 ob_start();
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 ?>
 
 <?php
+ini_set('display_startup_errors', 1);
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
@@ -66,7 +71,7 @@ $conn->close();
   <meta name="keywords" content="admin, dashboard, printing service" />
   <meta name="description" content="Admin page for staff management" />
   <meta name="robots" content="noindex,nofollow" />
-  <title>Services Management</title>
+  <title>Service Management</title>
   <!-- Favicon icon -->
   <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon.png" />
   <!-- Custom CSS -->
@@ -215,6 +220,13 @@ $conn->close();
     <!-- Sidebar -->
     <!-- ============================================================== -->
     <?php
+
+ini_set('display_startup_errors', 1);
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+
     if ($usertype === 'ADMIN') {
         include 'sidebarAdmin.php';
     } else {
@@ -227,7 +239,216 @@ $conn->close();
     <!-- ============================================================== -->
     <div class="page-wrapper">
    <!--php coding for customer-->
-   
+   <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+// Connect to the database
+
+
+  
+ 
+include('../../connection.php'); // Include your database connection file
+
+// Check if action is set in the URL
+$action = isset($_GET['action']) ? $_GET['action'] : 'view';
+
+switch($action) {
+    case 'view':
+        // View customers
+        $query = "SELECT * FROM services WHERE userType = 'STAFF'";
+$result = mysqli_query($conn, $query);
+
+echo "<h2>Service List</h2>";
+
+// Apply CSS styling to the table
+echo "<style>
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          font-family: Arial, sans-serif;
+        }
+
+        th, td {
+          text-align: left;
+          padding: 12px;
+          border-bottom: 1px solid #ddd;
+        }
+
+        th {
+          background-color: #f2f2f2;
+          color: #333;
+          font-weight: bold;
+        }
+
+        tr:nth-child(even) {
+          background-color: #f9f9f9;
+        }
+
+        tr:hover {
+          background-color: #f1f1f1;
+        }
+
+        a {
+          color: #1a73e8;
+          text-decoration: none;
+        }
+
+        a:hover {
+          text-decoration: underline;
+        }
+
+        @media screen and (max-width: 600px) {
+          table, th, td {
+            width: 100%;
+            display: block;
+          }
+
+          th, td {
+            text-align: left;
+            padding: 10px;
+          }
+
+          th {
+            background-color: #f0f0f0;
+          }
+        }
+      </style>";
+
+// Table structure
+echo "<table>";
+echo "<tr><th>ID</th><th>Name</th><th>Status</th></tr>";
+
+// Fetch and display customer data
+while ($row = mysqli_fetch_assoc($result)) {
+    echo "<tr>";
+    echo "<td>" . $row['service_id'] . "</td>";
+    echo "<td>" . $row['service_name'] . "</td>";
+    echo "<td>" . $row['status'] . "</td>";
+    echo "<td>
+    <a href='services.php?action=edit&id=" . $row['service_id'] . "' style='display: inline-block; padding: 8px 16px; text-align: center; text-decoration: none; background-color: #1a73e8; color: white; border-radius: 4px; margin-right: 8px;'>Edit</a>
+    <a href='services.php?action=delete&id=" . $row['service_id'] . "' style='display: inline-block; padding: 8px 16px; text-align: center; text-decoration: none; background-color: #e53935; color: white; border-radius: 4px;' onclick='return confirm(\"Are you sure you want to delete?\")'>Delete</a>
+  </td>";
+echo "</tr>";
+}
+
+echo "</table>";
+        break;
+
+    case 'edit':
+ // Edit customer
+     if (isset($_GET['service_id'])) {
+      $service_id = $_GET['service_id'];
+      if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+          // Update customer data
+          $service_name = $_POST['service_name'];
+          $status = $_POST['status'];
+          $updateQuery = "UPDATE services SET service_name='$service_name', status='$status' WHERE service_id='$service_id'";
+          mysqli_query($conn, $updateQuery);
+          header("Location: services.php?action=view");
+      } else {
+          // Fetch current customer data for editing
+          $query = "SELECT * FROM services WHERE service_id='$service_id'";
+          $result = mysqli_query($conn, $query);
+          $services = mysqli_fetch_assoc($result);
+          ?>
+
+          <!-- Add styling to the edit customer table -->
+          <style>
+              table {
+                  width: 100%;
+                  border-collapse: collapse;
+                  font-family: Arial, sans-serif;
+                  margin-top: 20px;
+              }
+
+              th, td {
+                  text-align: left;
+                  padding: 12px;
+                  border-bottom: 1px solid #ddd;
+              }
+
+              th {
+                  background-color: #f2f2f2;
+                  color: #333;
+                  font-weight: bold;
+              }
+
+              tr:nth-child(even) {
+                  background-color: #f9f9f9;
+              }
+
+              tr:hover {
+                  background-color: #f1f1f1;
+              }
+
+              input[type="text"], input[type="email"], input[type="number"] {
+                  width: 95%;
+                  padding: 10px;
+                  border: 1px solid #ccc;
+                  border-radius: 4px;
+              }
+
+              input[type="submit"] {
+                  background-color: #28a745;
+                  color: white;
+                  padding: 10px 15px;
+                  border: none;
+                  border-radius: 4px;
+                  cursor: pointer;
+              }
+
+              input[type="submit"]:hover {
+                  background-color: #218838;
+              }
+          </style>
+
+          <h2>Edit Services</h2>
+
+          <!-- Display the customer details inside a table -->
+          <form method="POST" action="">
+              <table>
+                  <tr>
+                      <th>Name</th>
+                      <td><input type="text" name="service_name" value="<?php echo $services['service_name']; ?>" required></td>
+                  </tr>
+                  <tr>
+                      <th>Status</th>
+                      <td><input type="text" name="status" value="<?php echo $services['status']; ?>" required></td>
+                  </tr>
+                  <tr>
+                      <td colspan="2" style="text-align: center;">
+                          <input type="submit" value="Update">
+                      </td>
+                  </tr>
+              </table>
+          </form>
+
+          <?php
+          ini_set('display_startup_errors', 1);
+
+          error_reporting(E_ALL);
+          ini_set('display_errors', 1);
+          
+      }
+  }
+  break;
+    case 'delete':
+        // Delete customer
+        if(isset($_GET['service_id'])) {
+            $service_id = $_GET['service_id'];
+            $deleteQuery = "DELETE FROM services WHERE service_id='$service_id'";
+            mysqli_query($conn, $deleteQuery);
+            header("Location: services.php?action=view"); // Redirect to view after deleting
+        }
+        break;
+
+    default:
+        // Default action is to view customers
+        header("Location: services.php?action=view");
+        break;
+}
+?>
 
     <!-- ============================================================== -->
     <!-- Footer -->
@@ -253,5 +474,43 @@ $conn->close();
 </html>
 
 <?php
+ini_set('display_startup_errors', 1);
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+ob_end_flush();
+?>
+
+    <!-- ============================================================== -->
+    <!-- Footer -->
+    <!-- ============================================================== -->
+    <footer class="footer text-center">
+      All Rights Reserved by Your Company. Designed and Developed by <a href="https://www.wrappixel.com">WrapPixel</a>.
+    </footer>
+  </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- All Jquery -->
+  <!-- ============================================================== -->
+  <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
+  <!-- Bootstrap tether Core JavaScript -->
+  <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../dist/js/app-style-switcher.js"></script>
+  <script src="../dist/js/waves.js"></script>
+  <script src="../dist/js/sidebarmenu.js"></script>
+  <script src="../dist/js/custom.js"></script>
+</body>
+
+</html>
+
+<?php
+
+ini_set('display_startup_errors', 1);
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 ob_end_flush();
 ?>
