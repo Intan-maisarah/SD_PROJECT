@@ -227,6 +227,7 @@ $conn->close();
                               background-color: #f2f2f2;
                               color: #333;
                               font-weight: bold;
+                              text-align: center;
                             }
 
                             tr:nth-child(even) {
@@ -264,7 +265,7 @@ $conn->close();
                           </style>";
 
                     echo "<table>";
-                    echo "<tr><th>ID</th><th>Name</th><th>Description</th><th>Status</th><th>Image</th><th>Choice</th</tr>";
+                    echo "<tr><th>ID</th><th>Name</th><th>Description</th><th>Status</th><th>Image</th><th>Actions</th</tr>";
 
                     while ($row = mysqli_fetch_assoc($result)) {
                         echo "<tr>";
