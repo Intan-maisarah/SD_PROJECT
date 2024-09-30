@@ -71,8 +71,10 @@ include 'services.php'; // This should include the PHP code that populates $serv
                     echo '<h2>' . htmlspecialchars($service["service_name"]) . '</h2>';
                     echo '<p>' . htmlspecialchars($service["service_description"]) . '</p>';
                     if (!empty($service["image"])) {
-                        echo '<img src="' . htmlspecialchars($service["image"]) . '" alt="' . htmlspecialchars($service["service_name"]) . '">';
+                        $imagePath = 'assets/images/' . htmlspecialchars($service["image"]);
+                        echo '<img src="' . $imagePath . '" alt="' . htmlspecialchars($service["service_name"]) . '">';
                     }
+                    
                     echo '</div>';
                 }
             } else {
@@ -136,7 +138,7 @@ include 'services.php'; // This should include the PHP code that populates $serv
                 <p>Business hours:</p>
                 <a href="">Mon-Fri: 9am - 6pm</a>
             </div>
-            <div class="contact-popup" id="location-popup" style="width: 400px; height: 200px;">
+            <div class="contact-popup" id="location-popup" style="width: 400px; height: 350px;">
                 <p>Address</p>
                 <a href="">Gurney Mall, Lot 1-30, Jln Maktab, 54000 Kuala Lumpur</a>
                 <iframe 

@@ -208,7 +208,7 @@ $conn->close();
                     // View services
                     $query = "SELECT * FROM services";
                     $result = mysqli_query($conn, $query);
-
+                
                     echo "<h2>Service List</h2>";
                     echo "<style>
                             table {
@@ -216,75 +216,88 @@ $conn->close();
                               border-collapse: collapse;
                               font-family: Arial, sans-serif;
                             }
-
+                
                             th, td {
                               text-align: left;
                               padding: 12px;
                               border-bottom: 1px solid #ddd;
                             }
-
+                
                             th {
                               background-color: #f2f2f2;
                               color: #333;
                               font-weight: bold;
                               text-align: center;
                             }
-
+                
                             tr:nth-child(even) {
                               background-color: #f9f9f9;
                             }
-
+                
                             tr:hover {
                               background-color: #f1f1f1;
                             }
-
+                
                             a {
                               color: #1a73e8;
                               text-decoration: none;
                             }
-
+                
                             a:hover {
                               text-decoration: underline;
                             }
-
+                
+                            img {
+                              max-width: 100px;
+                              height: auto;
+                            }
+                
                             @media screen and (max-width: 600px) {
                               table, th, td {
                                 width: 100%;
                                 display: block;
                               }
-
+                
                               th, td {
                                 text-align: left;
                                 padding: 10px;
                               }
-
+                
                               th {
                                 background-color: #f0f0f0;
                               }
                             }
                           </style>";
-
+                
                     echo "<table>";
-                    echo "<tr><th>ID</th><th>Name</th><th>Description</th><th>Status</th><th>Image</th><th>Actions</th</tr>";
-
+                    echo "<tr><th>ID</th><th>Name</th><th>Description</th><th>Status</th><th>Image</th><th>Actions</th></tr>";
+                
                     while ($row = mysqli_fetch_assoc($result)) {
                         echo "<tr>";
                         echo "<td>" . $row['service_id'] . "</td>";
                         echo "<td>" . $row['service_name'] . "</td>";
                         echo "<td>" . $row['service_description'] . "</td>";
                         echo "<td>" . $row['status'] . "</td>";
-                        echo "<td>" . $row['image'] . "</td>";
+                
+                        // Display the image, if available
+                        if (!empty($row['image'])) {
+                            echo "<td><img src='" . $row['image'] . "' alt='" . htmlspecialchars($row['service_name']) . "'></td>";
+                        } else {
+                            echo "<td>No image available</td>";
+                        }
+                
                         echo "<td>
                                 <a href='services.php?action=edit&service_id=" . $row['service_id'] . "' style='display: inline-block; padding: 8px 16px; text-align: center; text-decoration: none; background-color: #1a73e8; color: white; border-radius: 4px; margin-right: 8px;'>Edit</a>
                                 <a href='services.php?action=delete&service_id=" . $row['service_id'] . "' style='display: inline-block; padding: 8px 16px; text-align: center; text-decoration: none; background-color: #e53935; color: white; border-radius: 4px;' onclick='return confirm(\"Are you sure you want to delete?\")'>Delete</a>
                               </td>";
                         echo "</tr>";
                     }
-
+                
                     echo "</table>";
                     echo "<br><a href='services.php?action=add' style='background-color: #00b300; padding: 10px 20px; color: white; text-decoration: none; border-radius: 5px;'>Add New Service</a>";
-
+                
                     break;
+                
 
                 case 'add':
                     // Add service
@@ -451,81 +464,62 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     break;
 
                     case 'edit':
-                      // Edit service
-                      $service_id = $_GET['service_id'];
-                  
-                      if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                          $service_name = $_POST['service_name'];
-                          $service_description = $_POST['service_description'];
-                          $status = $_POST['status'];
-
-
-                          // Define the destination path
-                           $targetDirectory = "C:assets\images";
-                           $imageName = $_FILES['image']['name'];
-                           $targetFilePath = $targetDirectory . basename($imageName);
-
-                           if (!is_dir($targetDirectory)) {
-                            mkdir($targetDirectory, 0755, true); // Create the directory if it doesn't exist
-                        }
-                        
-                        // Attempt to move the uploaded file to the target directory
-                        if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFilePath)) {
-                            // If successful, you may want to store the path in the database
-                            $image = $targetFilePath; // Store the file path for the database
-                        } else {
-                            echo "Error uploading image.";
-                            exit;
-                        }
-
-                        
-
-                          // Handle the uploaded image
-                          $imageURL = $_POST['image']; // Store the existing image URL by default
-                  
-                          if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
-                              // Image upload
-                              $targetDir = "";
-                              if (!is_dir($targetDir)) {
-                                mkdir($targetDir, 0755, true); // Create the directory with proper permissions
+                        // Edit service
+                        $service_id = $_GET['service_id'];
+                    
+                        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                            $service_name = $_POST['service_name'];
+                            $service_description = $_POST['service_description'];
+                            $status = $_POST['status'];
+                            $imageURL = $_POST['image']; // Keep existing image by default
+                            
+                            // Define the destination path for the new image
+                            $targetDirectory = "../../assets/images/";
+                    
+                            // Check if the image is uploaded
+                            if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
+                                $imageName = $_FILES['image']['name'];
+                                $targetFilePath = $targetDirectory . basename($imageName);
+                                $imageFileType = strtolower(pathinfo($targetFilePath, PATHINFO_EXTENSION));
+                    
+                                // Validate the image file type
+                                $allowedFormats = ["jpg", "jpeg", "png", "gif"];
+                                if (in_array($imageFileType, $allowedFormats)) {
+                                    // Create the directory if it doesn't exist
+                                    if (!is_dir($targetDirectory)) {
+                                        mkdir($targetDirectory, 0755, true);
+                                    }
+                    
+                                    // Attempt to move the uploaded file
+                                    if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFilePath)) {
+                                        $imageURL = $targetFilePath; // Update with the new image URL
+                                    } else {
+                                        echo "<div>Error uploading image.</div>";
+                                        exit;
+                                    }
+                                } else {
+                                    echo "<div>Invalid image format. Only JPG, JPEG, PNG, and GIF are allowed.</div>";
+                                    exit;
+                                }
                             }
-                              $targetFile = $targetDir . basename($_FILES["image"]["name"]);
-                              $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
-                  
-                              // Validate image file type
-                              $allowedFormats = ["jpg", "jpeg", "png", "gif"];
-                              if (in_array($imageFileType, $allowedFormats)) {
-                                  // Move uploaded file to target directory
-                                  if (move_uploaded_file($_FILES["image"]["tmp_name"], $targetFile)) {
-                                      // Generate the URL for the uploaded image
-                                      $imageURL = $targetFile; // Adjust the URL accordingly
-                                  } else {
-                                      echo "<div>Error uploading image.</div>";
-                                      exit;
-                                  }
-                              } else {
-                                  echo "<div>Invalid image format.</div>";
-                                  exit;
-                              }
-                          }
-                  
-                          // Update service details in the database
-                          $updateQuery = "UPDATE services SET service_name = ?, status = ?, service_description = ?, image = ? WHERE service_id = ?";
-                          $updateStmt = $conn->prepare($updateQuery);
-                          $updateStmt->bind_param("ssssi", $service_name, $status, $service_description, $imageURL, $service_id);
-                          $updateStmt->execute();
-                  
-                          if ($updateStmt->affected_rows > 0) {
-                              $updateStmt->close();
-                              header("Location: services.php?action=view");
-                              exit;
-                          } else {
-                              echo "<div>Error updating service. $updateStmt->error</div>";
-                              exit;
-                          }
-                  
-                          $updateStmt->close();
-                      }
+                    
+                            // Update service details in the database
+                            $updateQuery = "UPDATE services SET service_name = ?, status = ?, service_description = ?, image = ? WHERE service_id = ?";
+                            $updateStmt = $conn->prepare($updateQuery);
+                            $updateStmt->bind_param("ssssi", $service_name, $status, $service_description, $imageURL, $service_id);
+                            $updateStmt->execute();
+                    
+                            if ($updateStmt->affected_rows > 0) {
+                                $updateStmt->close();
+                                header("Location: services.php?action=view");
+                                exit;
+                            } else {
+                                echo "<div>Error updating service. {$updateStmt->error}</div>";
+                                exit;
+                            }
+                        }
+                        
+                    
                   
                       // Fetch the current details of the service
                       $selectQuery = "SELECT * FROM services WHERE service_id = ?";
