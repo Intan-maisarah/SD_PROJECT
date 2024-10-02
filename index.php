@@ -3,7 +3,7 @@ session_start();
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
-include 'services.php'; // This should include the PHP code that populates $services
+include 'services.php'; 
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -33,17 +33,17 @@ include 'services.php'; // This should include the PHP code that populates $serv
                 </nav>
                 <?php if (!isset($_SESSION['signin'])): ?>
                     <div class="nav-item">
-                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='signin.php'">Log In</button>
+                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='user/signin.php'">Log In</button>
                     </div>
                     <div class="nav-item">
-                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='signup.php'">Sign Up</button>
+                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='user/signup.php'">Sign Up</button>
                     </div>
                 <?php else: ?>
                     <div class="nav-item">
                         <button class="btn btn-primary rounded ml-4" onclick="window.location.href='logout.php'">Log Out</button>
                     </div>
                     <div class="nav-item">
-                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='view_profile.php'">Profile</button>
+                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='user/view_profile.php'">Profile</button>
                     </div>
                 <?php endif; ?>
             </div>
@@ -56,7 +56,7 @@ include 'services.php'; // This should include the PHP code that populates $serv
         <div class="hero-content" >
             <h1>Let Us Handle All Your Printing Needs.</h1>
             <p>Your on the go printing service!</p>
-            <button class="btn btn-primary" onclick="window.location.href='signin.php'">Get Started</button>
+            <button class="btn btn-primary" onclick="window.location.href='user/signin.php'">Get Started</button>
         </div>
     </section>
 

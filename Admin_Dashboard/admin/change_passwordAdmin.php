@@ -440,7 +440,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <!-- ============================================================== -->
     <!-- ============================================================== -->
     
-    <?php include "sidebarAdmin.php";?>
+    <?php include "../sidebar/sidebarAdmin.php";?>
     <div class="page-wrapper">
       <div class="container-fluid">
         <div class="row">

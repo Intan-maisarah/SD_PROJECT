@@ -410,8 +410,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <!-- End Topbar header -->
     <!-- ============================================================== -->
     <!-- ============================================================== -->
-    <?php include "sidebarStaff.php";?>
-
+    <?php include "../sidebar/sidebarAdmin.php";?>
 
     <div class="page-wrapper">
       <div class="container-fluid">
@@ -428,7 +427,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </div>
               </div>
               <div class="profile-userbuttons">
-                <a href="change_passwordStaff.php" class="btn btn-primary">Change Password</a>
+                <a href="change_passwordAdmin.php" class="btn btn-primary">Change Password</a>
               </div>
               <div class="profile-usermenu">
                 <ul>

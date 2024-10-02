@@ -1,6 +1,6 @@
 <?php
 session_start();
-include "connection.php"; // Ensure this file contains the database connection setup
+include "../connection.php"; // Ensure this file contains the database connection setup
 include "user.php";
 
 // Handle form submission
@@ -27,13 +27,13 @@ if (isset($_POST['signin'])) {
 
             $userType = getUserType($conn, $username);
             if ($userType == 'ADMIN') {
-                header("Location: Admin_Dashboard/html/admin_page.php");
+                header("Location: ../Admin_Dashboard/admin/admin_page.php");
                 exit();
             } else if ($userType == 'STAFF') {
-                header("Location: Admin_Dashboard/html/staff_page.php"); 
+                header("Location: ../Admin_Dashboard/staff/staff_page.php"); 
                 exit();
             } else {
-                header("Location: index.php");
+                header("Location: ../index.php");
                 exit();
             }
 
@@ -91,11 +91,11 @@ if (isset($_POST['signin'])) {
         <div class="container-fluid h-custom">
             <div class="row d-flex justify-content-center align-items-center h-100">
                 <div class="col-md-9 col-lg-6 col-xl-5">
-                    <img src="assets/images/printer.png"
+                    <img src="../assets/images/printer.png"
                         class="img-fluid" alt="Sample image">
                 </div>
                 <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
-                <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Sign In</p>
+                <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Log In</p>
                     <form action="signin.php" method="POST">
                     
 

@@ -189,9 +189,9 @@ $conn->close();
         
         <?php
             if ($usertype === 'ADMIN') {
-                include 'sidebarAdmin.php';
+                include '../sidebar/sidebarAdmin.php';
             } else {
-                include 'sidebarStaff.php';
+                include '../sidebar/sidebarStaff.php';
             }
         ?>
         
@@ -210,7 +210,45 @@ $conn->close();
                     $result = mysqli_query($conn, $query);
                 
                     echo "<h2>Service List</h2>";
+                    if (isset($_SESSION['message'])): ?>
+                        <div class="alert alert-<?php echo $_SESSION['msg_type']; ?> alert-dismissible fade show" role="alert">
+                            <?php echo $_SESSION['message']; ?>
+                            
+                        </div>
+                        <?php
+                        // Unset message after displaying it
+                        unset($_SESSION['message']);
+                        unset($_SESSION['msg_type']);
+                    endif;
                     echo "<style>
+
+                             .alert {
+                                padding: 15px;
+                                margin-bottom: 20px;
+                                border: 1px solid transparent;
+                                border-radius: 4px;
+                            }
+                            .alert-success {
+                                color: #155724;
+                                background-color: #d4edda;
+                                border-color: #c3e6cb;
+                            }
+                            .alert-danger {
+                                color: #721c24;
+                                background-color: #f8d7da;
+                                border-color: #f5c6cb;
+                            }
+                            .close {
+                                float: right;
+                                font-size: 1.5rem;
+                                font-weight: bold;
+                                line-height: 1;
+                                color: #000;
+                                text-shadow: 0 1px 0 #fff;
+                                opacity: .5;
+                                cursor: pointer;
+                            }
+
                             table {
                               width: 100%;
                               border-collapse: collapse;
@@ -312,7 +350,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // Check if the image file was uploaded
         if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
           // Define the destination path
-          $targetDirectory = "C:assets\\images\\";
+          $targetDirectory = "../../assets/images/uploads/";
           $imageName = $_FILES['image']['name'];
           $targetFilePath = $targetDirectory . basename($imageName);
 
@@ -343,13 +381,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       $insertStmt->execute();
 
       if ($insertStmt->affected_rows > 0) {
-          header("Location: services.php?action=view");
-          echo "<div>Service added successfully!</div>";
-      } else {
-          echo "<div>Error adding service.</div>";
-          exit;
-      }
-
+        $_SESSION['message'] = "Service added successfully!";
+        $_SESSION['msg_type'] = "success"; // You can use 'success', 'danger', 'info', etc.
+        header("Location: services.php?action=view");
+        exit;
+    } else {
+        $_SESSION['message'] = "Error adding service.";
+        $_SESSION['msg_type'] = "danger";
+        header("Location: services.php?action=view");
+        exit;
+    }
       $insertStmt->close();
     }
 
@@ -420,10 +461,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <form action="services.php?action=add" method="POST" enctype="multipart/form-data"> <!-- Add enctype -->
 
     <table>
-        <tr>
-            <th>Service ID</th>
-            <td><input type="text" name="service_id" required></td>
-        </tr>
+    
         <tr>
             <th>Service Name</th>
             <td><input type="text" name="service_name" required></td>
@@ -474,7 +512,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             $imageURL = $_POST['image']; // Keep existing image by default
                             
                             // Define the destination path for the new image
-                            $targetDirectory = "../../assets/images/";
+                            $targetDirectory = "../../assets/images/uploads/";
                     
                             // Check if the image is uploaded
                             if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
@@ -510,11 +548,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             $updateStmt->execute();
                     
                             if ($updateStmt->affected_rows > 0) {
-                                $updateStmt->close();
+                                $_SESSION['message'] = "Service updated successfully!";
+                                $_SESSION['msg_type'] = "success";
                                 header("Location: services.php?action=view");
                                 exit;
                             } else {
-                                echo "<div>Error updating service. {$updateStmt->error}</div>";
+                                $_SESSION['message'] = "Error updating service.";
+                                $_SESSION['msg_type'] = "danger";
+                                header("Location: services.php?action=view");
                                 exit;
                             }
                         }
@@ -635,13 +676,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     $deleteStmt->execute();
 
                     if ($deleteStmt->affected_rows > 0) {
-                        echo "<div>Service deleted successfully!</div>";
+                        $_SESSION['message'] = "Service deleted successfully!";
+                        $_SESSION['msg_type'] = "success";
+                        header("Location: services.php?action=view");
+                        exit;
                     } else {
-                        echo "<div>Error deleting service.</div>";
+                        $_SESSION['message'] = "Error deleting service.";
+                        $_SESSION['msg_type'] = "danger";
+                        header("Location: services.php?action=view");
+                        exit;
                     }
-                    $deleteStmt->close();
-                    header("Location: services.php?action=view");
-                    exit;
                     
                 
 
@@ -656,11 +700,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         </div>
     </div>
 
-    <script src="../dist/js/modernizr-3.6.0.min.js"></script>
-    <script src="../dist/js/jquery-3.6.0.min.js"></script>
-    <script src="../dist/js/bootstrap.bundle.min.js"></script>
-    <script src="../dist/js/script.js"></script>
-</body>
+   <!-- Include jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script src="../assets/libs/jquery/dist/jquery.min.js"></script>
+  <!-- Bootstrap tether Core JavaScript -->
+  <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="../dist/js/app-style-switcher.js"></script>
+  <script src="../dist/js/waves.js"></script>
+  <script src="../dist/js/sidebarmenu.js"></script>
+  <script src="../dist/js/custom.js"></script>
 
 </html>
 

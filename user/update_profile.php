@@ -4,7 +4,7 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 // Include the database connection file
-include 'connection.php';
+include '../connection.php';
 
 session_start();
 
@@ -82,7 +82,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <nav class="nav nav-borders">
             <a class="nav-link active ms-0" href="view_profile.php" target="_self">Profile</a>
             <a class="nav-link" href="update_profile.php" target="_self">Security</a>
-            <a class="nav-link ms-auto" href="index.php" target="_self">Home</a>
+            <a class="nav-link ms-auto" href="../index.php" target="_self">Home</a>
         </nav>   
         <hr class="mt-0 mb-4">
         

@@ -1,6 +1,6 @@
 <?php
 session_start();
-require 'connection.php'; // Include database connection
+require '../connection.php'; // Include database connection
 
 // Function to validate password
 function validatePassword($password) {
@@ -86,7 +86,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <nav class="nav nav-borders">
         <a class="nav-link" href="view_profile.php" target="_self">Profile</a>
         <a class="nav-link active ms-0" href="change_password.php" target="_self">Password</a>
-        <a class="nav-link ms-auto" href="index.php" target="_self">Home</a>
+        <a class="nav-link ms-auto" href="../index.php" target="_self">Home</a>
     </nav>   
     <hr class="mt-0 mb-4">
     <div class="row">

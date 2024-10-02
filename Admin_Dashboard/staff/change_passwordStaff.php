@@ -439,7 +439,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <!-- End Topbar header -->
     <!-- ============================================================== -->
     <!-- ============================================================== -->
-    <?php include "sidebarStaff.php";?>
+    <?php include "../staff/sidebarStaff.php";?>
 
 
     <div class="page-wrapper">

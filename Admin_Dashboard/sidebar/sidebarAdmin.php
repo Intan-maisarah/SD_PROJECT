@@ -1,4 +1,3 @@
-@ -1,160 +0,0 @@
 <?php
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -47,7 +46,6 @@ if ($result->num_rows > 0) {
 $stmt->close();
 $conn->close();
 
-// Debugging output for email
 ?>
 
 <!-- Sidebar HTML Structure -->
@@ -74,7 +72,7 @@ $conn->close();
                     </a>
 
                   <div class="dropdown-menu dropdown-menu-end" aria-labelledby="Userdd">
-                    <a class="dropdown-item" href="admin_profile.php"><i class="mdi mdi-account m-r-5 m-l-5"></i> My
+                    <a class="dropdown-item" href="../admin/pages_profile.php"><i class="mdi mdi-account m-r-5 m-l-5"></i> My
                       Profile</a>
                     <a class="dropdown-item" href="javascript:void(0)"><i class="mdi mdi-wallet m-r-5 m-l-5"></i> My
                       Balance</a>
@@ -92,43 +90,30 @@ $conn->close();
               </div>
               <!-- End User Profile-->
             </li>
-            <li class="p-15 m-t-10">
-              <a href="javascript:void(0)" class="
-                    btn
-                    d-block
-                    w-100
-                    create-btn
-                    text-white
-                    no-block
-                    d-flex
-                    align-items-center
-                  "><i class="mdi mdi-plus-box"></i>
-                <span class="hide-menu m-l-5">Create New</span>
-              </a>
-            </li>
+            
             <!-- User Profile-->
             <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="admin_page.php" aria-expanded="false"><i
+              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="../admin/admin_page.php" aria-expanded="false"><i
                   class="mdi mdi-view-dashboard"></i><span class="hide-menu">Dashboard</span></a>
             </li>
             <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="pages_profile.php"
+              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="../admin/pages_profile.php"
                 aria-expanded="false"><i class="mdi mdi-account-network"></i><span class="hide-menu">Profile</span></a>
             </li>
             <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="staff.php"
+              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="../service/staff.php"
                 aria-expanded="false"><i class="mdi mdi-account"></i><span class="hide-menu">Staff</span></a>
             </li>
             <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="customer.php"
+              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="../service/customer.php"
                 aria-expanded="false"><i class="mdi mdi-account"></i><span class="hide-menu">Customer</span></a>
             </li>
             <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="printspec.php"
+              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="../service/printspec.php"
                 aria-expanded="false"><i class="mdi mdi-printer"></i><span class="hide-menu">Printing</span></a>
             </li>
             <li class="sidebar-item">
-              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="services.php"
+              <a class="sidebar-link waves-effect waves-dark sidebar-link" href="../service/services.php"
                 aria-expanded="false"><i class="mdi mdi-printer"></i><span class="hide-menu">Services</span></a>
             </li>
             <li class="sidebar-item">

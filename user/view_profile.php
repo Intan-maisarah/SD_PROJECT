@@ -5,7 +5,7 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 // Include the database connection file
-include 'connection.php';
+include '../connection.php';
 session_start();
 
 // Fetch user ID from session
@@ -74,16 +74,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <title>View Profile</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet">
-<style type="text/css">
-    /* Your existing styles */
-</style>
+<link rel="stylesheet" href="assets/ipasss.css">
 </head>
 <body>
+
     <div class="container-xl px-4 mt-4">
         <nav class="nav nav-borders">
             <a class="nav-link active ms-0" href="view_profile.php" target="_self">Profile</a>
             <a class="nav-link" href="change_password.php" target="_self">Password</a>
-            <a class="nav-link ms-auto" href="index.php" target="_self">Home</a>
+            <a class="nav-link ms-auto" href="../index.php" target="_self">Home</a>
         </nav>
         <hr class="mt-0 mb-4">
     
@@ -223,6 +222,52 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         document.getElementById('displayAddress').textContent = address;
         document.getElementById('displayContact').textContent = contact;
     }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const marker = document.getElementById("marker");
+        const navLinks = document.querySelectorAll("nav a");
+        const sections = document.querySelectorAll("section"); // Ensure all your sections have the correct IDs like #home, #services, etc.
+
+        // Function to move the marker
+        function moveMarker(element) {
+            marker.style.width = element.offsetWidth + "px";
+            marker.style.left = element.offsetLeft + "px";
+        }
+
+        // IntersectionObserver callback
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Get the active section ID
+                    const sectionId = entry.target.id;
+
+                    // Find the corresponding nav link
+                    const activeLink = document.querySelector(`nav a[href="#${sectionId}"]`);
+
+                    // Remove active class from all links and add to the current one
+                    navLinks.forEach(link => link.classList.remove("active"));
+                    activeLink.classList.add("active");
+
+                    // Move the marker
+                    moveMarker(activeLink);
+                }
+            });
+        }, {
+            threshold: 0.5  // Trigger when 50% of the section is visible
+        });
+
+        // Observe each section
+        sections.forEach(section => observer.observe(section));
+
+        // Add click event listeners to each navigation link for click-based marker movement
+        navLinks.forEach(link => {
+            link.addEventListener("click", function() {
+                navLinks.forEach(nav => nav.classList.remove("active"));
+                this.classList.add("active");
+                moveMarker(this);
+            });
+        });
+    });
 </script>
 </body>
 </html>

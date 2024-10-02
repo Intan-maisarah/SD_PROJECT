@@ -216,9 +216,9 @@ $conn->close();
     <!-- ============================================================== -->
     <?php
     if ($usertype === 'ADMIN') {
-        include 'sidebarAdmin.php';
+        include '../sidebar/sidebarAdmin.php';
     } else {
-        include 'sidebarStaff.php';
+        include '../sidebar/sidebarStaff.php';
     }
     ?>
     

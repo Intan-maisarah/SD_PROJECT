@@ -5,12 +5,12 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-include "connection.php";
+include "../connection.php";
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 // Include PHPMailer files
-require 'vendor/autoload.php';
+require '../vendor/autoload.php';
 
 // Initialize error message variable
 $error_message = '';
@@ -172,7 +172,7 @@ if (isset($_POST['register'])) {
                                     </div>
                                 </div>
                                 <div class="col-md-10 col-lg-6 col-xl-7 d-flex align-items-center order-1 order-lg-2">
-                                    <img src="assets/images/laptop.png" class="img-fluid" alt="Sample image">
+                                    <img src="../assets/images/laptop.png" class="img-fluid" alt="Sample image">
                                 </div>
                             </div>
                         </div>

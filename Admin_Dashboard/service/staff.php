@@ -176,7 +176,7 @@ $conn->close();
             </nav>
         </header>
         
-        <?php include 'sidebarAdmin.php'; ?>
+        <?php include '../sidebar/sidebarAdmin.php'; ?>
         
         <div class="page-wrapper">
             <?php

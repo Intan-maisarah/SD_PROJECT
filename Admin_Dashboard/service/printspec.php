@@ -312,7 +312,7 @@ $conn->close();
   <!-- ============================================================== -->
   <!-- Preloader - style you can find in spinners.css -->
   <!-- ============================================================== -->
-  <!--<div class="preloader">
+  <div class="preloader">
   <div class="printer">
     <div class="printer-top"></div>
     <div class="paper-input-slot"></div>
@@ -321,7 +321,7 @@ $conn->close();
     </div>
     <div class="printer-tray"></div>
   </div>
-</div>-->
+</div>
 
 
   
@@ -336,7 +336,7 @@ $conn->close();
     <header class="topbar" data-navbarbg="skin5">
       <nav class="navbar top-navbar navbar-expand-md navbar-dark">
         <div class="navbar-header" data-logobg="skin5">
-          <a class="navbar-brand" href="admin_page.html">
+          <a class="navbar-brand" href="admin_page.php">
             <b class="logo-icon">
               <img src="../../assets/images/logo.png" alt="homepage" style="width: 60px; height: auto;" />
             </b>
@@ -362,9 +362,9 @@ $conn->close();
     <!-- ============================================================== -->
     <?php
     if ($usertype === 'ADMIN') {
-        include 'sidebarAdmin.php';
+        include '../sidebar/sidebarAdmin.php';
     } else {
-        include 'sidebarStaff.php';
+        include '../sidebar/sidebarStaff.php';
     }
     ?>
     
@@ -491,7 +491,8 @@ echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; p
                   $updateQuery = "UPDATE specification SET spec_type = ?, price = ?, status = ? WHERE id = ?";
                   $stmt = $conn->prepare($updateQuery);
                   $stmt->bind_param('sssi', $spec_type, $price, $status, $id);
-      
+
+                  
                   if ($stmt->execute()) {
                       // If update is successful, redirect to view the list of specifications
                       header("Location: printspec.php?action=view");

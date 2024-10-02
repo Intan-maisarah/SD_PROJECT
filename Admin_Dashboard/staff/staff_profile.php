@@ -335,7 +335,7 @@ $conn->close();
         </div>
       </nav>
     </header>
-    <?php include "sidebarStaff.php";?>
+    <?php include "../sidebar/sidebarStaff.php";?>
 
     <div class="page-wrapper">
       <div class="container-fluid">
