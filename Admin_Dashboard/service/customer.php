@@ -23,9 +23,10 @@ require '../../connection.php';
 $user_id = $_SESSION['user_id'];
 $adminEmail = '';
 $usertype = '';
+$profile_pic = '';
 
 // Prepare and execute a query to get the user's email and usertype
-$sql = "SELECT email, usertype FROM users WHERE id = ?";
+$sql = "SELECT email, usertype, profile_pic FROM users WHERE id = ?";
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
     echo "Prepare statement failed: " . $conn->error . "<br>";
@@ -241,6 +242,16 @@ switch($action) {
 $result = mysqli_query($conn, $query);
 
 echo "<h2>Customer List</h2>";
+if (isset($_SESSION['message'])): ?>
+  <div class="alert alert-<?php echo $_SESSION['msg_type']; ?> alert-dismissible fade show" role="alert">
+      <?php echo $_SESSION['message']; ?>
+      
+  </div>
+  <?php
+  // Unset message after displaying it
+  unset($_SESSION['message']);
+  unset($_SESSION['msg_type']);
+endif;
 
 // Apply CSS styling to the table
 echo "<style>
@@ -320,22 +331,50 @@ echo "</table>";
 
     case 'edit':
  // Edit customer
-     if (isset($_GET['id'])) {
-      $id = $_GET['id'];
-      if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-          // Update customer data
-          $name = $_POST['name'];
-          $email = $_POST['email'];
-          $contact = $_POST['contact'];
-          $address = $_POST['address'];
-          $updateQuery = "UPDATE users SET name='$name', email='$email', contact='$contact', address='$address' WHERE id='$id'";
-          mysqli_query($conn, $updateQuery);
+ if (isset($_GET['id'])) {
+  $id = $_GET['id'];
+  
+  if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+      // Update customer data
+      $name = $_POST['name'];
+      $email = $_POST['email'];
+      $contact = $_POST['contact'];
+      $address = $_POST['address'];
+
+      // Prepare the update query using prepared statements
+      $updateQuery = "UPDATE users SET name=?, email=?, contact=?, address=? WHERE id=?";
+      $updateStmt = $conn->prepare($updateQuery);
+      $updateStmt->bind_param("ssssi", $name, $email, $contact, $address, $id);
+      
+      if ($updateStmt->execute()) {
+          $_SESSION['message'] = "Customer updated successfully!";
+          $_SESSION['msg_type'] = "success";
           header("Location: customer.php?action=view");
+          exit;
       } else {
-          // Fetch current customer data for editing
-          $query = "SELECT * FROM users WHERE id='$id'";
-          $result = mysqli_query($conn, $query);
-          $customer = mysqli_fetch_assoc($result);
+          $_SESSION['message'] = "Error updating customer.";
+          $_SESSION['msg_type'] = "danger";
+          header("Location: customer.php?action=view");
+          exit;
+      }
+  } else {
+      // Fetch current customer data for editing
+      $fetchQuery = "SELECT * FROM users WHERE id = ?";
+      $fetchStmt = $conn->prepare($fetchQuery);
+      $fetchStmt->bind_param("i", $id);
+      $fetchStmt->execute();
+      $result = $fetchStmt->get_result();
+      $customer = $result->fetch_assoc();
+      
+      if (!$customer) {
+          $_SESSION['message'] = "Customer not found.";
+          $_SESSION['msg_type'] = "danger";
+          header("Location: customer.php?action=view");
+          exit;
+      }
+  
+
+
           ?>
 
           <!-- Add styling to the edit customer table -->
@@ -421,15 +460,25 @@ echo "</table>";
       }
   }
   break;
-    case 'delete':
-        // Delete customer
-        if(isset($_GET['id'])) {
-            $id = $_GET['id'];
-            $deleteQuery = "DELETE FROM users WHERE id='$id'";
-            mysqli_query($conn, $deleteQuery);
-            header("Location: customer.php?action=view"); // Redirect to view after deleting
-        }
-        break;
+  case 'delete':
+    // Delete service
+    $id = $_GET['id'];
+    $deleteQuery = "DELETE FROM users WHERE id = ?";
+    $deleteStmt = $conn->prepare($deleteQuery);
+    $deleteStmt->bind_param("i", $id);
+    $deleteStmt->execute();
+
+    if ($deleteStmt->affected_rows > 0) {
+        $_SESSION['message'] = "Customer deleted successfully!";
+        $_SESSION['msg_type'] = "success";
+        header("Location: customer.php?action=view");
+        exit;
+    } else {
+        $_SESSION['message'] = "Error customer service.";
+        $_SESSION['msg_type'] = "danger";
+        header("Location: customer.php?action=view");
+        exit;
+    }
 
     default:
         // Default action is to view customers

@@ -189,6 +189,16 @@ $conn->close();
                     $result = mysqli_query($conn, $query);
 
                     echo "<h2>Staff List</h2>";
+                    if (isset($_SESSION['message'])): ?>
+                        <div class="alert alert-<?php echo $_SESSION['msg_type']; ?> alert-dismissible fade show" role="alert">
+                            <?php echo $_SESSION['message']; ?>
+                            
+                        </div>
+                        <?php
+                        // Unset message after displaying it
+                        unset($_SESSION['message']);
+                        unset($_SESSION['msg_type']);
+                      endif;
 
                     echo "<style>
                             table { width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; }
@@ -231,13 +241,20 @@ $conn->close();
                             $email = $_POST['email'];
                             $contact = $_POST['contact'];
                             $address = $_POST['address'];
-                            $updateQuery = "UPDATE users SET name='$name', email='$email', contact='$contact', address='$address' WHERE id='$id'";
-                            if (mysqli_query($conn, $updateQuery)) {
-                                echo "Staff updated successfully.";
+                            $updateQuery = "UPDATE users SET name=?, email=?, contact=?, address=? WHERE id=?";
+                            $updateStmt = $conn->prepare($updateQuery);
+                            $updateStmt->bind_param("ssssi", $name, $email, $contact, $address, $id);
+                            
+                            if ($updateStmt->execute()) {
+                                $_SESSION['message'] = "Staff updated successfully!";
+                                $_SESSION['msg_type'] = "success";
                                 header("Location: staff.php?action=view");
                                 exit;
                             } else {
-                                echo "Error updating staff: " . mysqli_error($conn);
+                                $_SESSION['message'] = "Error updating staff.";
+                                $_SESSION['msg_type'] = "danger";
+                                header("Location: staff.php?action=view");
+                                exit;
                             }
                         } else {
                             $selectQuery = "SELECT * FROM users WHERE id='$id'";
@@ -268,7 +285,7 @@ $conn->close();
                   tr:hover {
                       background-color: #f1f1f1;
                   }
-                  input[type="text"], input[type="number"], select {
+                  input[type="text"], input[type="email"], input[type="password"], textarea[name="address"],input[type="number"], select {
                       width: 95%;
                       padding: 10px;
                       border: 1px solid #ccc;
@@ -309,19 +326,25 @@ $conn->close();
                     }
                     break;
 
-                case 'delete':
-                    if (isset($_GET['id'])) {
+                    case 'delete':
+                        // Delete service
                         $id = $_GET['id'];
-                        $deleteQuery = "DELETE FROM users WHERE id='$id'";
-                        if (mysqli_query($conn, $deleteQuery)) {
-                            echo "Staff deleted successfully.";
+                        $deleteQuery = "DELETE FROM users WHERE id = ?";
+                        $deleteStmt = $conn->prepare($deleteQuery);
+                        $deleteStmt->bind_param("i", $id);
+                        $deleteStmt->execute();
+    
+                        if ($deleteStmt->affected_rows > 0) {
+                            $_SESSION['message'] = "Staff deleted successfully!";
+                            $_SESSION['msg_type'] = "success";
                             header("Location: staff.php?action=view");
                             exit;
                         } else {
-                            echo "Error deleting staff: " . mysqli_error($conn);
+                            $_SESSION['message'] = "Error deleting staff.";
+                            $_SESSION['msg_type'] = "danger";
+                            header("Location: staff.php?action=view");
+                            exit;
                         }
-                    }
-                    break;
 
                 case 'add':
                     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -331,14 +354,30 @@ $conn->close();
                         $contact = $_POST['contact'];
                         $address = $_POST['address'];
                         $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
-                        $insertQuery = "INSERT INTO users (username, name, email, contact, address, password, userType, is_verified) VALUES ('$username', '$name', '$email', '$contact', '$address', '$password', 'STAFF', '0')";
-                        if (mysqli_query($conn, $insertQuery)) {
-                            echo "Staff added successfully.";
-                            header("Location: staff.php?action=view");
-                            exit;
+                        // Prepare the insert query using placeholders
+                        $insertQuery = "INSERT INTO users (username, name, email, contact, address, password, userType, is_verified) 
+                        VALUES (?, ?, ?, ?, ?, ?, 'STAFF', '0')";
+                        $insertStmt = $conn->prepare($insertQuery);
+
+                        // Bind the parameters (username, name, email, contact, address, password)
+                        $insertStmt->bind_param("ssssss", $username, $name, $email, $contact, $address, $password);
+
+                        // Execute the query
+                        $insertStmt->execute();
+
+                        // Check if the insertion was successful
+                        if ($insertStmt->affected_rows > 0) {
+                        $_SESSION['message'] = "Staff added successfully!";
+                        $_SESSION['msg_type'] = "success"; // 'success', 'danger', 'info', etc.
+                        header("Location: staff.php?action=view");
+                        exit;
                         } else {
-                            echo "Error adding staff: " . mysqli_error($conn);
+                        $_SESSION['message'] = "Error adding staff.";
+                        $_SESSION['msg_type'] = "danger";
+                        header("Location: staff.php?action=view");
+                        exit;
                         }
+
                     } else {
                         ?>
 
@@ -365,7 +404,7 @@ $conn->close();
                   tr:hover {
                       background-color: #f1f1f1;
                   }
-                  input[type="text"], input[type="number"], select {
+                  input[type="text"], input[type="email"], input[type="password"],textarea[name="address"],input[type="number"], select {
                       width: 95%;
                       padding: 10px;
                       border: 1px solid #ccc;

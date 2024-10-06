@@ -19,9 +19,10 @@ require '../../connection.php';
 // Fetch the logged-in user's ID from the session
 $user_id = $_SESSION['user_id'];
 $adminEmail = '';
+$profile_pic = '';
 
 // Prepare and execute a query to get the user's email
-$sql = "SELECT email FROM users WHERE id = ?";
+$sql = "SELECT email, profile_pic FROM users WHERE id = ?";
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
     echo "Prepare statement failed: " . $conn->error . "<br>";
@@ -44,6 +45,8 @@ if ($result->num_rows > 0) {
 
 // Close statement and connection
 $stmt->close();
+
+
 $conn->close();
 
 ?>
@@ -60,7 +63,7 @@ $conn->close();
               <!-- User Profile-->
               <div class="user-profile d-flex no-block dropdown m-t-20">
                 <div class="user-pic">
-                  <img src="../assets/images/users/1.jpg" alt="users" class="rounded-circle" width="40" />
+                  <img src="<?php echo htmlspecialchars($profilePicPath); ?>" alt="Profile Picture" class="rounded-circle" width="40" />
                 </div>
                 <div class="user-content hide-menu m-l-10">
                  <!-- HTML -->
@@ -114,7 +117,7 @@ $conn->close();
             </li>
             <li class="sidebar-item">
               <a class="sidebar-link waves-effect waves-dark sidebar-link" href="../service/services.php"
-                aria-expanded="false"><i class="mdi mdi-printer"></i><span class="hide-menu">Services</span></a>
+                aria-expanded="false"><i class="mdi mdi-briefcase"></i><span class="hide-menu">Services</span></a>
             </li>
             <li class="sidebar-item">
               <a class="sidebar-link waves-effect waves-dark sidebar-link" href="table_basic.html"

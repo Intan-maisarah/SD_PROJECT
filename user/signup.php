@@ -78,7 +78,7 @@ if (isset($_POST['register'])) {
                     $mail->Subject = 'Verify Your Email Address';
                     $mail->Body    = '<p>Hi ' . htmlspecialchars($username) . ',</p>
                                       <p>Thank you for registering. Please click the link below to verify your email address:</p>
-                                      <p><a href="http://localhost/SD_PROJECT/verify_email.php?token=' . $verification_token . '">Verify Email</a></p>';
+                                      <p><a href="http://localhost/SD_PROJECT/user/verify_email.php?token=' . $verification_token . '">Verify Email</a></p>';
             
                     $mail->send();
             

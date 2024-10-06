@@ -20,7 +20,7 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = $_SESSION['user_id'];
 
 // Query to get the user's profile data
-$query = "SELECT name, username, email, contact, address FROM users WHERE id = ?";
+$query = "SELECT name, username, email, contact, address, profile_pic FROM users WHERE id = ?";
 $stmt = $conn->prepare($query);
 
 if (!$stmt) {
@@ -39,16 +39,23 @@ if ($result->num_rows > 0) {
     $email = $row['email'] ?? "N/A";
     $contact = $row['contact'] ?? "N/A";
     $address = $row['address'] ?? "N/A";
+    $profile_pic = $row['profile_pic'] ?? '../assets/profile_pic/default-placeholder.png'; 
+
 } else {
     $name = "N/A";
     $usernames = "N/A";
     $email = "N/A";
     $contact = "N/A";
     $address = "N/A";
+    $profile_pic = '../assets/profile_pic/default-placeholder.png'; 
+
 }
 
 // Close the statement and connection
 $stmt->close();
+
+$profilePicPath = !empty($profile_pic) ? htmlspecialchars($profile_pic) : '../assets/profile_pic/default-placeholder.png';
+
 $conn->close();
 ?>
 
@@ -336,7 +343,6 @@ $conn->close();
       </nav>
     </header>
     <?php include "../sidebar/sidebarStaff.php";?>
-
     <div class="page-wrapper">
       <div class="container-fluid">
         <div class="row">
@@ -348,7 +354,7 @@ $conn->close();
                   <div class="col-md-3 col-sm-12">
                     <div class="profile-sidebar">
                       <div class="profile-userpic">
-                        <img src="../assets/images/users/1.jpg" class="img-responsive" alt="" />
+                      <img src="<?php echo $profilePicPath; ?>" alt="Profile Picture" id="profile_pic" style="width: 120px; height: 120px; border-radius: 50%; margin-left: 50px;">
                       </div>
                       <div class="profile-usertitle">
                         <div class="profile-usertitle-name"> <?php echo htmlspecialchars($name); ?> </div>
@@ -392,10 +398,20 @@ $conn->close();
     </div>
   </div>
   <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
+  <!-- Bootstrap tether Core JavaScript -->
   <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../dist/js/app-style-switcher.js"></script>
+  <!--Wave Effects -->
+  <script src="../dist/js/waves.js"></script>
+  <!--Menu sidebar -->
   <script src="../dist/js/sidebarmenu.js"></script>
+  <!--Custom JavaScript -->
   <script src="../dist/js/custom.js"></script>
+  <!--This page JavaScript -->
+  <!--chartis chart-->
+  <script src="../assets/libs/chartist/dist/chartist.min.js"></script>
+  <script src="../assets/libs/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js"></script>
+  <script src="../dist/js/pages/dashboards/dashboard1.js"></script>
 </body>
 
 </html>

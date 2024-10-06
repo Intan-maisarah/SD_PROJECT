@@ -1,4 +1,5 @@
 <?php
+// Enable error reporting for debugging
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -11,62 +12,137 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Fetch the admin's profile data (assuming you have an admin_id session or get the admin's id)
+// Fetch the user's profile data
 $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
 
-// Query to get the admin's profile data
-$query = "SELECT name, username, email, contact, address FROM users WHERE id = ?";
+// Initialize message variables
+$message = '';
+$success = '';
+$error = '';
+
+// Query to get the user's profile data
+$query = "SELECT name, username, email, contact, address, profile_pic FROM users WHERE id = ?";
 $stmt = $conn->prepare($query);
-$stmt->bind_param("i", $user_id); // Bind admin ID dynamically
+$stmt->bind_param("i", $user_id); // Bind user ID dynamically
 $stmt->execute();
 $result = $stmt->get_result();
 
+// Fetch user data
 if ($result->num_rows > 0) {
-  $row = $result->fetch_assoc();
-  $name = $row['name'] ?? "N/A";
-  $usernames = $row['username'] ?? "N/A";
-  $email = $row['email'] ?? "N/A";
-  $contact = $row['contact'] ?? "N/A";
-  $address = $row["address"] ?? "N/A";
+    $row = $result->fetch_assoc();
+    $name = $row['name'] ?? "N/A";
+    $usernames = $row['username'] ?? "N/A";
+    $email = $row['email'] ?? "N/A";
+    $contact = $row['contact'] ?? "N/A";
+    $address = $row['address'] ?? "N/A";
+    $profile_pic = $row['profile_pic'] ?? '../assets/profile_pic/default-placeholder.png'; // Default placeholder
 } else {
+    // Default values if no user found
     $name = "N/A";
     $usernames = "N/A";
     $email = "N/A";
     $contact = "N/A";
     $address = "N/A";
+    $profile_pic = '../assets/profile_pic/default-placeholder.png'; // Default placeholder
 }
 
-// Check if form is submitted
+// Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Get form data
-    $name = $_POST['name'];
-    $email = $_POST['email'];
-    $contact = $_POST['contact'];
-    $address = $_POST['address'];
+    // Sanitize input data
+    $name = $_POST['name'] ?? $name;
+    $email = $_POST['email'] ?? $email;
+    $contact = $_POST['contact'] ?? $contact;
+    $address = $_POST['address'] ?? $address;
+    $uploadOk = 1; // Flag to check upload status
 
-    // Validate input
-    if (empty($name) || empty($email) || empty($contact) || empty($address)) {
-        $error = "All fields are required.";
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error = "Invalid email format.";
-    } else {
-        // Prepare SQL statement
-        include '../../connection.php'; // Reconnect to the database
-        $sql = "UPDATE users SET name=?, email=?, contact=?, address=? WHERE id=?";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssssi", $name, $email, $contact, $address, $user_id);
-
-        if ($stmt->execute()) {
-            $success = "Profile updated successfully.";
-        } else {
-            $error = "Error updating profile: " . $stmt->error;
+    // Profile picture upload
+    if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] == 0) {
+        $target_dir = "../assets/profile_pic/"; // Define upload directory
+        $target_file = $target_dir . basename($_FILES["profile_pic"]["name"]);
+        $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
+        
+        // Check if image file is an actual image
+        $check = getimagesize($_FILES["profile_pic"]["tmp_name"]);
+        if ($check === false) {
+            $error = "File is not an image.";
+            $uploadOk = 0;
         }
 
-        $stmt->close();
-        $conn->close();
+        // Check file size (limit to 2MB)
+        if ($_FILES["profile_pic"]["size"] > 2000000) {
+            $error = "Sorry, your file is too large.";
+            $uploadOk = 0;
+        }
+
+        // Allow certain file formats
+        if (!in_array($imageFileType, ['jpg', 'jpeg', 'png', 'gif'])) {
+            $error = "Sorry, only JPG, JPEG, PNG & GIF files are allowed.";
+            $uploadOk = 0;
+        }
+
+        // Check if $uploadOk is set to 0 by an error
+        if ($uploadOk == 0) {
+            $error = "File upload failed due to errors: $error";
+        } else {
+            // If everything is ok, try to upload the file
+            if (move_uploaded_file($_FILES["profile_pic"]["tmp_name"], $target_file)) {
+                // Save the full path in the database
+                $profile_pic = '../assets/profile_pic/' . basename($_FILES["profile_pic"]["name"]); // Full path for database
+            } else {
+                $error = "Error uploading the file.";
+            }
+        }
+    } else {
+        // If no new picture is uploaded, retain the existing profile picture from the database
+        $stmt = $conn->prepare("SELECT profile_pic FROM users WHERE id = ?");
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $profile_pic = $row['profile_pic']; // Retain existing profile picture
+        }
     }
+
+    
+
+    // Update user details in the database
+    $stmt = $conn->prepare("UPDATE users SET name = ?, email = ?, contact = ?, address = ?, profile_pic = ? WHERE id = ?");
+    $stmt->bind_param("sssssi", $name, $email, $contact, $address, $profile_pic, $user_id);
+
+    if ($stmt->execute()) {
+        $success = "Profile updated successfully.";
+    } else {
+        $error = "Error updating profile: " . $stmt->error; // Capture and display SQL errors
+    }
+
+    // Construct message output
+    if (!empty($success)) {
+        $message = '<div class="alert alert-success" role="alert">' . htmlspecialchars($success) . '</div>';
+    }
+    if (!empty($error)) {
+        $message = '<div class="alert alert-danger" role="alert">' . htmlspecialchars($error) . '</div>';
+    }
+
+    // Store message in session and redirect to avoid form resubmission
+    $_SESSION['message'] = $message;
+    header('Location: ' . $_SERVER['PHP_SELF']);
+    exit();
 }
+
+// Display messages only under the Edit Profile heading
+if (isset($_SESSION['message'])) {
+    $message = $_SESSION['message'];
+    unset($_SESSION['message']); // Clear the message after displaying it
+}
+
+$profilePicPath = !empty($profile_pic) ? htmlspecialchars($profile_pic) : '../assets/profile_pic/default-placeholder.png';
+
+
+$conn->close(); // Close the database connection
 ?>
+
+
 
 
 <!DOCTYPE html>
@@ -341,7 +417,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
           <!-- ============================================================== -->
           <!-- Logo -->
           <!-- ============================================================== -->
-          <a class="navbar-brand" href="admin_page.php">
+          <a class="navbar-brand" href="staff_page.php">
             <!-- Logo icon -->
             <b class="logo-icon">
               <!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
@@ -406,76 +482,71 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
       </nav>
     </header>
-    <!-- ============================================================== -->
-    <!-- End Topbar header -->
-    <!-- ============================================================== -->
-    <!-- ============================================================== -->
+   
     <?php include "../sidebar/sidebarStaff.php";?>
-
-
     <div class="page-wrapper">
       <div class="container-fluid">
         <div class="row">
           <div class="col-md-4">
             <div class="profile-sidebar">
               
-              <div class="profile-usertitle">
+            <div class="profile-usertitle">
                 <div class="profile-usertitle-name">
-                  <?php echo htmlspecialchars($name); ?>
+                    <?php echo htmlspecialchars($name); ?>
                 </div>
                 <div class="profile-usertitle-job">
-                  <?php echo htmlspecialchars($usernames); ?>
+                    <?php echo htmlspecialchars($usernames); ?>
                 </div>
-              </div>
-              <div class="profile-userbuttons">
+            </div>
+
+            <!-- Profile Picture Section -->
+            <div class="profile-picture" style="text-align: center;">
+              <img src="<?php echo htmlspecialchars($profilePicPath); ?>" alt="Profile Picture" id="profile_pic" style="width: 120px; height: 120px; border-radius: 50%;">
+            </div>
+                   
+            <div class="profile-userbuttons">
                 <a href="change_passwordStaff.php" class="btn btn-primary">Change Password</a>
-              </div>
-              <div class="profile-usermenu">
-                <ul>
-                  <!--<li>
-                    <a href="profile.html">
-                      <i class="mdi mdi-account"></i> Profile
-                    </a>
-                  </li>
-                  <li>
-                    <a href="settings.html">
-                      <i class="mdi mdi-settings"></i> Settings
-                    </a>
-                  </li>-->
-                </ul>
-              </div>
+            </div>
+
             </div>
           </div>
           <div class="col-md-8">
             <div class="profile-content">
               <h3>Edit Profile</h3>
-              <?php
-              if (isset($success)) {
-                  echo "<div class='alert alert-success'>$success</div>";
-              }
-              if (isset($error)) {
-                  echo "<div class='alert alert-danger'>$error</div>";
-              }
-              ?>
-              <form action="" method="POST">
-                <div class="form-group">
-                  <label for="name">Name</label>
-                  <input type="text" class="form-control" id="name" name="name" value="<?php echo htmlspecialchars($name); ?>" />
-                </div>
-                <div class="form-group">
-                  <label for="email">Email</label>
-                  <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($email); ?>" readonly/>
-                </div>
-                <div class="form-group">
-                  <label for="contact">Contact</label>
-                  <input type="text" class="form-control" id="contact" name="contact" value="<?php echo htmlspecialchars($contact); ?>" />
-                </div>
-                <div class="form-group">
-                  <label for="address">Address</label>
-                  <input type="text" class="form-control" id="address" name="address" value="<?php echo htmlspecialchars($address); ?>" />
-                </div>
-                <button type="submit" class="btn btn-primary">Save Changes</button>
+             <div class="message-box">
+                  <?php if (!empty($message)): ?>
+                    <?php echo $message; ?>
+                <?php endif; ?>
+            </div>
+
+
+              <form action="update_StaffProfile.php" method="POST" enctype="multipart/form-data">
+                  <div class="form-group">
+                      <label for="name">Name</label>
+                      <input type="text" class="form-control" id="name" name="name" value="<?php echo htmlspecialchars($name); ?>" />
+                  </div>
+                  <div class="form-group">
+                      <label for="email">Email</label>
+                      <input type="email" class="form-control" id="email" name="email" value="<?php echo htmlspecialchars($email); ?>" readonly />
+                  </div>
+                  <div class="form-group">
+                      <label for="contact">Contact</label>
+                      <input type="text" class="form-control" id="contact" name="contact" value="<?php echo htmlspecialchars($contact); ?>" />
+                  </div>
+                  <div class="form-group">
+                      <label for="address">Address</label>
+                      <input type="text" class="form-control" id="address" name="address" value="<?php echo htmlspecialchars($address); ?>" />
+                  </div>
+                  <div class="form-group">
+                    <label for="profile_pic">Profile Picture:</label>
+                    <input type="file" class="form-control-file" id="profile_pic" name="profile_pic" />
+                    <small class="form-text text-muted">Upload a new profile picture (max 2MB).</small>
+                  </div>
+
+                  
+                  <button type="submit" class="btn btn-primary">Save Changes</button>
               </form>
+
             </div>
           </div>
         </div>
@@ -489,10 +560,21 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   <!-- Include jQuery -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-  <!-- Local JS -->
+<script src="../assets/libs/jquery/dist/jquery.min.js"></script>
+  <!-- Bootstrap tether Core JavaScript -->
+  <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
   <script src="../dist/js/app-style-switcher.js"></script>
+  <!--Wave Effects -->
+  <script src="../dist/js/waves.js"></script>
+  <!--Menu sidebar -->
+  <script src="../dist/js/sidebarmenu.js"></script>
+  <!--Custom JavaScript -->
   <script src="../dist/js/custom.js"></script>
-  <script src="../dist/js/sidebarmen.js"></script>
+  <!--This page JavaScript -->
+  <!--chartis chart-->
+  <script src="../assets/libs/chartist/dist/chartist.min.js"></script>
+  <script src="../assets/libs/chartist-plugin-tooltips/dist/chartist-plugin-tooltip.min.js"></script>
+  <script src="../dist/js/pages/dashboards/dashboard1.js"></script>
 </body>
 
 </html>
