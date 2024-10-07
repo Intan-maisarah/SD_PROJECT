@@ -22,9 +22,10 @@ require '../../connection.php';
 $user_id = $_SESSION['user_id'];
 $adminEmail = '';
 $usertype = '';
+$profile_pic = '';
 
 // Prepare and execute a query to get the user's email and usertype
-$sql = "SELECT email, usertype FROM users WHERE id = ?";
+$sql = "SELECT email, usertype, profile_pic FROM users WHERE id = ?";
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
     echo "Prepare statement failed: " . $conn->error . "<br>";
@@ -42,6 +43,7 @@ if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $adminEmail = $row['email'];
     $usertype = $row['usertype'];
+    $profile_pic = $row['profile_pic'];
 } else {
     echo "User not found.<br>";
     exit;
@@ -479,11 +481,16 @@ echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; p
                                         </select>
                                     </td>
                                 </tr>
-                            </table>
-                            <div class="form-actions">
-                                <input type="submit" value="Update Specification">
-                                <button type="button" class="back-button" onclick="window.history.back();">Back</button>
-                            </div>
+                            
+                            <tr>
+                                      <td colspan="2" style="text-align: center;">
+                                          <input type="submit" value="Update Service" style="padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                          <button onclick="history.go(-1);" style="padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">
+                                             Back</button>
+
+                                      </td>
+                                  </tr>
+                                  </table>
                         </form>
                     </div>
 

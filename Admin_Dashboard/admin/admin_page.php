@@ -14,9 +14,10 @@ require '../../connection.php';
 $user_id = $_SESSION['user_id'];
 
 $adminEmail = '';
+$profile_pic = '';
 
 // Prepare and execute a query to get the user's email
-$sql = "SELECT email FROM users WHERE id = ?";
+$sql = "SELECT email, profile_pic FROM users WHERE id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param('i', $user_id);
 $stmt->execute();
@@ -26,6 +27,7 @@ $result = $stmt->get_result();
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $adminEmail = $row['email'];
+    $profile_pic = $row['profile_pic'];
 } else {
     $adminEmail = "Email not found";
 }

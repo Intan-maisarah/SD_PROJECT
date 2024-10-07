@@ -44,6 +44,7 @@ if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $adminEmail = $row['email'];
     $usertype = $row['usertype'];
+    $profile_pic = $row['profile_pic'];
 } else {
     echo "User not found.<br>";
     exit;
@@ -166,7 +167,7 @@ $conn->close();
 <body>
   <!-- ============================================================== -->
   <!-- Preloader - style you can find in spinners.css -->
-  <!-- ============================================================== -->
+  <!-- ============================================================== 
   <div class="preloader">
   <div class="printer">
     <div class="printer-top"></div>
@@ -176,7 +177,7 @@ $conn->close();
     </div>
     <div class="printer-tray"></div>
   </div>
-</div>
+</div>-->
 
 
   
@@ -347,16 +348,24 @@ echo "</table>";
       $updateStmt->bind_param("ssssi", $name, $email, $contact, $address, $id);
       
       if ($updateStmt->execute()) {
-          $_SESSION['message'] = "Customer updated successfully!";
-          $_SESSION['msg_type'] = "success";
-          header("Location: customer.php?action=view");
-          exit;
-      } else {
-          $_SESSION['message'] = "Error updating customer.";
-          $_SESSION['msg_type'] = "danger";
-          header("Location: customer.php?action=view");
-          exit;
-      }
+        if ($updateStmt->affected_rows > 0) {
+            $_SESSION['message'] = "Customer updated successfully!";
+            $_SESSION['msg_type'] = "success";
+        } else {
+            // No rows were updated (data may not have changed)
+            $_SESSION['message'] = "No changes made to the customer.";
+            $_SESSION['msg_type'] = "warning";
+        }
+        header("Location: customer.php?action=view");
+        exit;
+    } else {
+        // Log the error or display it
+        error_log("Error updating customer: " . $conn->error);
+        $_SESSION['message'] = "Error updating print customer.";
+        $_SESSION['msg_type'] = "danger";
+        header("Location: customer.php?action=view");
+        exit;
+    }
   } else {
       // Fetch current customer data for editing
       $fetchQuery = "SELECT * FROM users WHERE id = ?";
@@ -449,10 +458,13 @@ echo "</table>";
                       <td><input type="text" name="address" value="<?php echo $customer['address']; ?>" required></td>
                   </tr>
                   <tr>
-                      <td colspan="2" style="text-align: center;">
-                          <input type="submit" value="Update">
-                      </td>
-                  </tr>
+                                      <td colspan="2" style="text-align: center;">
+                                          <input type="submit" value="Update Customer" style="padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                          <button onclick="history.go(-1);" style="padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">
+                                             Back</button>
+
+                                      </td>
+                                  </tr>
               </table>
           </form>
 

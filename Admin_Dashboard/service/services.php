@@ -23,9 +23,10 @@ require '../../connection.php';
 $user_id = $_SESSION['user_id'];
 $adminEmail = '';
 $usertype = '';
+$profile_pic = '';
 
 // Prepare and execute a query to get the user's email and usertype
-$sql = "SELECT email, usertype FROM users WHERE id = ?";
+$sql = "SELECT email, usertype, profile_pic FROM users WHERE id = ?";
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
     echo "Prepare statement failed: " . $conn->error . "<br>";
@@ -43,6 +44,7 @@ if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $adminEmail = $row['email'];
     $usertype = $row['usertype'];
+    $profile_pic = $row['profile_pic'];
 } else {
     echo "User not found.<br>";
     exit;
@@ -337,169 +339,170 @@ $conn->close();
                     break;
                 
 
-                case 'add':
-                    // Add service
-                   // Add service
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-  $service_id = $_POST['service_id'];                     
-  $service_name = $_POST['service_name'];
-  $service_description = $_POST['service_description'];
-  $status = $_POST['status'];
-  
-
-        // Check if the image file was uploaded
-        if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
-          // Define the destination path
-          $targetDirectory = "../../assets/images/uploads/";
-          $imageName = $_FILES['image']['name'];
-          $targetFilePath = $targetDirectory . basename($imageName);
-
-          // Create the directory if it doesn't exist
-          if (!is_dir($targetDirectory)) {
-              if (!mkdir($targetDirectory, 0755, true)) {
-                  echo "<div>Error creating directory.</div>";
-                  exit;
-              }
-          }
-
-          // Attempt to move the uploaded file to the target directory
-          if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFilePath)) {
-              $imageURL = $targetFilePath; // Store the file path for the database
-          } else {
-              echo "<div>Error uploading image.</div>";
-              exit;
-          }
-      } else {
-          echo "<div>No image uploaded or error in the upload.</div>";
-          exit;
-      }
-
-      // Prepare and execute the insert query
-      $insertQuery = "INSERT INTO services (service_id, service_name, service_description, status, image) VALUES (?, ?, ?, ?, ?)";
-      $insertStmt = $conn->prepare($insertQuery);
-      $insertStmt->bind_param("sssss", $service_id, $service_name, $service_description, $status, $imageURL);
-      $insertStmt->execute();
-
-      if ($insertStmt->affected_rows > 0) {
-        $_SESSION['message'] = "Service added successfully!";
-        $_SESSION['msg_type'] = "success"; // You can use 'success', 'danger', 'info', etc.
-        header("Location: services.php?action=view");
-        exit;
-    } else {
-        $_SESSION['message'] = "Error adding service.";
-        $_SESSION['msg_type'] = "danger";
-        header("Location: services.php?action=view");
-        exit;
-    }
-      $insertStmt->close();
-    }
-
+                    case 'add':
+                        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                            // Initialize variables
+                            $service_id = isset($_POST['service_id']) ? $_POST['service_id'] : null; // Handle optional service_id
+                            $service_name = $_POST['service_name'];
+                            $service_description = $_POST['service_description'];
+                            $status = $_POST['status'];
+                            $imageURL = ""; // Initialize image URL
+                    
+                            // Check if the image file was uploaded
+                            if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
+                                // Define the destination path
+                                $targetDirectory = "../../assets/images/uploads/";
+                                $imageName = basename($_FILES['image']['name']);
+                                $targetFilePath = $targetDirectory . $imageName;
+                    
+                                // Create the directory if it doesn't exist
+                                if (!is_dir($targetDirectory)) {
+                                    if (!mkdir($targetDirectory, 0755, true)) {
+                                        echo "<div>Error creating directory.</div>";
+                                        exit;
+                                    }
+                                }
+                    
+                                // Attempt to move the uploaded file to the target directory
+                                if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFilePath)) {
+                                    $imageURL = $targetFilePath; // Store the file path for the database
+                                } else {
+                                    echo "<div>Error uploading image.</div>";
+                                    exit;
+                                }
+                            } else {
+                                echo "<div>No image uploaded or error in the upload.</div>";
+                                exit;
+                            }
+                    
+                            // Prepare and execute the insert query
+                            $insertQuery = "INSERT INTO services (service_id, service_name, service_description, status, image) VALUES (?, ?, ?, ?, ?)";
+                            $insertStmt = $conn->prepare($insertQuery);
+                    
+                            if ($insertStmt) {
+                                // Use null if service_id is not provided, adjust the bind_param accordingly
+                                $insertStmt->bind_param("sssss", $service_id, $service_name, $service_description, $status, $imageURL);
+                                $insertStmt->execute();
+                    
+                                if ($insertStmt->affected_rows > 0) {
+                                    $_SESSION['message'] = "Service added successfully!";
+                                    $_SESSION['msg_type'] = "success";
+                                } else {
+                                    $_SESSION['message'] = "Error adding service.";
+                                    $_SESSION['msg_type'] = "danger";
+                                }
+                                $insertStmt->close();
+                            } else {
+                                echo "<div>Error preparing statement: " . $conn->error . "</div>";
+                                exit;
+                            }
+                    
+                            // Redirect to services view page
+                            header("Location: services.php?action=view");
+                            exit;
+                        }
                     ?>
+                    
                     <style>
                         table {
-                      width: 100%;
-                      border-collapse: collapse;
-                      font-family: Arial, sans-serif;
-                      margin-top: 20px;
-                  }
-      
-                  th, td {
-                      text-align: left;
-                      padding: 12px;
-                      border-bottom: 1px solid #ddd;
-                  }
-      
-                  th {
-                      background-color: #f2f2f2;
-                      color: #333;
-                      font-weight: bold;
-                  }
-      
-                  tr:nth-child(even) {
-                      background-color: #f9f9f9;
-                  }
-      
-                  tr:hover {
-                      background-color: #f1f1f1;
-                  }
-      
-                  input[type="text"], input[type="number"], select {
-                      width: 95%;
-                      padding: 10px;
-                      border: 1px solid #ccc;
-                      border-radius: 4px;
-                  }
-      
-                  input[type="submit"] {
-                      background-color: #28a745;
-                      color: white;
-                      padding: 10px 15px;
-                      border: none;
-                      border-radius: 4px;
-                      cursor: pointer;
-                  }
-      
-                  input[type="submit"]:hover {
-                      background-color: #218838;
-                  }
-      
-                  .remove-btn {
-                      background-color: #dc3545;
-                      color: white;
-                      padding: 5px 10px;
-                      border: none;
-                      border-radius: 4px;
-                      cursor: pointer;
-                      margin-left: 10px;
-                  }
-      
-                  .add-more {
-                      margin-top: 20px;
-                  }
-                      </style>
-                  <h2>Add New Service</h2>
-<form action="services.php?action=add" method="POST" enctype="multipart/form-data"> <!-- Add enctype -->
-
-    <table>
-    
-        <tr>
-            <th>Service Name</th>
-            <td><input type="text" name="service_name" required></td>
-        </tr>
-        <tr>
-            <th>Service Description</th>
-            <td><input type="text" name="service_description" required></td>
-        </tr>
-        <tr>
-            <th>Status</th>
-            <td>
-                <select name="status" required>
-                    <option value="available" <?php if (isset($service) && $service['status'] == 'available') echo 'selected'; ?>>Available</option>
-                    <option value="unavailable" <?php if (isset($service) && $service['status'] == 'unavailable') echo 'selected'; ?>>Unavailable</option>
-                </select>
-            </td>
-        </tr>
-        <tr>
-            <th>Image</th>
-            <td>
-                <input type="file" name="image" id="image" class="form-control" required> <!-- Make sure the file input is required -->
-                <!-- The hidden input for 'image' is unnecessary in this case -->
-            </td>
-        </tr>
-    </table>
-    <br>
-    <td colspan="2" style="text-align: center;">
-        <input type="submit" value="Add Services" style="padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
-        <button type="button" onclick="window.history.back();" style="padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">
-            Back
-        </button>
-    </td>
-</form>
-
+                            width: 100%;
+                            border-collapse: collapse;
+                            font-family: Arial, sans-serif;
+                            margin-top: 20px;
+                        }
                     
-              
+                        th, td {
+                            text-align: left;
+                            padding: 12px;
+                            border-bottom: 1px solid #ddd;
+                        }
+                    
+                        th {
+                            background-color: #f2f2f2;
+                            color: #333;
+                            font-weight: bold;
+                        }
+                    
+                        tr:nth-child(even) {
+                            background-color: #f9f9f9;
+                        }
+                    
+                        tr:hover {
+                            background-color: #f1f1f1;
+                        }
+                    
+                        input[type="text"], input[type="number"], select {
+                            width: 95%;
+                            padding: 10px;
+                            border: 1px solid #ccc;
+                            border-radius: 4px;
+                        }
+                    
+                        input[type="submit"] {
+                            background-color: #28a745;
+                            color: white;
+                            padding: 10px 15px;
+                            border: none;
+                            border-radius: 4px;
+                            cursor: pointer;
+                        }
+                    
+                        input[type="submit"]:hover {
+                            background-color: #218838;
+                        }
+                    
+                        .remove-btn {
+                            background-color: #dc3545;
+                            color: white;
+                            padding: 5px 10px;
+                            border: none;
+                            border-radius: 4px;
+                            cursor: pointer;
+                            margin-left: 10px;
+                        }
+                    
+                        .add-more {
+                            margin-top: 20px;
+                        }
+                    </style>
+                    
+                    <h2>Add New Service</h2>
+                    <form action="services.php?action=add" method="POST" enctype="multipart/form-data"> <!-- Add enctype -->
+                        <table>
+                            <tr>
+                                <th>Service Name</th>
+                                <td><input type="text" name="service_name" required></td>
+                            </tr>
+                            <tr>
+                                <th>Service Description</th>
+                                <td><input type="text" name="service_description" required></td>
+                            </tr>
+                            <tr>
+                                <th>Status</th>
+                                <td>
+                                    <select name="status" required>
+                                        <option value="available" <?php if (isset($service) && $service['status'] == 'available') echo 'selected'; ?>>Available</option>
+                                        <option value="unavailable" <?php if (isset($service) && $service['status'] == 'unavailable') echo 'selected'; ?>>Unavailable</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Image</th>
+                                <td>
+                                    <input type="file" name="image" id="image" class="form-control" required> <!-- Make sure the file input is required -->
+                                </td>
+                            </tr>
+                        </table>
+                        <br>
+                        <td colspan="2" style="text-align: center;">
+                            <input type="submit" value="Add Service">
+                            <button type="button" onclick="window.history.back();">Back</button>
+                        </td>
+                    </form>
+                    
                     <?php
                     break;
+                    
 
                     case 'edit':
                         // Edit service
@@ -547,15 +550,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             $updateStmt->bind_param("ssssi", $service_name, $status, $service_description, $imageURL, $service_id);
                             $updateStmt->execute();
                     
-                            if ($updateStmt->affected_rows > 0) {
-                                $_SESSION['message'] = "Service updated successfully!";
-                                $_SESSION['msg_type'] = "success";
+                            if ($updateStmt->execute()) {
+                                // Check if the query executed and the row was affected
+                                if ($updateStmt->affected_rows > 0) {
+                                    $_SESSION['message'] = "Service updated successfully!";
+                                    $_SESSION['msg_type'] = "success";
+                                } else {
+                                    // No rows were updated (data may not have changed)
+                                    $_SESSION['message'] = "No changes made to the service.";
+                                    $_SESSION['msg_type'] = "warning";
+                                }
                                 header("Location: services.php?action=view");
                                 exit;
                             } else {
+                                // Log the error or display it
+                                error_log("Error updating service: " . $conn->error);
                                 $_SESSION['message'] = "Error updating service.";
                                 $_SESSION['msg_type'] = "danger";
-                                header("Location: services.php?action=view");
+                                header("Location: service.php?action=view");
                                 exit;
                             }
                         }
@@ -651,9 +663,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                   <tr>
                                       <td colspan="2" style="text-align: center;">
                                           <input type="submit" value="Update Service" style="padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                                          <button onclick="window.history.back();" style="padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">
-                                              Back
-                                          </button>
+                                          <button onclick="history.go(-1);" style="padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">
+                                             Back</button>
+
                                       </td>
                                   </tr>
                               </table>

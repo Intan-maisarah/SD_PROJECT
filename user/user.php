@@ -1,6 +1,6 @@
 <?php
 
-include "connection.php"; 
+include "../connection.php"; 
 
 function getUserType($conn, $username) {
     $sql = "SELECT userType FROM users WHERE username='$username'";

@@ -79,9 +79,7 @@ section {
 #home {
     padding-top: 70px;
     padding-left: 650px;
-    background-image: url('images/background.jpeg') !important;
-    background-size: 105%;
-    background-position: center;
+    background-color: rgb(214, 209, 240) !important;
     position: relative;
     height: 100vh; 
 }
@@ -91,7 +89,7 @@ section {
 /* Services Section */
 #services {
     padding: 60px 0;
-    background-color: #f8f9fa; /* Light background color for contrast */
+    background-color: rgba(244,238,240,255); /* Light background color for contrast */
 }
 
 #services .container {
@@ -340,11 +338,6 @@ section {
 }
 
 
-
-
-
-
-
 #feedback {
     background-color: #b0ccd9; 
 }
@@ -380,72 +373,207 @@ section {
     min-width: 160px;
 }
 
+/* General hero section styling */
+/* General Hero Section Styling */
 .hero-section {
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    height: 100vh;
-    text-align: center;
     position: relative;
-}
-
-.hero-content {
-    max-width: 600px;
-    z-index: 2;
+    height: 100vh;
+    background-color: rgb(197, 191, 226) !important;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     padding: 20px;
+    overflow: hidden;
 }
 
-.hero-section h1 {
-    font-size: 48px;
-    font-weight: bold;
-    margin-bottom: 20px;
-}
-
-.hero-section p {
-    font-size: 18px;
-    margin-bottom: 40px;
-}
-
-.hero-section .btn {
-    background-color: #29b6f6; /* Bright blue for hero buttons */
-    border: none;
-    color: white;
-    font-weight: bold;
-    padding: 10px 20px;
-    text-transform: uppercase;
-}
-
-.hero-section .btn:hover {
-    background-color: #0288d1; /* Darker blue on hover */
-}
-
+/* Hero Content Overlay */
 .hero-overlay {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: rgba(0, 0, 0, 0.1);
+    background: rgba(231, 224, 224, 0); /* Can be adjusted if overlay is needed */
+}
+
+/* Content Layout */
+.hero-content {
+    position: relative;
     z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    max-width: 1200px;
+    width: 100%;
+    padding: 0 20px;
+    text-align: left; /* Aligns text to the left */
 }
 
+/* Hero Image Styling */
+.hero-img {
+    width: 650px;
+    margin-right: 20px; /* Spacing between image and text */
+    margin-left: -550px;
+    flex-shrink: 0; /* Prevent image from shrinking */
+    border-radius: 50px;
+}
+
+.hero-img img {
+    width: 100%;
+    height: auto;
+    display: block;
+    animation: none; 
+    margin-left: 20px;
+}
+
+
+/* Text Styling */
+.hero-text {
+    max-width: 600px;
+}
+
+.hero-title {
+    font-family: "Gochi Hand", cursive;
+  font-weight: 400;
+  
+    font-size: 60px;
+    font-style: normal;
+    color: #3e335f; 
+    margin: 0; 
+}
+.hero-par {
+    font-family: "Nanum Pen Script", cursive;
+    font-weight: 400;
+    font-size: 32px;
+    color: #3e335f; 
+    margin: 0; 
+}
+.hero-btn {
+    font-family: "Nanum Pen Script", cursive;
+    font-weight: 400;
+    font-size: 20px;
+    background-color: #526794;
+    color: white;
+}
+
+.btn {
+    background-color: #526794;
+    color: #000;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    
+}
+
+.btn:hover {
+    background-color: #ffd700;
+}
+
+/* Icon Container for Scatter Effect */
+.icon-container {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* Prevents icons from being clickable */
+}
+
+/* Styling for Scattered Icons */
+.icon {
+    font-size: 50px;
+    color: #bfabcf;
+    position: absolute;
+    opacity: 0.7; /* Slight transparency */
+}
+
+/* Adjust Icon Positions Across the Page */
+.icon:nth-child(1) { top: 5%; left: 5%; }
+.icon:nth-child(2) { top: 12%; left: 75%; }
+.icon:nth-child(3) { top: 15%; left: 30%; }
+.icon:nth-child(4) { top: 20%; left: 80%; }
+.icon:nth-child(5) { top: 25%; left: 40%; }
+.icon:nth-child(6) { top: 30%; right: 10%; }
+.icon:nth-child(7) { top: 35%; left: 15%; }
+.icon:nth-child(8) { top: 45%; left: 65%; }
+.icon:nth-child(9) { top: 50%; left: 10%; }
+.icon:nth-child(10) { top: 55%; right: 20%; }
+.icon:nth-child(11) { top: 60%; left: 50%; }
+.icon:nth-child(12) { bottom: 10%; right: 25%; }
+.icon:nth-child(13) { bottom: 15%; left: 25%; }
+.icon:nth-child(14) { bottom: 20%; right: 15%; }
+.icon:nth-child(15) { bottom: 25%; left: 5%; }
+.icon:nth-child(16) { bottom: 27%; left: 50%; }
+.icon:nth-child(17) { top: 70%; left: 20%; }  /* New Icon 1 */
+.icon:nth-child(18) { top: 75%; left: 75%; }  /* New Icon 2 */
+.icon:nth-child(19) { top: 25%; left: 65%; }  /* New Icon 3 */
+.icon:nth-child(20) { top: 85%; left: 10%; }  /* New Icon 4 */
+.icon:nth-child(21) { top: 90%; left: 40%; }   /* New Icon 5 */
+.icon:nth-child(22) { top: 60%; right: 10%; }   /* New Icon 6 */
+.icon:nth-child(23) { top: 55%; right: 30%; }   /* New Icon 7 */
+.icon:nth-child(24) { top: 20%; left: 45%; }   /* New Icon 8 */
+.icon:nth-child(25) { top: 10%; right: 25%; }   /* New Icon 9 */
+.icon:nth-child(26) { bottom: 15%; left: 35%; }  /* New Icon 10 */
+.icon:nth-child(27) { bottom: 5%; right: 20%; }  /* New Icon 11 */
+.icon:nth-child(28) { top: 40%; left: 80%; }     /* New Icon 12 */
+.icon:nth-child(29) { top: 80%; left: 50%; }     /* New Icon 13 */
+.icon:nth-child(30) { top: 65%; left: 30%; }     /* New Icon 14 */
+.icon:nth-child(31) { bottom: 20%; left: 10%; }  /* New Icon 15 */
+.icon:nth-child(32) { bottom: 25% }
+
+
+
+/* Mobile View Adjustments */
 @media (max-width: 768px) {
-    .hero-section {
+    .hero-content {
+        flex-direction: column; /* Stack image and text */
         text-align: center;
-        padding: 20px;
     }
 
-    .hero-section .hero-content {
-        padding: 10px;
+    .hero-img {
+        margin-right: 0;
+        margin-bottom: 20px;
+        width: 100%;
+        max-width: 300px; /* Maintain max width */
     }
 
-    .hero-section h1 {
-        font-size: 36px;
+    .icon {
+        font-size: 30px;
     }
 
-    .hero-section p {
-        font-size: 16px;
+    /* Adjust Icon Positions for Smaller Screens */
+    .icon:nth-child(1) { top: 10%; left: 8%; }
+    .icon:nth-child(2) { top: 18%; right: 12%; }
+    .icon:nth-child(3) { bottom: 12%; left: 12%; }
+    .icon:nth-child(4) { bottom: 5%; right: 15%; }
+    .icon:nth-child(5) { top: 25%; left: 10%; }
+    .icon:nth-child(6) { top: 35%; right: 10%; }
+    .icon:nth-child(7) { bottom: 10%; left: 8%; }
+    .icon:nth-child(8) { top: 50%; right: 8%; }
+    .icon:nth-child(9) { top: 15%; left: 20%; }
+    .icon:nth-child(10) { top: 25%; right: 15%; }
+    .icon:nth-child(11) { bottom: 20%; left: 25%; }
+    .icon:nth-child(12) { bottom: 10%; right: 20%; }
+    .icon:nth-child(13) { top: 35%; left: 50%; }
+    .icon:nth-child(14) { top: 40%; right: 40%; }
+    .icon:nth-child(15) { bottom: 15%; left: 35%; }
+    .icon:nth-child(16) { top: 50%; right: 30%; }
+    .icon:nth-child(17) { top: 18%; left: 20%; }   /* New Icon 1 */
+    .icon:nth-child(18) { top: 25%; left: 50%; }   /* New Icon 2 */
+    .icon:nth-child(19) { bottom: 18%; left: 25%; } /* New Icon 3 */
+    .icon:nth-child(20) { bottom: 10%; left: 40%; } /* New Icon 4 */
+    .icon:nth-child(21) { top: 30%; left: 60%; }    /* New Icon 5 */
+    .icon:nth-child(22) { top: 42%; right: 10%; }   /* New Icon 6 */
+    .icon:nth-child(23) { bottom: 8%; left: 12%; }  /* New Icon 7 */
+    .icon:nth-child(24) { top: 60%; right: 15%; }   /* New Icon 8 */
+    .icon:nth-child(25) { top: 20%; left: 15%; }    /* New Icon 9 */
+    .icon:nth-child(26) { top: 35%; right: 20%; }   /* New Icon 10 */
+    .icon:nth-child(27) { bottom: 25%; left: 5%; }  /* New Icon 11 */
+    .icon:nth-child(28) { bottom: 5%; right: 25%; }  /* New Icon 12 */
+    .icon:nth-child(29) { top: 50%; left: 65%; }     /* New Icon 13 */
+    .icon:nth-child(30) { top: 70%; left: 20%; }     /* New Icon 14 */
+    .icon:nth-child(31) { bottom: 18%; left: 35%; }  /* New Icon 15 */
+    .icon:nth-child(32) { top: 60%; right: 20%; }    /* New Icon 16 */
     }
-}
+

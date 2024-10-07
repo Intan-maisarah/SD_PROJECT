@@ -39,12 +39,14 @@ if (!$result) {
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $adminEmail = $row['email'];
+    $profile_pic = $row['profile_pic'];
 } else {
     $adminEmail = "Email not found";
 }
 
 // Close statement and connection
 $stmt->close();
+$profilePicPath = !empty($profile_pic) ? htmlspecialchars($profile_pic) : '../assets/profile_pic/default-placeholder.png';
 
 
 $conn->close();

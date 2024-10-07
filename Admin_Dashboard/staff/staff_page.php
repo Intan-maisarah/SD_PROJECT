@@ -15,9 +15,10 @@ $user_id = $_SESSION['user_id'];
 
 // Initialize the $staffEmail variable
 $staffEmail = '';
+$profile_pic = '';
 
 // Prepare and execute a query to get the user's email
-$sql = "SELECT email FROM users WHERE id = ?";
+$sql = "SELECT email, profile_pic FROM users WHERE id = ?";
 $stmt = $conn->prepare($sql);
 $stmt->bind_param('i', $user_id);
 $stmt->execute();
@@ -27,12 +28,16 @@ $result = $stmt->get_result();
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $staffEmail = $row['email'];
+    $profile_pic = $row['profile_pic'];
 } else {
     $staffEmail = "Email not found";
 }
 
 // Close the statement and connection
 $stmt->close();
+
+$profilePicPath = !empty($profile_pic) ? htmlspecialchars($profile_pic) : '../assets/profile_pic/default-placeholder.png';
+
 $conn->close();
 ?>
 

@@ -15,10 +15,11 @@ $user_id = $_SESSION['user_id'];
 // Initialize variables
 $name = '';
 $email = '';
-$username = '';
+$usernames = '';
+$profile_pic = '';
 
 // Fetch the current user details from the database
-$query = "SELECT name, email, username, password FROM users WHERE id = ?";
+$query = "SELECT name, email, username, password, profile_pic FROM users WHERE id = ?";
 $stmt = $conn->prepare($query);
 if ($stmt === false) {
     die("Prepare failed: " . htmlspecialchars($conn->error));
@@ -26,7 +27,7 @@ if ($stmt === false) {
 
 $stmt->bind_param('i', $user_id);
 $stmt->execute();
-$stmt->bind_result($name, $email, $username, $hashedPassword);
+$stmt->bind_result($name, $email, $usernames, $profile_pic, $hashedPassword);
 
 
 // Check if we have a result
@@ -452,7 +453,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                   <?php echo htmlspecialchars($name); ?>
                 </div>
                 <div class="profile-usertitle-job">
-                  <?php echo htmlspecialchars($username); ?>
+                  <?php echo htmlspecialchars($usernames); ?>
                 </div>
               </div>
               <div class="profile-userbuttons">

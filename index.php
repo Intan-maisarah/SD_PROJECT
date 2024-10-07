@@ -14,6 +14,10 @@ include 'services.php';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/ipasss.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=Shadows+Into+Light&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Nanum+Pen+Script&family=Shadows+Into+Light&display=swap" rel="stylesheet">
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light fixed-top">
@@ -51,14 +55,56 @@ include 'services.php';
     </nav>
 
     <!-- Hero Section -->
-    <section class="hero-section" id="home" >
-        <div class="hero-overlay"></div>
-        <div class="hero-content" >
-            <h1>Let Us Handle All Your Printing Needs.</h1>
-            <p>Your on the go printing service!</p>
-            <button class="btn btn-primary" onclick="window.location.href='user/signin.php'">Get Started</button>
+    <section class="hero-section" id="home">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <img src="assets/images/printing.gif" class="hero-img" alt="Printing GIF">
+        <div class="hero-text">
+            <h1 class="hero-title">Let Us Handle All Your Printing Needs.</h1>            
+            <p class="hero-par">Your on-the-go printing service!</p>
+            <button class="hero-btn" onclick="window.location.href='user/signin.php'">Get Started</button>
         </div>
-    </section>
+    </div>
+    <!-- Spinning Icons -->
+    <div class="icon-container">
+    <i class="fa fa-print icon"></i>
+    <i class="fa fa-file icon"></i>
+    <i class="fa fa-paperclip icon"></i>
+    <i class="fa fa-envelope icon"></i>
+    <i class="fa fa-cloud icon"></i>
+    <i class="fa fa-paper-plane icon"></i>
+    <i class="fa fa-cogs icon"></i>
+    <i class="fa fa-laptop icon"></i>
+    <i class="fa fa-printer icon"></i>
+    <i class="fa fa-camera icon"></i>
+    <i class="fa fa-image icon"></i>
+    <i class="fa fa-pencil-alt icon"></i>
+    <i class="fa fa-users icon"></i>
+    <i class="fa fa-globe icon"></i>
+    <i class="fa fa-check-circle icon"></i>
+    <i class="fa fa-thumbs-up icon"></i>
+    <i class="fa fa-heart icon"></i>
+    <i class="fa fa-star icon"></i>
+    <i class="fa fa-bell icon"></i>
+    <i class="fa fa-music icon"></i>
+    <i class="fa fa-calendar icon"></i>
+    <i class="fa fa-clock icon"></i>
+    <i class="fa fa-shopping-cart icon"></i>
+    <i class="fa fa-bolt icon"></i>
+    <i class="fa fa-chart-line icon"></i>
+    <i class="fa fa-map icon"></i>
+    <i class="fa fa-folder-open icon"></i>
+    <i class="fa fa-signal icon"></i>
+    <i class="fa fa-users-cog icon"></i>
+    <i class="fa fa-comments icon"></i>
+    <i class="fa fa-lightbulb icon"></i>
+    <i class="fa fa-code icon"></i>
+
+    </div>
+</section>
+
+
+
 
     <section id="services">
         <div class="container">

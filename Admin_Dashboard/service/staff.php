@@ -263,64 +263,117 @@ $conn->close();
                             ?>
 
 <style>
-                  table {
-                      width: 100%;
-                      border-collapse: collapse;
-                      font-family: Arial, sans-serif;
-                      margin-top: 20px;
-                  }
-                  th, td {
-                      text-align: left;
-                      padding: 12px;
-                      border-bottom: 1px solid #ddd;
-                  }
-                  th {
-                      background-color: #f2f2f2;
-                      color: #333;
-                      font-weight: bold;
-                  }
-                  tr:nth-child(even) {
-                      background-color: #f9f9f9;
-                  }
-                  tr:hover {
-                      background-color: #f1f1f1;
-                  }
-                  input[type="text"], input[type="email"], input[type="password"], textarea[name="address"],input[type="number"], select {
-                      width: 95%;
-                      padding: 10px;
-                      border: 1px solid #ccc;
-                      border-radius: 4px;
-                  }
-                  input[type="submit"] {
-                      background-color: #28a745;
-                      color: white;
-                      padding: 10px 15px;
-                      border: none;
-                      border-radius: 4px;
-                      cursor: pointer;
-                  }
-                  input[type="submit"]:hover {
-                      background-color: #218838;
-                  }
-                  h2 {
-                      margin-top: 20px;
-                      color: #333;
-                  }
-              </style>
+                        body {
+                            font-family: Arial, sans-serif;
+                            background-color: #f8f9fa;
+                            margin: 0;
+                            padding: 0;
+                        }
+                        .container {
+                            max-width: 800px;
+                            margin: 50px auto;
+                            padding: 20px;
+                            background-color: #fff;
+                            border-radius: 8px;
+                            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                        }
+                        h2 {
+                            text-align: center;
+                            color: #333;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            margin-top: 20px;
+                        }
+                        th, td {
+                            text-align: left;
+                            padding: 12px;
+                            border-bottom: 1px solid #ddd;
+                        }
+                        th {
+                            background-color: #f2f2f2;
+                            color: #333;
+                            font-weight: bold;
+                        }
+                        tr:nth-child(even) {
+                            background-color: #f9f9f9;
+                        }
+                        tr:hover {
+                            background-color: #f1f1f1;
+                        }
+                        input[type="text"], input[type="number"], select {
+                            width: 95%;
+                            padding: 10px;
+                            border: 1px solid #ccc;
+                            border-radius: 4px;
+                            font-size: 16px;
+                        }
+                        input[type="submit"], button {
+                            padding: 10px 15px;
+                            background-color: #28a745;
+                            color: white;
+                            border: none;
+                            border-radius: 4px;
+                            cursor: pointer;
+                            font-size: 16px;
+                        }
+                        input[type="submit"]:hover, button:hover {
+                            background-color: #218838;
+                        }
+                        .back-button {
+                            background-color: #007bff;
+                            margin-left: 10px;
+                        }
+                        .back-button:hover {
+                            background-color: #0056b3;
+                        }
+                        .form-actions {
+                            text-align: center;
+                            margin-top: 20px;
+                        }
+                    </style>
                             <h2>Edit Staff</h2>
-                            <form method="POST">
-                            <label for="username">Username:</label><br>
-                            <input type="text" name="username" value="<?php echo $row['username']; ?>" required><br>
-                                <label for="name">Name:</label><br>
-                                <input type="text" name="name" value="<?php echo $row['name']; ?>" required><br>
-                                <label for="email">Email:</label><br>
-                                <input type="email" name="email" value="<?php echo $row['email']; ?>" required><br>
-                                <label for="contact">Phone Number:</label><br>
-                                <input type="text" name="contact" value="<?php echo $row['contact']; ?>" required><br>
-                                <label for="address">Address:</label><br>
-                                <textarea name="address" required><?php echo $row['address']; ?></textarea><br>
-                                <input type="submit" value="Update Staff">
-                            </form>
+
+                        <form method="POST" action="">
+                            <table>
+                                <tr>
+                                    <th>Username</th>
+                                    <td><input type="text" name="username" value="<?php echo $row['username']; ?>" required>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Name</th>
+                                    <td><input type="text" name="name" value="<?php echo $row['name']; ?>" required></td>
+                                </tr>
+                                <tr>
+                                    <th>Email</th>
+                                    <td><input type="email" name="email" value="<?php echo $row['email']; ?>" required></td>
+                                </tr>
+                                <tr>
+                                    <th>Phone Number</th>
+                                    <td>
+                                    <input type="text" name="contact" value="<?php echo $row['contact']; ?>" required><br>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Address</th>
+                                    <td>
+                                    <textarea name="address" required><?php echo $row['address']; ?></textarea><br>
+                                    </td>
+                                </tr>
+                            
+                            <tr>
+                                      <td colspan="2" style="text-align: center;">
+                                          <input type="submit" value="Update Staff" style="padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                          <button onclick="history.go(-1);" style="padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">
+                                             Back</button>
+
+                                      </td>
+                                  </tr>
+                                  </table>
+                        </form>
+                            
                             <?php
                         }
                     }

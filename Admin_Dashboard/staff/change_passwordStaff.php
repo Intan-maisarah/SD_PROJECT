@@ -15,10 +15,11 @@ $user_id = $_SESSION['user_id'];
 // Initialize variables
 $name = '';
 $email = '';
-$username = '';
+$usernames = '';
+$profile_pic = '';
 
 // Fetch the current user details from the database
-$query = "SELECT name, email, username, password FROM users WHERE id = ?";
+$query = "SELECT name, email, username, password, profile_pic FROM users WHERE id = ?";
 $stmt = $conn->prepare($query);
 if ($stmt === false) {
     die("Prepare failed: " . htmlspecialchars($conn->error));
@@ -26,7 +27,7 @@ if ($stmt === false) {
 
 $stmt->bind_param('i', $user_id);
 $stmt->execute();
-$stmt->bind_result($name, $email, $username, $hashedPassword);
+$stmt->bind_result($name, $email, $usernames, $hashedPassword, $profile_pic);
 
 
 // Check if we have a result
@@ -36,6 +37,8 @@ if (!$stmt->fetch()) {
 
 // Close the prepared statement
 $stmt->close();
+
+$profilePicPath = !empty($profile_pic) ? htmlspecialchars($profile_pic) : '../assets/profile_pic/default-placeholder.png';
 
 // Function to validate password
 function validatePassword($password) {
@@ -57,10 +60,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $error = 'New passwords do not match.';
     } elseif (!validatePassword($newPassword)) {
         $error = 'New password does not meet the requirements.
-                  Password must be at least 8 characters including at least
-                  1 special symbol,
-                  1 number,
-                  1 uppercase letter';
+                  Password must be at least 8 characters including
+                  - special symbol
+                  - number
+                  - uppercase letter';
     } else {
         // Verify if the current password matches the hashed password in the database
         if (password_verify($currentPassword, $hashedPassword)) {
@@ -370,7 +373,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
           <!-- ============================================================== -->
           <!-- Logo -->
           <!-- ============================================================== -->
-          <a class="navbar-brand" href="admin_page.php">
+          <a class="navbar-brand" href="staff_page.php">
             <!-- Logo icon -->
             <b class="logo-icon">
               <!--You can put here icon as well // <i class="wi wi-sunset"></i> //-->
@@ -439,9 +442,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <!-- End Topbar header -->
     <!-- ============================================================== -->
     <!-- ============================================================== -->
-    <?php include "../staff/sidebarStaff.php";?>
-
-
+    
+    <?php include "../sidebar/sidebarStaff.php";?>
     <div class="page-wrapper">
       <div class="container-fluid">
         <div class="row">
@@ -453,7 +455,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                   <?php echo htmlspecialchars($name); ?>
                 </div>
                 <div class="profile-usertitle-job">
-                  <?php echo htmlspecialchars($username); ?>
+                  <?php echo htmlspecialchars($usernames); ?>
                 </div>
               </div>
               <div class="profile-userbuttons">
