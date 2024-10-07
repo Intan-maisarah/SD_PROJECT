@@ -70,7 +70,7 @@ nav #marker {
 }
 
 section {
-    height: 100vh;
+    min-height: 100vh;
     padding: 80px 20px;
     border-bottom: 1px solid #eaeaea;
     box-sizing: border-box; 
@@ -89,7 +89,9 @@ section {
 /* Services Section */
 #services {
     padding: 60px 0;
-    background-color: rgba(244,238,240,255); /* Light background color for contrast */
+    background-color: rgba(244,238,240,255); 
+    min-height: 300px;
+    z-index: 1;
 }
 
 #services .container {
@@ -109,6 +111,7 @@ section {
     flex-wrap: wrap;
     gap: 20px; /* Space between service items */
     justify-content: center; /* Center items horizontally */
+    overflow: auto;
 }
 
 .service-item {
@@ -122,6 +125,7 @@ section {
     padding: 20px; /* Padding inside the box */
     box-sizing: border-box; /* Include padding and border in element's total width and height */
     transition: transform 0.3s ease; /* Smooth scaling on hover */
+    margin-bottom: 20px;
 }
 
 .service-item:hover {
@@ -144,6 +148,20 @@ section {
 .service-item p {
     font-size: 1rem;
     color: #666;
+}
+
+@media (max-width: 768px) {
+    .service-item {
+        flex: 1 1 calc(50% - 20px); /* 2 items per row on small screens */
+        max-width: calc(50% - 20px);
+    }
+}
+
+@media (max-width: 480px) {
+    .service-item {
+        flex: 1 1 100%; /* 1 item per row on extra small screens */
+        max-width: 100%;
+    }
 }
 
 

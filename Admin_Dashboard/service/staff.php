@@ -140,7 +140,7 @@ $conn->close();
     </style>
 </head>
 <body>
-    <!--<div class="preloader">
+    <div class="preloader">
         <div class="printer">
             <div class="printer-top"></div>
             <div class="paper-input-slot"></div>
@@ -149,7 +149,7 @@ $conn->close();
             </div>
             <div class="printer-tray"></div>
         </div>
-    </div>-->
+    </div>
 
     <div id="main-wrapper" data-layout="vertical" data-navbarbg="skin5" data-sidebartype="full" data-header-position="absolute">
         <header class="topbar" data-navbarbg="skin5">
@@ -164,9 +164,7 @@ $conn->close();
                 <div class="navbar-collapse collapse" id="navbarSupportedContent" data-navbarbg="skin5">
                     <ul class="navbar-nav float-end">
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark pro-pic" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <img src="../assets/images/users/1.jpg" alt="user" class="rounded-circle" width="31" />
-                            </a>
+                            
                             <ul class="dropdown-menu dropdown-menu-end user-dd animated" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item" href="pages_profile.php"><i class="mdi mdi-account m-r-5 m-l-5"></i> My Profile</a>
                             </ul>
@@ -208,6 +206,7 @@ $conn->close();
                             tr:hover { background-color: #f1f1f1; }
                             a { color: #1a73e8; text-decoration: none; }
                             a:hover { text-decoration: underline; }
+                            
                         </style>";
 
                     echo "<table>";
@@ -221,15 +220,15 @@ $conn->close();
                         echo "<td>" . $row['contact'] . "</td>";
                         echo "<td>" . $row['address'] . "</td>";
                         echo "<td>
-                        <a href='staff.php?action=edit&id=" . $row['id'] . "' style='background-color: #1a73e8; padding: 8px; color: white;'>Edit</a>
-                        <a href='staff.php?action=delete&id=" . $row['id'] . "' style='background-color: #e53935; padding: 8px; color: white;' onclick='return confirm(\"Are you sure you want to delete?\")'>Delete</a>
+                        <a href='staff.php?action=edit&id=" . $row['id'] . "' style='background-color: #1a73e8; border-radius: 3px; padding: 8px; color: white;'>Edit</a>
+                        <a href='staff.php?action=delete&id=" . $row['id'] . "' style='background-color: #e53935; border-radius: 3px; padding: 8px; color: white;' onclick='return confirm(\"Are you sure you want to delete?\")'>Delete</a>
                         </td>";
                         echo "</tr>";
                     }
 
                     echo "</table>";
                     
-                    echo "<br><a href='staff.php?action=add' style='background-color: #00b300; padding: 8px;  margin-left: 30px; color: white;'>Add Staff</a><br><br>";
+                    echo "<br><a href='staff.php?action=add' style='background-color: #00b300; padding: 8px;  margin-left: 30px;border-radius: 3px;  color: white;'>Add Staff</a><br><br>";
                     break;
 
                 case 'edit':
@@ -246,11 +245,20 @@ $conn->close();
                             $updateStmt->bind_param("ssssi", $name, $email, $contact, $address, $id);
                             
                             if ($updateStmt->execute()) {
-                                $_SESSION['message'] = "Staff updated successfully!";
-                                $_SESSION['msg_type'] = "success";
+                                // Check if the query executed and the row was affected
+                                if ($updateStmt->affected_rows > 0) {
+                                    $_SESSION['message'] = "Staff updated successfully!";
+                                    $_SESSION['msg_type'] = "success";
+                                } else {
+                                    // No rows were updated (data may not have changed)
+                                    $_SESSION['message'] = "No changes made to the staff.";
+                                    $_SESSION['msg_type'] = "warning";
+                                }
                                 header("Location: staff.php?action=view");
                                 exit;
                             } else {
+                                // Log the error or display it
+                                error_log("Error updating staff: " . $conn->error);
                                 $_SESSION['message'] = "Error updating staff.";
                                 $_SESSION['msg_type'] = "danger";
                                 header("Location: staff.php?action=view");
@@ -495,6 +503,8 @@ $conn->close();
                             <input type="password" name="password" required><br>
                             <br>
                             <input type="submit" value="Add Staff">
+                            <button onclick="history.go(-1);" style="padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">
+                                             Back</button>
                         </form>
                         <?php
                     }
@@ -512,7 +522,7 @@ $conn->close();
     <!-- Footer -->
     <!-- ============================================================== -->
     <footer class="footer text-center">
-      All Rights Reserved by Your Company. Designed and Developed by <a href="https://www.wrappixel.com">WrapPixel</a>.
+      All Rights Reserved by Infinity Printing. Designed and Developed by <a href="https://www.wrappixel.com">WrapPixel</a>.
     </footer>
   </div>
   </div>

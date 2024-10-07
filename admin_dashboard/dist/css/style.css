@@ -8293,7 +8293,9 @@ html[dir="ltr"] body .p-l-0 {
  Footer
 *******************/
 .footer {
-  padding: 15px 20px; }
+  padding: 15px 20px; 
+position: relative;
+}
 
 /*******************
  Stickey inner-left-part

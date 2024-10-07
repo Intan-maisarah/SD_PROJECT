@@ -311,24 +311,25 @@ echo "<table>";
 echo "<tr><th>ID</th><th>Specification Name</th><th>Specification Type</th><th>Price</th><th>Status</th><th>Actions</th></tr>";
 
 while ($row = mysqli_fetch_assoc($result)) {
-    echo "<tr>";
-    echo "<td>" . $row['id'] . "</td>";
-    echo "<td>" . $row['spec_name'] . "</td>";
-    echo "<td>" . $row['spec_type'] . "</td>";
-    echo "<td>" . $row['price'] . "</td>";
-    echo "<td>" . $row['status'] . "</td>";
-    echo "<td>
-    <a href='printspec.php?action=edit&id=" . $row['id'] . "' style='display: inline-block; padding: 8px 16px; text-align: center; text-decoration: none; background-color: #1a73e8; color: white; border-radius: 4px; margin-right: 8px;'>Edit</a>
-    <a href='printspec.php?action=delete&id=" . $row['id'] . "' style='display: inline-block; padding: 8px 16px; text-align: center; text-decoration: none; background-color: #e53935; color: white; border-radius: 4px;' onclick='return confirm(\"Are you sure you want to delete?\")'>Delete</a>
+  echo "<tr>";
+  echo "<td>" . $row['id'] . "</td>";
+  echo "<td>" . $row['spec_name'] . "</td>";
+  echo "<td>" . $row['spec_type'] . "</td>";
+  echo "<td>" . $row['price'] . "</td>";
+  echo "<td>" . $row['status'] . "</td>";
+  echo "<td>
+  <a href='printspec.php?action=edit&id=" . $row['id'] . "' style='display: inline-block; padding: 8px 16px; text-align: center; text-decoration: none; background-color: #1a73e8; color: white; border-radius: 4px; margin-right: 8px;'>Edit</a>
+  <a href='javascript:void(0);'
+     style='display: inline-block; padding: 8px 16px; text-align: center; text-decoration: none; background-color: #e53935; color: white; border-radius: 4px;'
+     onclick='openDeleteModal(\"" . addslashes($row['spec_name']) . "\", " . $row['id'] . ")'>Delete</a>
   </td>";
-echo "</tr>";
+  echo "</tr>";
 }
+
 
 echo "</table>";
 echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; padding: 8px;  margin-left: 30px; color: white;'>Add Print Specification</a><br><br>";
         break;
-
-       
 
             case 'edit':
                 if (isset($_GET['id']) && is_numeric($_GET['id'])) {
@@ -615,90 +616,119 @@ echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; p
                   }
               </style>
       
-              <h2>Add New Specification</h2>
-      
-              <form method="POST" action="">
-                  <table>
-                      <tr>
-                          <th>Specification Name</th>
-                          <td><input type="text" name="spec_name" required></td>
-                      </tr>
-                  </table>
-      
-                  <h3>Specification Types</h3>
-                  <div id="spec-type-section">
-                      <div class="spec-type-entry">
-                          <table>
-                              <tr>
-                                  <th>Specification Type</th>
-                                  <td><input type="text" name="spec_type[]" required></td>
-                              </tr>
-                              <tr>
-                                  <th>Price</th>
-                                  <td><input type="number" step="0.01" name="price[]" required></td>
-                              </tr>
-                              <tr>
-                                  <th>Status</th>
-                                  <td>
-                                      <select name="status[]">
-                                          <option value="available">Available</option>
-                                          <option value="unavailable">Unavailable</option>
-                                      </select>
-                                  </td>
-                              </tr>
-                          </table>
-                          <button type="button" class="remove-btn" onclick="removeType(this)">Remove Type</button>
-                      </div>
-                  </div>
-      
-                  <button type="button" class="add-more" onclick="addType()">Add More Types</button><br><br>
-      
-                  
-                  <td colspan="2" style="text-align: center;">
-                              <input type="submit" value="Add Specification" style="padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                              <button onclick="window.history.back();" style="padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">
-                                  Back
-                              </button>
-                          </td>
-                      </tr>
+      <h2>Add New Specification</h2>
 
-              </form>
-      
+        <form method="POST" action="">
+            <table>
+                <tr>
+                    <th>Specification Name</th>
+                    <td><input type="text" name="spec_name" required></td>
+                </tr>
+            </table>
+
+            <h3>Specification Types</h3>
+            <label>
+                <input type="checkbox" id="same-price-checkbox"> Apply the same price for all specification types
+            </label>
+            
+            <div id="spec-type-section">
+                <div class="spec-type-entry">
+                    <table>
+                        <tr>
+                            <th>Specification Type</th>
+                            <td><input type="text" name="spec_type[]" required></td>
+                        </tr>
+                        <tr>
+                            <th>Price</th>
+                            <td><input type="number" step="0.01" name="price[]" class="price-input" required></td>
+                        </tr>
+                        <tr>
+                            <th>Status</th>
+                            <td>
+                                <select name="status[]">
+                                    <option value="available">Available</option>
+                                    <option value="unavailable">Unavailable</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                    <button type="button" class="remove-btn" onclick="removeType(this)">Remove Type</button>
+                </div>
+            </div>
+
+            <button type="button" class="add-more" onclick="addType()">Add More Types</button><br><br>
+
+            <td colspan="2" style="text-align: center;">
+                <input type="submit" value="Add Specification" style="padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                <button onclick="window.history.back();" style="padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">
+                    Back
+                </button>
+            </td>
+        </form>
+
               <script>
-                  // Function to dynamically add more specification types
-                  function addType() {
-                      let section = document.getElementById('spec-type-section');
-                      let newTypeEntry = document.createElement('div');
-                      newTypeEntry.classList.add('spec-type-entry');
-                      newTypeEntry.innerHTML = `
-                          <table>
-                              <tr>
-                                  <th>Specification Type</th>
-                                  <td><input type="text" name="spec_type[]" required></td>
-                              </tr>
-                              <tr>
-                                  <th>Price</th>
-                                  <td><input type="number" step="0.01" name="price[]" required></td>
-                              </tr>
-                              <tr>
-                                  <th>Status</th>
-                                  <td>
-                                      <select name="status[]">
-                                          <option value="available">Available</option>
-                                          <option value="unavailable">Unavailable</option>
-                                      </select>
-                                  </td>
-                              </tr>
-                          </table>
-                          <button type="button" class="remove-btn" onclick="removeType(this)">Remove Type</button>
-                      `;
-                      section.appendChild(newTypeEntry);
-                  }
-      
-                  // Function to remove a specification type entry
-                  function removeType(button) {
-                      button.parentElement.remove();
-                  }
+                 document.getElementById('same-price-checkbox').addEventListener('change', function() {
+                    const priceInputs = document.querySelectorAll('.price-input');
+                    
+                    if (this.checked) {
+                        const firstPrice = priceInputs[0].value;
+                        if (!firstPrice) {
+                            alert("Please enter the price for the first specification type before applying the same price to others.");
+                            this.checked = false; // Uncheck the checkbox if no price is entered
+                            return;
+                        }
+                        priceInputs.forEach((input, index) => {
+                            if (index > 0) {
+                                input.value = firstPrice;  // Auto-fill the same price in all other fields
+                            }
+                        });
+                    }
+                });
+
+                function addType() {
+                    const specTypeSection = document.getElementById('spec-type-section');
+                    const newEntry = document.createElement('div');
+                    newEntry.classList.add('spec-type-entry');
+                    
+                    newEntry.innerHTML = `
+                        <table>
+                            <tr>
+                                <th>Specification Type</th>
+                                <td><input type="text" name="spec_type[]" required></td>
+                            </tr>
+                            <tr>
+                                <th>Price</th>
+                                <td><input type="number" step="0.01" name="price[]" class="price-input" required></td>
+                            </tr>
+                            <tr>
+                                <th>Status</th>
+                                <td>
+                                    <select name="status[]">
+                                        <option value="available">Available</option>
+                                        <option value="unavailable">Unavailable</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </table>
+                        <button type="button" class="remove-btn" onclick="removeType(this)">Remove Type</button>
+                    `;
+
+                    specTypeSection.appendChild(newEntry);
+
+                    // If checkbox is checked, auto-fill the new price field
+                    if (document.getElementById('same-price-checkbox').checked) {
+                        const priceInputs = document.querySelectorAll('.price-input');
+                        const firstPrice = priceInputs[0].value;
+                        if (firstPrice) {
+                            priceInputs[priceInputs.length - 1].value = firstPrice; // Fill the last added price input
+                        }
+                    }
+                }
+
+                function removeType(button) {
+                    button.closest('.spec-type-entry').remove();
+                }
+
               </script>
       
               <?php
@@ -706,32 +736,142 @@ echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; p
           break;
       
           case 'delete':
-            // Delete service
-            $id = $_GET['id'];
-            $deleteQuery = "DELETE FROM specification WHERE id = ?";
-            $deleteStmt = $conn->prepare($deleteQuery);
-            $deleteStmt->bind_param("i", $id);
-            $deleteStmt->execute();
-        
-            if ($deleteStmt->affected_rows > 0) {
-                $_SESSION['message'] = "Specification deleted successfully!";
-                $_SESSION['msg_type'] = "success";
-                header("Location: printspec.php?action=view");
-                exit;
-            } else {
-                $_SESSION['message'] = "Error specification service.";
-                $_SESSION['msg_type'] = "danger";
-                header("Location: printspec.php?action=view");
-                exit;
-            }
-        
+    if (isset($_POST['specification_name'])) {
+        $specName = $_POST['specification_name']; // Corrected the variable name
+        $deleteAll = isset($_POST['delete_all']) ? $_POST['delete_all'] : 0;
 
+        if ($deleteAll) {
+            // Delete all specifications related to the selected name
+            $deleteQuery = "DELETE FROM specification WHERE spec_name = ?";
+            $stmt = $conn->prepare($deleteQuery);
+            $stmt->bind_param("s", $specName);
+            $stmt->execute();
+
+            if ($stmt->affected_rows > 0) {
+                echo "All specifications related to '$specName' have been deleted successfully.";
+            } else {
+                echo "No specifications found related to '$specName'.";
+            }
+        } else {
+            // Delete only the clicked specification
+            if (isset($_POST['specification_id'])) { // Check if specification_id is set
+                $specId = $_POST['specification_id']; // Use the correct key here
+                $deleteQuery = "DELETE FROM specification WHERE id = ?";
+                $stmt = $conn->prepare($deleteQuery);
+                $stmt->bind_param("i", $specId); // Use the correct variable
+                $stmt->execute();
+
+                if ($stmt->affected_rows > 0) {
+                    echo "Specification deleted successfully.";
+                } else {
+                    echo "Error deleting the specification.";
+                }
+            } else {
+                echo "Specification ID is required for deletion.";
+            }
+        }
+    } else {
+        echo "Specification name is required for deletion.";
+    }
+    break;
+
+        
     default:
         // Default action is to view customers
         header("Location: printspec.php?action=view");
         break;
 }
 ?>
+
+<style>
+  .modal {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: fixed; /* Use fixed positioning */
+    top: 3%;
+    left: 35%;
+    right: 0%;
+    bottom: 0;
+}
+
+.modal-content {
+    background-color: white; /* Background color of the modal */
+    border-radius: 8px; /* Rounded corners */
+    padding: 20px; /* Padding inside the modal */
+    width: 400px; /* Fixed width for the modal */
+    max-width: 90%; /* Responsive width */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Soft shadow */
+}
+
+</style>
+
+<!-- Delete Confirmation Modal -->
+<div id="deleteModal" class="modal" style="display: none;">
+    <div class="modal-content">
+        <h4>Are you sure you want to delete this specification?</h4>
+        <p>This action cannot be undone.</p>
+
+        <!-- Checkbox to delete all related specification types -->
+        <label>
+            <input type="checkbox" id="deleteAllSpecsCheckbox">
+            Delete all specification types related to this specification name.
+        </label>
+
+        <!-- Hidden inputs to store the specification name and ID -->
+        <input type="hidden" id="specificationName" value="">
+        <input type="hidden" id="specificationId" value="">
+
+        <div class="modal-footer">
+            <button id="confirmDelete" class="btn btn-danger">Confirm Delete</button>
+            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<script>
+function openDeleteModal(specificationName, specificationId) {
+    document.getElementById('specificationName').value = specificationName;
+    document.getElementById('specificationId').value = specificationId; 
+    document.getElementById('deleteModal').style.display = 'block';
+}
+
+// Function to close the modal
+function closeModal() {
+    document.getElementById('deleteModal').style.display = 'none';
+}
+
+// Handle the delete confirmation
+document.getElementById('confirmDelete').addEventListener('click', function() {
+    const specificationName = document.getElementById('specificationName').value;
+    const specificationId = document.getElementById('specificationId').value;
+    const deleteAll = document.getElementById('deleteAllSpecsCheckbox').checked;
+    
+    // Send data to the server to delete the specific record or all related ones
+    deleteSpecification(specificationId, specificationName, deleteAll);
+    closeModal();
+});
+
+// AJAX function to handle the deletion
+function deleteSpecification(specificationId, specificationName, deleteAll) {
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "printspec.php?action=delete", true);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+
+    // Send whether to delete all related specifications or just the one
+    xhr.send("specification_id=" + specificationId + "&specification_name=" + specificationName + "&delete_all=" + (deleteAll ? 1 : 0));
+
+    xhr.onload = function() {
+        if (xhr.status === 200) {
+            alert(xhr.responseText);
+            // Reload the page or update the table
+            location.reload();
+        }
+    }
+}
+</script>
+
+
 
     <!-- ============================================================== -->
     <!-- Footer -->

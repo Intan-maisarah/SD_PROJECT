@@ -492,12 +492,16 @@ $conn->close();
                                     <input type="file" name="image" id="image" class="form-control" required> <!-- Make sure the file input is required -->
                                 </td>
                             </tr>
+                            <tr>
+                                      <td colspan="2" style="text-align: center;">
+                                          <input type="submit" value="Add Service" style="padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                          <button onclick="history.go(-1);" style="padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">
+                                             Back</button>
+
+                                      </td>
+                                  </tr>
                         </table>
-                        <br>
-                        <td colspan="2" style="text-align: center;">
-                            <input type="submit" value="Add Service">
-                            <button type="button" onclick="window.history.back();">Back</button>
-                        </td>
+                        
                     </form>
                     
                     <?php
@@ -545,31 +549,30 @@ $conn->close();
                             }
                     
                             // Update service details in the database
-                            $updateQuery = "UPDATE services SET service_name = ?, status = ?, service_description = ?, image = ? WHERE service_id = ?";
-                            $updateStmt = $conn->prepare($updateQuery);
-                            $updateStmt->bind_param("ssssi", $service_name, $status, $service_description, $imageURL, $service_id);
-                            $updateStmt->execute();
-                    
-                            if ($updateStmt->execute()) {
-                                // Check if the query executed and the row was affected
-                                if ($updateStmt->affected_rows > 0) {
-                                    $_SESSION['message'] = "Service updated successfully!";
-                                    $_SESSION['msg_type'] = "success";
-                                } else {
-                                    // No rows were updated (data may not have changed)
-                                    $_SESSION['message'] = "No changes made to the service.";
-                                    $_SESSION['msg_type'] = "warning";
-                                }
-                                header("Location: services.php?action=view");
-                                exit;
+                        $updateQuery = "UPDATE services SET service_name = ?, status = ?, service_description = ?, image = ? WHERE service_id = ?";
+                        $updateStmt = $conn->prepare($updateQuery);
+                        $updateStmt->bind_param("ssssi", $service_name, $status, $service_description, $imageURL, $service_id);
+
+                        if ($updateStmt->execute()) {
+                            // Check if the query executed and the row was affected
+                            if ($updateStmt->affected_rows > 0) {
+                                $_SESSION['message'] = "Service updated successfully!";
+                                $_SESSION['msg_type'] = "success";
                             } else {
-                                // Log the error or display it
-                                error_log("Error updating service: " . $conn->error);
-                                $_SESSION['message'] = "Error updating service.";
-                                $_SESSION['msg_type'] = "danger";
-                                header("Location: service.php?action=view");
-                                exit;
+                                // No rows were updated (data may not have changed)
+                                $_SESSION['message'] = "No changes made to the service.";
+                                $_SESSION['msg_type'] = "warning";
                             }
+                            header("Location: services.php?action=view");
+                            exit;
+                        } else {
+                            // Log the error or display it
+                            error_log("Error updating service: " . $updateStmt->error);
+                            $_SESSION['message'] = "Error updating service.";
+                            $_SESSION['msg_type'] = "danger";
+                            header("Location: service.php?action=view");
+                            exit;
+                        }
                         }
                         
                     
@@ -707,7 +710,7 @@ $conn->close();
             ?>
 
             <footer class="footer text-center">
-                All Rights Reserved by your company name
+                All Rights Reserved by Infinity Printing
             </footer>
         </div>
     </div>
