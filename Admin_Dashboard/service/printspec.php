@@ -773,48 +773,42 @@ echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; p
           break;
       
           case 'delete':
-    if (isset($_POST['specification_name'])) {
-        $specName = $_POST['specification_name']; // Corrected the variable name
-        $deleteAll = isset($_POST['delete_all']) ? $_POST['delete_all'] : 0;
-
-        if ($deleteAll) {
-            // Delete all specifications related to the selected name
-            $deleteQuery = "DELETE FROM specification WHERE spec_name = ?";
-            $stmt = $conn->prepare($deleteQuery);
-            $stmt->bind_param("s", $specName);
-            $stmt->execute();
-
-            if ($stmt->affected_rows > 0) {
-                echo "All specifications related to '$specName' have been deleted successfully.";
-            } else {
-                echo "No specifications found related to '$specName'.";
-            }
-        } else {
-            // Delete only the clicked specification
-            if (isset($_POST['specification_id'])) { // Check if specification_id is set
-                $specId = $_POST['specification_id']; // Use the correct key here
-                $deleteQuery = "DELETE FROM specification WHERE id = ?";
-                $stmt = $conn->prepare($deleteQuery);
-                $stmt->bind_param("i", $specId); // Use the correct variable
-                $stmt->execute();
-
-                if ($stmt->affected_rows > 0) {
-                    echo "Specification deleted successfully.";
+            if (isset($_POST['specification_name'])) {
+                $specName = $_POST['specification_name']; 
+                $deleteAll = isset($_POST['delete_all']) ? $_POST['delete_all'] : 0;
+    
+                if ($deleteAll) {
+                    // Delete all specifications related to the selected name
+                    $deleteQuery = "DELETE FROM specification WHERE spec_name = ?";
+                    $stmt = $conn->prepare($deleteQuery);
+                    $stmt->bind_param("s", $specName);
+                    $stmt->execute();
+    
+                    if ($stmt->affected_rows > 0) {
+                    }
                 } else {
-                    echo "Error deleting the specification.";
+                    // Delete only the clicked specification
+                    if (isset($_POST['specification_id'])) { 
+                        $specId = $_POST['specification_id']; 
+                        $deleteQuery = "DELETE FROM specification WHERE id = ?";
+                        $stmt = $conn->prepare($deleteQuery);
+                        $stmt->bind_param("i", $specId); 
+                        $stmt->execute();
+    
+                        if ($stmt->affected_rows > 0) {
+                            // Successful deletion logic, but no echo to prevent output
+                        }
+                    }
                 }
-            } else {
-                echo "Specification ID is required for deletion.";
             }
-        }
-    } else {
-        echo "Specification name is required for deletion.";
-    }
-    break;
+    
+            // Redirect to view page after deletion
+            header("Location: printspec.php?action=view");
+            exit; // Stop further script execution to prevent HTML from rendering
+            break;
 
         
     default:
-        // Default action is to view customers
         header("Location: printspec.php?action=view");
         break;
 }
@@ -855,7 +849,6 @@ echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; p
             Delete all specification types related to this specification name.
         </label>
 
-        <!-- Hidden inputs to store the specification name and ID -->
         <input type="hidden" id="specificationName" value="">
         <input type="hidden" id="specificationId" value="">
 
@@ -899,12 +892,11 @@ function deleteSpecification(specificationId, specificationName, deleteAll) {
     xhr.send("specification_id=" + specificationId + "&specification_name=" + specificationName + "&delete_all=" + (deleteAll ? 1 : 0));
 
     xhr.onload = function() {
-        if (xhr.status === 200) {
-            alert(xhr.responseText);
-            // Reload the page or update the table
-            location.reload();
-        }
+    if (xhr.status === 200) {
+        console.log(xhr.responseText); // Log response for debugging (optional)
+        location.reload(); // Reload the page without showing an alert
     }
+}
 }
 </script>
 
