@@ -375,6 +375,16 @@ section {
     background-color: #0277bd; 
 }
 
+.btn.btn-secondary {
+    background-color: #8eafc1; 
+    color: white;
+    border: none;
+}
+
+.btn.btn-secondary:hover {
+    background-color: #0277bd; 
+}
+
 .btn.rounded {
     border-radius: 50px !important;
 }

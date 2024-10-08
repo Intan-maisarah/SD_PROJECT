@@ -74,16 +74,45 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <title>View Profile</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet">
-<link rel="stylesheet" href="assets/ipasss.css">
+<link rel="stylesheet" href="../assets/ipasss.css">
 </head>
 <body>
-
+<br>
     <div class="container-xl px-4 mt-4">
-        <nav class="nav nav-borders">
-            <a class="nav-link active ms-0" href="view_profile.php" target="_self">Profile</a>
-            <a class="nav-link" href="change_password.php" target="_self">Password</a>
-            <a class="nav-link ms-auto" href="../index.php" target="_self">Home</a>
-        </nav>
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#"><img src="../assets/images/logo.png" alt="Logo" style="width: 100px; height: auto;"></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <nav>
+                <div id="marker"></div>
+                <a href="../index.php#home" class="active">Home</a>
+                <a href="../index.php#services">Services</a>
+                <a href="../index.php#about">About</a>
+                <a href="../index.php#contact">Contact</a>
+                <a href="../index.php#feedback">Feedback</a>
+
+                </nav>
+                <?php if (!isset($_SESSION['signin'])): ?>
+                    <div class="nav-item">
+                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='signin.php'">Log In</button>
+                    </div>
+                    <div class="nav-item">
+                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='signup.php'">Sign Up</button>
+                    </div>
+                <?php else: ?>
+                    <div class="nav-item">
+                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='../logout.php'">Log Out</button>
+                    </div>
+                    <div class="nav-item">
+                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='view_profile.php'">Profile</button>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </nav>
         <hr class="mt-0 mb-4">
     
         <!-- View Profile Section -->
@@ -100,7 +129,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             <p><strong>Address:</strong> <span id="displayAddress"><?php echo htmlspecialchars($address); ?></span></p>
                             <p><strong>Phone Number:</strong> <span id="displayContact"><?php echo htmlspecialchars($contact); ?></span></p>
                             <button class="btn btn-secondary" type="button" onclick="toggleInsert()">Update Profile</button>
-                        </div>
+                            <button class="btn btn-secondary" type="button" onclick="window.location.href='change_password.php';">Change Password</button>
+                            </div>
                     </div>
                 </div>
             </div>
@@ -137,7 +167,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                                     <label class="small mb-1" for="inputAddress">Address</label>
                                     <input class="form-control" name="address" id="inputAddress" type="text" placeholder="Enter your address" value="<?php echo htmlspecialchars($address); ?>" required>
                                 </div>
-                                <button class="btn btn-primary" name="InsertButton" onclick="saveChanges()" type="submit">Save changes</button>
+                                <button class="btn btn-secondary" name="InsertButton" onclick="saveChanges()" type="submit">Save changes</button>
+                                <button class="btn btn-secondary" onclick="history.back()">Back</button>
+
                             </form>
                         </div>
                     </div>

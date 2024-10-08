@@ -1,7 +1,7 @@
 <?php
 ob_start();
 session_start();
-require 'connection.php'; // Your database connection
+require '../connection.php'; // Your database connection
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -12,7 +12,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 // Autoload the PHPMailer classes via Composer
-require 'vendor/autoload.php';
+require '../vendor/autoload.php';
 
 if (isset($_POST['submit_email'])) {
     $email = $_POST['email'];
@@ -46,7 +46,7 @@ if (isset($_POST['submit_email'])) {
                         : "http://infinityprinting.com";
             
             // Prepare the reset link
-            $reset_link = $base_url . "/reset_password.php?token=" . $token;
+            $reset_link = $base_url . "/user/reset_password.php?token=" . $token;
 
             // Send the reset link via PHPMailer
             $mail = new PHPMailer(true);

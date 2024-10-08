@@ -310,12 +310,13 @@ echo "<style>
 
 // Table structure
 echo "<table>";
-echo "<tr><th>ID</th><th>Name</th><th>Email</th><th>Phone Number</th><th>Address</th><th>Actions</th></tr>";
+echo "<tr><th>ID</th><th>Username</th><th>Name</th><th>Email</th><th>Phone Number</th><th>Address</th><th>Actions</th></tr>";
 
 // Fetch and display customer data
 while ($row = mysqli_fetch_assoc($result)) {
     echo "<tr>";
     echo "<td>" . $row['id'] . "</td>";
+    echo "<td>" . $row['username'] . "</td>";
     echo "<td>" . $row['name'] . "</td>";
     echo "<td>" . $row['email'] . "</td>";
     echo "<td>" . $row['contact'] . "</td>";
@@ -503,7 +504,7 @@ echo "</table>";
     <!-- Footer -->
     <!-- ============================================================== -->
     <footer class="footer text-center">
-      All Rights Reserved by Your Company. Designed and Developed by <a href="https://www.wrappixel.com">WrapPixel</a>.
+      All Rights Reserved by Infinity Printing. Designed and Developed by <a href="https://www.wrappixel.com">WrapPixel</a>.
     </footer>
   </div>
   </div>

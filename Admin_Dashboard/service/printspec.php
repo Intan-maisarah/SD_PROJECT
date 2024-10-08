@@ -350,36 +350,60 @@ echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; p
 
                     // Handle form submission for editing the specification
                     if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                        $spec_type = $_POST['spec_type'];
-                        $price = $_POST['price'];
-                        $status = $_POST['status'];
-
-                        // Update query to edit the specification
-                        $updateQuery = "UPDATE specification SET spec_type = ?, price = ?, status = ? WHERE id = ?";
-                        $updatestmt = $conn->prepare($updateQuery);
-                        $updatestmt->bind_param('sssi', $spec_type, $price, $status, $id);
-
-                        if ($updatestmt->execute()) {
-                            // Check if the query executed and the row was affected
-                            if ($updatestmt->affected_rows > 0) {
-                                $_SESSION['message'] = "Print specification updated successfully!";
-                                $_SESSION['msg_type'] = "success";
-                            } else {
-                                // No rows were updated (data may not have changed)
-                                $_SESSION['message'] = "No changes made to the specification.";
-                                $_SESSION['msg_type'] = "warning";
-                            }
-                            header("Location: printspec.php?action=view");
-                            exit;
-                        } else {
-                            // Log the error or display it
-                            error_log("Error updating specification: " . $conn->error);
-                            $_SESSION['message'] = "Error updating print specification.";
-                            $_SESSION['msg_type'] = "danger";
-                            header("Location: printspec.php?action=view");
-                            exit;
-                        }
-                    }
+                      $spec_type = $_POST['spec_type'];
+                      $price = $_POST['price'];
+                      $status = $_POST['status'];
+                      $spec_name = $spec['spec_name']; // Fetch the current specification name
+                  
+                      $apply_price_to_all = isset($_POST['apply_price_to_all']) ? 1 : 0;
+                      $apply_status_to_all = isset($_POST['apply_status_to_all']) ? 1 : 0;
+                  
+                      // If both checkboxes are checked, update price and status for all specification types under the same spec name
+                      if ($apply_price_to_all && $apply_status_to_all) {
+                          $updateQuery = "UPDATE specification SET price = ?, status = ? WHERE spec_name = ?";
+                          $updatestmt = $conn->prepare($updateQuery);
+                          $updatestmt->bind_param('sss', $price, $status, $spec_name);
+                  
+                      // If only the price checkbox is checked, update the price for all specification types under the same spec name
+                      } elseif ($apply_price_to_all) {
+                          $updateQuery = "UPDATE specification SET price = ? WHERE spec_name = ?";
+                          $updatestmt = $conn->prepare($updateQuery);
+                          $updatestmt->bind_param('ss', $price, $spec_name);
+                  
+                      // If only the status checkbox is checked, update the status for all specification types under the same spec name
+                      } elseif ($apply_status_to_all) {
+                          $updateQuery = "UPDATE specification SET status = ? WHERE spec_name = ?";
+                          $updatestmt = $conn->prepare($updateQuery);
+                          $updatestmt->bind_param('ss', $status, $spec_name);
+                  
+                      // Otherwise, update only the current specification
+                      } else {
+                          $updateQuery = "UPDATE specification SET spec_type = ?, price = ?, status = ? WHERE id = ?";
+                          $updatestmt = $conn->prepare($updateQuery);
+                          $updatestmt->bind_param('sssi', $spec_type, $price, $status, $id);
+                      }
+                  
+                      // Execute the update query
+                      if ($updatestmt->execute()) {
+                          if ($updatestmt->affected_rows > 0) {
+                              $_SESSION['message'] = "Print specification updated successfully!";
+                              $_SESSION['msg_type'] = "success";
+                          } else {
+                              $_SESSION['message'] = "No changes made to the specification.";
+                              $_SESSION['msg_type'] = "warning";
+                          }
+                          header("Location: printspec.php?action=view");
+                          exit;
+                      } else {
+                          error_log("Error updating specification: " . $conn->error);
+                          $_SESSION['message'] = "Error updating print specification.";
+                          $_SESSION['msg_type'] = "danger";
+                          header("Location: printspec.php?action=view");
+                          exit;
+                      }
+                  }
+                  
+                  
 
                     // Display the form for editing the specification
                     ?>
@@ -471,7 +495,14 @@ echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; p
                                 </tr>
                                 <tr>
                                     <th>Price</th>
-                                    <td><input type="number" step="0.01" name="price" value="<?php echo htmlspecialchars($spec['price']); ?>" required></td>
+                                    <td>
+                                        <input type="number" step="0.01" name="price" value="<?php echo htmlspecialchars($spec['price']); ?>" required>
+                                        <br>
+                                        <!-- Checkbox to apply price to all specification types under the same specification name -->
+                                        <label>
+                                            <input type="checkbox" name="apply_price_to_all" value="1"> Apply price to all specification types under this specification name
+                                        </label>
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th>Status</th>
@@ -480,20 +511,26 @@ echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; p
                                             <option value="available" <?php if ($spec['status'] == 'available') echo 'selected'; ?>>Available</option>
                                             <option value="unavailable" <?php if ($spec['status'] == 'unavailable') echo 'selected'; ?>>Unavailable</option>
                                         </select>
+                                        <br>
+                                        <!-- Checkbox to apply status to all specification types under the same specification name -->
+                                        <label>
+                                            <input type="checkbox" name="apply_status_to_all" value="1"> Apply status to all specification types under this specification name
+                                        </label>
                                     </td>
                                 </tr>
-                            
-                            <tr>
-                                      <td colspan="2" style="text-align: center;">
-                                          <input type="submit" value="Update Service" style="padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                                          <button onclick="history.go(-1);" style="padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">
-                                             Back</button>
-
-                                      </td>
-                                  </tr>
-                                  </table>
+                                <tr>
+                                    <td colspan="2" style="text-align: center;">
+                                        <input type="submit" value="Update Service" style="padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
+                                        <button onclick="history.go(-1);" style="padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">
+                                            Back
+                                        </button>
+                                    </td>
+                                </tr>
+                            </table>
                         </form>
                     </div>
+
+
 
                     <?php
                 } else {
@@ -789,7 +826,7 @@ echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; p
     align-items: center;
     justify-content: center;
     position: fixed; /* Use fixed positioning */
-    top: 3%;
+    top: 3 %;
     left: 35%;
     right: 0%;
     bottom: 0;
@@ -877,7 +914,7 @@ function deleteSpecification(specificationId, specificationName, deleteAll) {
     <!-- Footer -->
     <!-- ============================================================== -->
     <footer class="footer text-center">
-      All Rights Reserved by Your Company. Designed and Developed by <a href="https://www.wrappixel.com">WrapPixel</a>.
+      All Rights Reserved by Infinity Printing. Designed and Developed by <a href="https://www.wrappixel.com">WrapPixel</a>.
     </footer>
   </div>
   </div>

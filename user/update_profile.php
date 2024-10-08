@@ -73,17 +73,187 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <title>View Profile</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet">
-<style type="text/css">
-    /* Your existing styles */
-</style>
+<!--<style type="text/css">
+    body {
+    font-family: Arial, sans-serif;
+    background-color: #f8f9fa;
+}
+
+.container-xl {
+    margin-top: 20px;
+}
+
+.nav-borders .nav-link {
+    color: #007bff;
+    border-bottom: 2px solid transparent;
+    padding-bottom: 0.25rem;
+    margin-right: 1rem;
+}
+
+.nav-borders .nav-link:hover {
+    border-bottom-color: #0062cc;
+}
+
+.nav-borders .nav-link.active {
+    border-bottom-color: #0062cc;
+}
+
+.card {
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: 10px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background-color: white;
+}
+
+.card-header {
+    font-weight: bold;
+    font-size: 1.1rem;
+    background-color: #0062cc;
+    color: white;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    text-align: center;
+}
+
+.card-body img {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.card-body p {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.btn-secondary, .btn-primary {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 5px;
+}
+
+.btn-secondary {
+    background-color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-primary {
+    background-color: #0062cc;
+    border-color: #0062cc;
+}
+
+.btn-secondary:hover, .btn-primary:hover {
+    background-color: #004a99;
+    border-color: #004a99;
+}
+
+.form-control {
+    border-radius: 0.25rem;
+    border: 1px solid #ced4da;
+}
+
+.card-body label {
+    font-size: 0.9rem;
+    color: #6c757d;
+}
+
+#editProfile {
+    display: none;
+}
+
+img.img-account-profile {
+    width: 150px;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid #dee2e6;
+}
+
+.small.font-italic.text-muted {
+    font-style: italic;
+    color: #6c757d;
+}
+
+.card-header {
+    font-weight: bold;
+}
+
+.mb-3 {
+    margin-bottom: 1rem !important;
+}
+
+.mb-4 {
+    margin-bottom: 1.5rem !important;
+}
+
+.gx-3 .col-md-6 {
+    padding-right: 0.75rem;
+    padding-left: 0.75rem;
+}
+
+.mt-0 {
+    margin-top: 0;
+}
+
+img:hover {
+    cursor: pointer;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .nav-borders .nav-link {
+        font-size: 0.875rem;
+        padding-bottom: 0.2rem;
+        margin-right: 0.5rem;
+    }
+    .btn-secondary, .btn-primary {
+        width: 100%;
+        padding: 0.5rem;
+    }
+}
+
+</style>-->
 </head>
 <body>
     <div class="container-xl px-4 mt-4">
-        <nav class="nav nav-borders">
-            <a class="nav-link active ms-0" href="view_profile.php" target="_self">Profile</a>
-            <a class="nav-link" href="update_profile.php" target="_self">Security</a>
-            <a class="nav-link ms-auto" href="../index.php" target="_self">Home</a>
-        </nav>   
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#"><img src="../assets/images/logo.png" alt="Logo" style="width: 100px; height: auto;"></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <nav>
+                <div id="marker"></div>
+                <a href="../index.php#home" class="active">Home</a>
+                <a href="../index.php#services">Services</a>
+                <a href="../index.php#about">About</a>
+                <a href="../index.php#contact">Contact</a>
+                <a href="../index.php#feedback">Feedback</a>
+
+                </nav>
+                <?php if (!isset($_SESSION['signin'])): ?>
+                    <div class="nav-item">
+                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='signin.php'">Log In</button>
+                    </div>
+                    <div class="nav-item">
+                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='signup.php'">Sign Up</button>
+                    </div>
+                <?php else: ?>
+                    <div class="nav-item">
+                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='../logout.php'">Log Out</button>
+                    </div>
+                    <div class="nav-item">
+                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='view_profile.php'">Profile</button>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </nav>
+      
         <hr class="mt-0 mb-4">
         
         <!-- View Profile Section -->
@@ -221,7 +391,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         document.getElementById('displayAddress').textContent = address;
         document.getElementById('displayContact').textContent = contact;
 
-        // Uncomment the line below to show a success message or handle the form submission properly
          alert('Changes saved');
     }
 </script>

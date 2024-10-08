@@ -80,14 +80,45 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     .btn-danger-soft { color: #000; background-color: #f1e0e3; border-color: #f1e0e3; }
     #requirementsMessage { color: red; }
 </style>
+<link rel="stylesheet" href="../assets/ipasss.css">
 </head>
 <body>
 <div class="container-xl px-4 mt-4">
-    <nav class="nav nav-borders">
-        <a class="nav-link" href="view_profile.php" target="_self">Profile</a>
-        <a class="nav-link active ms-0" href="change_password.php" target="_self">Password</a>
-        <a class="nav-link ms-auto" href="../index.php" target="_self">Home</a>
-    </nav>   
+<nav class="navbar navbar-expand-lg navbar-light fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="#"><img src="../assets/images/logo.png" alt="Logo" style="width: 100px; height: auto;"></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <nav>
+                <div id="marker"></div>
+                <a href="../index.php#home" class="active">Home</a>
+                <a href="../index.php#services">Services</a>
+                <a href="../index.php#about">About</a>
+                <a href="../index.php#contact">Contact</a>
+                <a href="../index.php#feedback">Feedback</a>
+
+                </nav>
+                <?php if (!isset($_SESSION['signin'])): ?>
+                    <div class="nav-item">
+                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='signin.php'">Log In</button>
+                    </div>
+                    <div class="nav-item">
+                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='signup.php'">Sign Up</button>
+                    </div>
+                <?php else: ?>
+                    <div class="nav-item">
+                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='../logout.php'">Log Out</button>
+                    </div>
+                    <div class="nav-item">
+                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='view_profile.php'">Profile</button>
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </nav>  
+    <br>
     <hr class="mt-0 mb-4">
     <div class="row">
         <div class="col-lg-8">
@@ -108,7 +139,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             <label class="small mb-1" for="confirmPassword">Confirm Password</label>
                             <input class="form-control" id="confirmPassword" name="confirmPassword" type="password" placeholder="Confirm new password" required>
                         </div>
-                        <button class="btn btn-primary" type="submit">Save</button>
+                        <button class="btn btn-secondary" type="submit">Save</button>
+                        <button class="btn btn-secondary" onclick="history.back()">Back</button>
+
                     </form>
                 </div>
             </div>

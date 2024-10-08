@@ -1,6 +1,9 @@
 <?php
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 session_start();
-require 'connection.php'; // Your database connection
+require '../connection.php'; // Your database connection
 
 if (isset($_POST['submit_password'])) {
     $token = $_GET['token'] ?? '';
