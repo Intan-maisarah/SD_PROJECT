@@ -328,7 +328,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 
 echo "</table>";
-echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; padding: 8px;  margin-left: 30px; color: white;'>Add Print Specification</a><br><br>";
+echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; border-radius: 4px; padding: 8px;  margin-left: 30px; color: white;'>Add Print Specification</a><br><br>";
         break;
 
             case 'edit':
@@ -689,11 +689,12 @@ echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; p
                             </td>
                         </tr>
                     </table>
+                    <br>
                     <button type="button" class="remove-btn" onclick="removeType(this)">Remove Type</button>
                 </div>
             </div>
 
-            <button type="button" class="add-more" onclick="addType()">Add More Types</button><br><br>
+            <button type="button" class="add-more" onclick="addType()" style="background-color: #e5c370; border: 0px; border-radius: 3px; color: white; padding: 6px 5px; margin-left: 6px">Add More Types</button><br><br>
 
             <td colspan="2" style="text-align: center;">
                 <input type="submit" value="Add Specification" style="padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
