@@ -64,80 +64,9 @@ $conn->close();
     <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon.png" />
     <!-- Custom CSS -->
     <link href="../dist/css/style.min.css" rel="stylesheet" />
+    <link href="style.css" rel="stylesheet">
 
-    <style>
-        .preloader {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            flex-direction: column;
-        }
-        /* Printer styling */
-        .printer {
-            position: relative;
-            width: 120px;
-            height: 120px;
-        }
-        .printer-top {
-            width: 80px;
-            height: 20px;
-            background: #666;
-            border-radius: 10px 10px 0 0;
-            position: absolute;
-            top: 0;
-            left: 20px;
-        }
-        .paper-input-slot {
-            width: 80px;
-            height: 10px;
-            background: #444;
-            border-radius: 3px;
-            position: absolute;
-            top: 20px;
-            left: 20px;
-        }
-        .printer-body {
-            width: 120px;
-            height: 60px;
-            background: #333;
-            border-radius: 5px;
-            position: absolute;
-            top: 30px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .paper {
-            width: 80px;
-            height: 50px;
-            background: #fff;
-            border: 2px solid #333;
-            border-radius: 3px;
-            position: relative;
-            animation: paper-print 2s infinite;
-        }
-        .printer-tray {
-            width: 100px;
-            height: 10px;
-            background: #333;
-            border-radius: 0 0 5px 5px;
-            position: absolute;
-            bottom: 0;
-            left: 10px;
-        }
-        @keyframes paper-print {
-            0% { transform: translateY(0); }
-            50% { transform: translateY(20px); }
-            100% { transform: translateY(0); }
-        }
-    </style>
+    
 </head>
 <body>
     <div class="preloader">
@@ -152,27 +81,8 @@ $conn->close();
     </div>
 
     <div id="main-wrapper" data-layout="vertical" data-navbarbg="skin5" data-sidebartype="full" data-header-position="absolute">
-        <header class="topbar" data-navbarbg="skin5">
-            <nav class="navbar top-navbar navbar-expand-md navbar-dark">
-                <div class="navbar-header" data-logobg="skin5">
-                    <a class="navbar-brand" href="admin_page.html">
-                        <b class="logo-icon">
-                            <img src="../../assets/images/logo.png" alt="homepage" style="width: 60px; height: auto;" />
-                        </b>
-                    </a>
-                </div>
-                <div class="navbar-collapse collapse" id="navbarSupportedContent" data-navbarbg="skin5">
-                    <ul class="navbar-nav float-end">
-                        <li class="nav-item dropdown">
-                            
-                            <ul class="dropdown-menu dropdown-menu-end user-dd animated" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="pages_profile.php"><i class="mdi mdi-account m-r-5 m-l-5"></i> My Profile</a>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-        </header>
+    <?php include '../sidebar/header.php'; ?>
+
         
         <?php include '../sidebar/sidebarAdmin.php'; ?>
         
@@ -186,7 +96,10 @@ $conn->close();
                     $query = "SELECT * FROM users WHERE userType = 'STAFF'";
                     $result = mysqli_query($conn, $query);
 
-                    echo "<h2>Staff List</h2>";
+                    echo "<div>
+                        <h2>Staff List</h2>
+                        <a href='staff.php?action=add' class='button button-add' >Add Staff</a>
+                    </div>";
                     if (isset($_SESSION['message'])): ?>
                         <div class="alert alert-<?php echo $_SESSION['msg_type']; ?> alert-dismissible fade show" role="alert">
                             <?php echo $_SESSION['message']; ?>
@@ -198,17 +111,7 @@ $conn->close();
                         unset($_SESSION['msg_type']);
                       endif;
 
-                    echo "<style>
-                            table { width: 100%; border-collapse: collapse; font-family: Arial, sans-serif; }
-                            th, td { text-align: left; padding: 12px; border-bottom: 1px solid #ddd; }
-                            th { background-color: #f2f2f2; color: #333; font-weight: bold; }
-                            tr:nth-child(even) { background-color: #f9f9f9; }
-                            tr:hover { background-color: #f1f1f1; }
-                            a { color: #1a73e8; text-decoration: none; }
-                            a:hover { text-decoration: underline; }
-                            
-                        </style>";
-
+                      echo "<div class='table-container'>";
                     echo "<table>";
                     echo "<tr><th>ID</th><th>Username</th><th>Name</th><th>Email</th><th>Phone Number</th><th>Address</th><th>Actions</th></tr>";
 
@@ -221,15 +124,15 @@ $conn->close();
                         echo "<td>" . $row['contact'] . "</td>";
                         echo "<td>" . $row['address'] . "</td>";
                         echo "<td>
-                        <a href='staff.php?action=edit&id=" . $row['id'] . "' style='background-color: #1a73e8; border-radius: 3px; padding: 8px; color: white;'>Edit</a>
-                        <a href='staff.php?action=delete&id=" . $row['id'] . "' style='background-color: #e53935; border-radius: 3px; padding: 8px; color: white;' onclick='return confirm(\"Are you sure you want to delete?\")'>Delete</a>
+                        <a href='staff.php?action=edit&id=" . $row['id'] . "' class='button button-edit'>Edit</a> |
+                        <a href='staff.php?action=delete&id=" . $row['id'] . "' class='button button-delete' onclick='return confirm(\"Are you sure you want to delete?\")'>Delete</a>
                         </td>";
                         echo "</tr>";
                     }
 
                     echo "</table>";
+                    echo "</div>";
                     
-                    echo "<br><a href='staff.php?action=add' style='background-color: #00b300; padding: 8px;  margin-left: 30px;border-radius: 3px;  color: white;'>Add Staff</a><br><br>";
                     break;
 
                 case 'edit':
@@ -271,84 +174,13 @@ $conn->close();
                             $row = mysqli_fetch_assoc($result);
                             ?>
 
-<style>
-                        body {
-                            font-family: Arial, sans-serif;
-                            background-color: #f8f9fa;
-                            margin: 0;
-                            padding: 0;
-                        }
-                        .container {
-                            max-width: 800px;
-                            margin: 50px auto;
-                            padding: 20px;
-                            background-color: #fff;
-                            border-radius: 8px;
-                            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                        }
-                        h2 {
-                            text-align: center;
-                            color: #333;
-                        }
-                        table {
-                            width: 100%;
-                            border-collapse: collapse;
-                            margin-top: 20px;
-                        }
-                        th, td {
-                            text-align: left;
-                            padding: 12px;
-                            border-bottom: 1px solid #ddd;
-                        }
-                        th {
-                            background-color: #f2f2f2;
-                            color: #333;
-                            font-weight: bold;
-                        }
-                        tr:nth-child(even) {
-                            background-color: #f9f9f9;
-                        }
-                        tr:hover {
-                            background-color: #f1f1f1;
-                        }
-                        input[type="text"], input[type="number"], select {
-                            width: 95%;
-                            padding: 10px;
-                            border: 1px solid #ccc;
-                            border-radius: 4px;
-                            font-size: 16px;
-                        }
-                        input[type="submit"], button {
-                            padding: 10px 15px;
-                            background-color: #28a745;
-                            color: white;
-                            border: none;
-                            border-radius: 4px;
-                            cursor: pointer;
-                            font-size: 16px;
-                        }
-                        input[type="submit"]:hover, button:hover {
-                            background-color: #218838;
-                        }
-                        .back-button {
-                            background-color: #007bff;
-                            margin-left: 10px;
-                        }
-                        .back-button:hover {
-                            background-color: #0056b3;
-                        }
-                        .form-actions {
-                            text-align: center;
-                            margin-top: 20px;
-                        }
-                    </style>
                             <h2>Edit Staff</h2>
 
                         <form method="POST" action="">
                             <table>
                                 <tr>
                                     <th>Username</th>
-                                    <td><input type="text" name="username" value="<?php echo $row['username']; ?>" required>
+                                    <td><input type="text" name="username" value="<?php echo $row['username']; ?>" readonly>
                                     </td>
                                 </tr>
                                 <tr>
@@ -374,8 +206,8 @@ $conn->close();
                             
                             <tr>
                                       <td colspan="2" style="text-align: center;">
-                                          <input type="submit" value="Update Staff" style="padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                                          <button onclick="history.go(-1);" style="padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">
+                                          <input type="submit" value="Update Staff" class="button button-edit">
+                                          <button onclick="history.go(-1);" class="button button-back">
                                              Back</button>
 
                                       </td>
@@ -443,51 +275,6 @@ $conn->close();
                     } else {
                         ?>
 
-<style>
-                  table {
-                      width: 100%;
-                      border-collapse: collapse;
-                      font-family: Arial, sans-serif;
-                      margin-top: 20px;
-                  }
-                  th, td {
-                      text-align: left;
-                      padding: 12px;
-                      border-bottom: 1px solid #ddd;
-                  }
-                  th {
-                      background-color: #f2f2f2;
-                      color: #333;
-                      font-weight: bold;
-                  }
-                  tr:nth-child(even) {
-                      background-color: #f9f9f9;
-                  }
-                  tr:hover {
-                      background-color: #f1f1f1;
-                  }
-                  input[type="text"], input[type="email"], input[type="password"],textarea[name="address"],input[type="number"], select {
-                      width: 95%;
-                      padding: 10px;
-                      border: 1px solid #ccc;
-                      border-radius: 4px;
-                  }
-                  input[type="submit"] {
-                      background-color: #28a745;
-                      color: white;
-                      padding: 10px 15px;
-                      border: none;
-                      border-radius: 4px;
-                      cursor: pointer;
-                  }
-                  input[type="submit"]:hover {
-                      background-color: #218838;
-                  }
-                  h2 {
-                      margin-top: 20px;
-                      color: #333;
-                  }
-              </style>
                         <h2>Add Staff</h2>
                         <form method="POST">
                             <label for="username">Username:</label><br>
@@ -503,8 +290,8 @@ $conn->close();
                             <label for="password">Password:</label><br>
                             <input type="password" name="password" required><br>
                             <br>
-                            <input type="submit" value="Add Staff">
-                            <button onclick="history.go(-1);" style="padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">
+                            <input type="submit" value="Add Staff" class="button button-add">
+                            <button onclick="history.go(-1);" class="button button-back">
                                              Back</button>
                         </form>
                         <?php

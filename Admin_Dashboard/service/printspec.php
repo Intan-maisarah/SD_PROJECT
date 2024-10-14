@@ -71,94 +71,7 @@ $conn->close();
   <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon.png" />
   <!-- Custom CSS -->
   <link href="../dist/css/style.min.css" rel="stylesheet" />
-
-  <style>
-    .preloader {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.8);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-  flex-direction: column;
-}
-
-/* Printer styling */
-.printer {
-  position: relative;
-  width: 120px;
-  height: 120px;
-}
-
-.printer-top {
-  width: 80px;
-  height: 20px;
-  background: #666;
-  border-radius: 10px 10px 0 0;
-  position: absolute;
-  top: 0;
-  left: 20px;
-}
-
-.paper-input-slot {
-  width: 80px;
-  height: 10px;
-  background: #444;
-  border-radius: 3px;
-  position: absolute;
-  top: 20px;
-  left: 20px;
-}
-
-.printer-body {
-  width: 120px;
-  height: 60px;
-  background: #333;
-  border-radius: 5px;
-  position: absolute;
-  top: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.paper {
-  width: 80px;
-  height: 50px;
-  background: #fff;
-  border: 2px solid #333;
-  border-radius: 3px;
-  position: relative;
-  animation: paper-print 2s infinite;
-}
-
-.printer-tray {
-  width: 100px;
-  height: 10px;
-  background: #333;
-  border-radius: 0 0 5px 5px;
-  position: absolute;
-  bottom: 0;
-  left: 10px;
-}
-
-/* Animation for the paper printing effect */
-@keyframes paper-print {
-  0% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(20px);
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
-  </style>
+  <link href="style.css" rel="stylesheet">
  
 </head>
 
@@ -184,32 +97,7 @@ $conn->close();
   <!-- ============================================================== -->
   <div id="main-wrapper" data-layout="vertical" data-navbarbg="skin5" data-sidebartype="full" data-header-position="absolute">
     
-    <!-- ============================================================== -->
-    <!-- Topbar header -->
-    <!-- ============================================================== -->
-    <header class="topbar" data-navbarbg="skin5">
-      <nav class="navbar top-navbar navbar-expand-md navbar-dark">
-        <div class="navbar-header" data-logobg="skin5">
-          <a class="navbar-brand" href="admin_page.php">
-            <b class="logo-icon">
-              <img src="../../assets/images/logo.png" alt="homepage" style="width: 60px; height: auto;" />
-            </b>
-          </a>
-        </div>
-        <div class="navbar-collapse collapse" id="navbarSupportedContent" data-navbarbg="skin5">
-          <ul class="navbar-nav float-end">
-            <li class="nav-item dropdown">
-              <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark pro-pic" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                <img src="../assets/images/users/1.jpg" alt="user" class="rounded-circle" width="31" />
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end user-dd animated" aria-labelledby="navbarDropdown">
-                <a class="dropdown-item" href="pages_profile.php"><i class="mdi mdi-account m-r-5 m-l-5"></i> My Profile</a>
-              </ul>
-            </li>
-          </ul>
-        </div>
-      </nav>
-    </header>
+  <?php include '../sidebar/header.php'; ?>
     
     <!-- ============================================================== -->
     <!-- Sidebar -->
@@ -240,7 +128,12 @@ switch($action) {
         $query = "SELECT * FROM specification";
 $result = mysqli_query($conn, $query);
 
-echo "<h2>Print Specification</h2>";
+echo "<div>
+        <h2>Print Specification</h2>
+        <a href='printspec.php?action=add' class = 'button button-add'>Add Print Specification</a>
+      </div>";
+
+
 if (isset($_SESSION['message'])): ?>
     <div class="alert alert-<?php echo $_SESSION['msg_type']; ?> alert-dismissible fade show" role="alert">
         <?php echo $_SESSION['message']; ?>
@@ -252,61 +145,8 @@ if (isset($_SESSION['message'])): ?>
     unset($_SESSION['msg_type']);
 endif;
 
-// Apply CSS styling to the table
-echo "<style>
-        table {
-          width: 100%;
-          border-collapse: collapse;
-          font-family: Arial, sans-serif;
-        }
+echo "<div class='table-container'>";
 
-        th, td {
-          text-align: left;
-          padding: 12px;
-          border-bottom: 1px solid #ddd;
-        }
-
-        th {
-          background-color: #f2f2f2;
-          color: #333;
-          font-weight: bold;
-        }
-
-        tr:nth-child(even) {
-          background-color: #f9f9f9;
-        }
-
-        tr:hover {
-          background-color: #f1f1f1;
-        }
-
-        a {
-          color: #1a73e8;
-          text-decoration: none;
-        }
-
-        a:hover {
-          text-decoration: underline;
-        }
-
-        @media screen and (max-width: 600px) {
-          table, th, td {
-            width: 100%;
-            display: block;
-          }
-
-          th, td {
-            text-align: left;
-            padding: 10px;
-          }
-
-          th {
-            background-color: #f0f0f0;
-          }
-        }
-      </style>";
-
-// Table structure
 echo "<table>";
 echo "<tr><th>ID</th><th>Specification Name</th><th>Specification Type</th><th>Price</th><th>Status</th><th>Actions</th></tr>";
 
@@ -318,9 +158,9 @@ while ($row = mysqli_fetch_assoc($result)) {
   echo "<td>" . $row['price'] . "</td>";
   echo "<td>" . $row['status'] . "</td>";
   echo "<td>
-  <a href='printspec.php?action=edit&id=" . $row['id'] . "' style='display: inline-block; padding: 8px 16px; text-align: center; text-decoration: none; background-color: #1a73e8; color: white; border-radius: 4px; margin-right: 8px;'>Edit</a>
+  <a href='printspec.php?action=edit&id=" . $row['id'] . "' class='button button-edit'>Edit</a> |
   <a href='javascript:void(0);'
-     style='display: inline-block; padding: 8px 16px; text-align: center; text-decoration: none; background-color: #e53935; color: white; border-radius: 4px;'
+     class='button button-delete'
      onclick='openDeleteModal(\"" . addslashes($row['spec_name']) . "\", " . $row['id'] . ")'>Delete</a>
   </td>";
   echo "</tr>";
@@ -328,7 +168,7 @@ while ($row = mysqli_fetch_assoc($result)) {
 
 
 echo "</table>";
-echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; border-radius: 4px; padding: 8px;  margin-left: 30px; color: white;'>Add Print Specification</a><br><br>";
+echo "</div>";
         break;
 
             case 'edit':
@@ -405,81 +245,9 @@ echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; b
                   
                   
 
-                    // Display the form for editing the specification
                     ?>
-                    <style>
-                        body {
-                            font-family: Arial, sans-serif;
-                            background-color: #f8f9fa;
-                            margin: 0;
-                            padding: 0;
-                        }
-                        .container {
-                            max-width: 800px;
-                            margin: 50px auto;
-                            padding: 20px;
-                            background-color: #fff;
-                            border-radius: 8px;
-                            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-                        }
-                        h2 {
-                            text-align: center;
-                            color: #333;
-                        }
-                        table {
-                            width: 100%;
-                            border-collapse: collapse;
-                            margin-top: 20px;
-                        }
-                        th, td {
-                            text-align: left;
-                            padding: 12px;
-                            border-bottom: 1px solid #ddd;
-                        }
-                        th {
-                            background-color: #f2f2f2;
-                            color: #333;
-                            font-weight: bold;
-                        }
-                        tr:nth-child(even) {
-                            background-color: #f9f9f9;
-                        }
-                        tr:hover {
-                            background-color: #f1f1f1;
-                        }
-                        input[type="text"], input[type="number"], select {
-                            width: 95%;
-                            padding: 10px;
-                            border: 1px solid #ccc;
-                            border-radius: 4px;
-                            font-size: 16px;
-                        }
-                        input[type="submit"], button {
-                            padding: 10px 15px;
-                            background-color: #28a745;
-                            color: white;
-                            border: none;
-                            border-radius: 4px;
-                            cursor: pointer;
-                            font-size: 16px;
-                        }
-                        input[type="submit"]:hover, button:hover {
-                            background-color: #218838;
-                        }
-                        .back-button {
-                            background-color: #007bff;
-                            margin-left: 10px;
-                        }
-                        .back-button:hover {
-                            background-color: #0056b3;
-                        }
-                        .form-actions {
-                            text-align: center;
-                            margin-top: 20px;
-                        }
-                    </style>
+                    
 
-                    <div class="container">
                         <h2>Edit Specification</h2>
 
                         <!-- Form to edit specification details -->
@@ -520,15 +288,14 @@ echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; b
                                 </tr>
                                 <tr>
                                     <td colspan="2" style="text-align: center;">
-                                        <input type="submit" value="Update Service" style="padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                                        <button onclick="history.go(-1);" style="padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">
+                                        <input type="submit" value="Update Print Specification" class="button button-edit">
+                                        <button onclick="history.go(-1);" class="button button-back">
                                             Back
                                         </button>
                                     </td>
                                 </tr>
                             </table>
                         </form>
-                    </div>
 
 
 
@@ -586,126 +353,63 @@ echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; b
               header("Location: printspec.php?action=view");
               exit;
           } else {
-              // Display the form for adding a new specification
               ?>
-              
-              <!-- Add styling to the add specification form -->
-              <style>
-                  table {
-                      width: 100%;
-                      border-collapse: collapse;
-                      font-family: Arial, sans-serif;
-                      margin-top: 20px;
-                  }
-      
-                  th, td {
-                      text-align: left;
-                      padding: 12px;
-                      border-bottom: 1px solid #ddd;
-                  }
-      
-                  th {
-                      background-color: #f2f2f2;
-                      color: #333;
-                      font-weight: bold;
-                  }
-      
-                  tr:nth-child(even) {
-                      background-color: #f9f9f9;
-                  }
-      
-                  tr:hover {
-                      background-color: #f1f1f1;
-                  }
-      
-                  input[type="text"], input[type="number"], textarea {
-                      width: 95%;
-                      padding: 10px;
-                      border: 1px solid #ccc;
-                      border-radius: 4px;
-                  }
-      
-                  input[type="submit"] {
-                      background-color: #28a745;
-                      color: white;
-                      padding: 10px 15px;
-                      border: none;
-                      border-radius: 4px;
-                      cursor: pointer;
-                  }
-      
-                  input[type="submit"]:hover {
-                      background-color: #218838;
-                  }
-      
-                  .remove-btn {
-                      background-color: #dc3545;
-                      color: white;
-                      padding: 5px 10px;
-                      border: none;
-                      border-radius: 4px;
-                      cursor: pointer;
-                      margin-left: 10px;
-                  }
-      
-                  .add-more {
-                      margin-top: 20px;
-                  }
-              </style>
-      
-      <h2>Add New Specification</h2>
 
-        <form method="POST" action="">
-            <table>
-                <tr>
-                    <th>Specification Name</th>
-                    <td><input type="text" name="spec_name" required></td>
-                </tr>
-            </table>
+            <h2>Add Specification</h2>
 
-            <h3>Specification Types</h3>
-            <label>
-                <input type="checkbox" id="same-price-checkbox"> Apply the same price for all specification types
-            </label>
-            
-            <div id="spec-type-section">
-                <div class="spec-type-entry">
-                    <table>
-                        <tr>
-                            <th>Specification Type</th>
-                            <td><input type="text" name="spec_type[]" required></td>
-                        </tr>
-                        <tr>
-                            <th>Price</th>
-                            <td><input type="number" step="0.01" name="price[]" class="price-input" required></td>
-                        </tr>
-                        <tr>
-                            <th>Status</th>
-                            <td>
-                                <select name="status[]">
-                                    <option value="available">Available</option>
-                                    <option value="unavailable">Unavailable</option>
-                                </select>
-                            </td>
-                        </tr>
-                    </table>
-                    <br>
-                    <button type="button" class="remove-btn" onclick="removeType(this)">Remove Type</button>
+            <form method="POST" action="">
+                <table>
+                    <tr>
+                        <th>Specification Name</th>
+                        <td><input type="text" name="spec_name" required></td>
+                    </tr>
+                </table>
+
+                <h3>Specification Types</h3>
+                <label>
+                    <input type="checkbox" id="same-price-checkbox"> Apply the same price for all specification types
+                </label>
+
+                <div id="spec-type-section">
+                    <div class="spec-type-entry">
+                        <table>
+                            <tr>
+                                <th>Specification Type</th>
+                                <td><input type="text" name="spec_type[]" required></td>
+                            </tr>
+                            <tr>
+                                <th>Price</th>
+                                <td><input type="number" step="0.01" name="price[]" class="price-input" required></td>
+                            </tr>
+                            <tr>
+                                <th>Status</th>
+                                <td>
+                                    <select name="status[]" style="width: 200px; height: 40px;">
+                                        <option value="available">Available</option>
+                                        <option value="unavailable">Unavailable</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        </table>
+                        <br>
+                        <button type="button" class="button button-delete" onclick="removeType(this)">Remove Type</button>
+                        <button type="button" class="button button-add" onclick="addType()">Add More Types</button>
+                    </div>
                 </div>
-            </div>
 
-            <button type="button" class="add-more" onclick="addType()" style="background-color: #e5c370; border: 0px; border-radius: 3px; color: white; padding: 6px 5px; margin-left: 6px">Add More Types</button><br><br>
+                <br><br>
 
-            <td colspan="2" style="text-align: center;">
-                <input type="submit" value="Add Specification" style="padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                <button onclick="window.history.back();" style="padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">
-                    Back
-                </button>
-            </td>
-        </form>
+                <!-- Neatly aligned buttons -->
+                <div class="button-container">
+                    <input type="submit" value="Add Specification" class="button button-add">
+                    <button type="button" onclick="window.history.back();" class="button button-back">Back</button>
+                </div>
+            </form>
 
-              <script>
-                 document.getElementById('same-price-checkbox').addEventListener('change', function() {
+
+
+            <script>
+                document.getElementById('same-price-checkbox').addEventListener('change', function() {
                     const priceInputs = document.querySelectorAll('.price-input');
                     
                     if (this.checked) {
@@ -741,14 +445,15 @@ echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; b
                             <tr>
                                 <th>Status</th>
                                 <td>
-                                    <select name="status[]">
+                                    <select name="status[]" style="width: 200px; height: 40px;"> <!-- Make the dropdown bigger -->
                                         <option value="available">Available</option>
                                         <option value="unavailable">Unavailable</option>
                                     </select>
                                 </td>
                             </tr>
                         </table>
-                        <button type="button" class="remove-btn" onclick="removeType(this)">Remove Type</button>
+                        <button type="button" class="button button-delete" onclick="removeType(this)">Remove Type</button>
+                        <button type="button" class="button button-add" onclick="addType()" >Add More Types</button>
                     `;
 
                     specTypeSection.appendChild(newEntry);
@@ -766,8 +471,8 @@ echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; b
                 function removeType(button) {
                     button.closest('.spec-type-entry').remove();
                 }
+            </script>
 
-              </script>
       
               <?php
           }
@@ -815,28 +520,6 @@ echo "<br><a href='printspec.php?action=add' style='background-color: #00b300; b
 }
 ?>
 
-<style>
-  .modal {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: fixed; /* Use fixed positioning */
-    top: 3 %;
-    left: 35%;
-    right: 0%;
-    bottom: 0;
-}
-
-.modal-content {
-    background-color: white; /* Background color of the modal */
-    border-radius: 8px; /* Rounded corners */
-    padding: 20px; /* Padding inside the modal */
-    width: 400px; /* Fixed width for the modal */
-    max-width: 90%; /* Responsive width */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Soft shadow */
-}
-
-</style>
 
 <!-- Delete Confirmation Modal -->
 <div id="deleteModal" class="modal" style="display: none;">

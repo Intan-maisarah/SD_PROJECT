@@ -4,32 +4,43 @@ body {
     padding: 0;
 }
 
+/* Navbar Styles */
 .navbar {
-    padding: 10px 0;
+    padding: 8px 0;
     background: rgb(252, 250, 249);
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     position: fixed;
     top: 0;
     width: 100%;
-    height: 8% !important;
     z-index: 1000;
 }
 
 .navbar-nav {
-    position: relative;
     display: flex;
     justify-content: flex-end;
+    align-items: right;
     width: 100%;
-    align-items: center;
 }
 
+.navbar-nav .nav-item {
+    margin-left: 20px;
+}
+
+.navbar-nav .nav-link {
+    color: #183a4d;
+    text-transform: uppercase;
+    font-size: 1em;
+    font-weight: bold;
+    padding: 10px;
+    transition: color 0.3s ease;
+}
 
 .navbar-nav .nav-link.active {
-    color: #0e263e; 
+    color: #0e263e;
 }
 
 .navbar-nav .nav-link:hover {
-    color: #0d243c; 
+    color: #0d243c;
 }
 
 nav {
@@ -43,12 +54,11 @@ nav a {
     text-transform: uppercase;
     font-size: 1em;
     cursor: pointer;
-    margin: 0px 20px;
+    margin: 0 20px;
     padding: 10px 0;
     font-weight: bold;
-    color: #183a4d; 
+    color: #183a4d;
     transition: color 0.3s ease;
-    cursor: pointer;
 }
 
 nav a.active {
@@ -59,15 +69,112 @@ nav #marker {
     position: absolute;
     bottom: -11px;
     left: 0;
-    background-color: #5e97c2; 
+    background-color: #5e97c2;
     width: 0;
     height: 4px;
     transition: 0.5s;
 }
 
-.navbar-expand-lg .navbar-collapse {
-    justify-content: flex-end;
+/* Responsive Navbar Styles */
+@media (max-width: 992px) {
+    .navbar-collapse {
+        display: none;
+    }
+
+    .navbar-collapse.show {
+        display: block;
+    }
+
+    .navbar-toggler {
+        display: block;
+        background-color: #bbd4df;
+        border: none;
+    }
+
+    .navbar-nav {
+        display: block;
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    .nav-item {
+        margin-left: -25px;
+        margin-bottom: 5px; 
+        
+    }
+
+    .navbar-nav .nav-link {
+        padding: 10px 0;
+        display: block;
+    }
+
+    .navbar-toggler-icon {
+        display: inline-block;
+        width: 30px;
+        height: 30px;
+        position: relative;
+    }
+
+    .navbar-toggler-icon:before,
+    .navbar-toggler-icon:after {
+        content: "";
+        position: absolute;
+        width: 30px;
+        height: 2px;
+        left: 0;
+        transition: all 0.2s ease;
+    }
+
+    .navbar-toggler-icon:before {
+        top: -8px;
+    }
+
+    .navbar-toggler-icon:after {
+        top: 8px;
+    }
+
+    nav {
+        display: block;
+    }
+
+    nav a {
+        display: block;
+        margin: 10px 0;
+        font-size: 1.2em;
+    }
+
+    .navbar-toggler:focus {
+        outline: none;
+    }
+
+    nav #marker {
+    position: absolute;
+    bottom: 0px;
+    left: 0;
+    background-color: #5e97c2;
+    width: 0;
+    height: 4px;
+    transition: 0.5s;
 }
+}
+
+/* Mobile View Adjustments */
+@media (max-width: 576px) {
+    .navbar-nav {
+        width: 100%;
+    }
+
+    nav a {
+        font-size: 1.1em;
+        padding: 10px 0;
+        margin: 5px 0;
+    }
+
+    .nav-item {
+        margin-bottom: 15px;
+    }
+}
+
 
 section {
     min-height: 100vh;
@@ -150,19 +257,6 @@ section {
     color: #666;
 }
 
-@media (max-width: 768px) {
-    .service-item {
-        flex: 1 1 calc(50% - 20px); /* 2 items per row on small screens */
-        max-width: calc(50% - 20px);
-    }
-}
-
-@media (max-width: 480px) {
-    .service-item {
-        flex: 1 1 100%; /* 1 item per row on extra small screens */
-        max-width: 100%;
-    }
-}
 
 
 #about {
@@ -225,24 +319,6 @@ section {
     line-height: 1.6;
     text-align: justify;
     padding: 0 15px;
-  }
-
-  
-  @media (max-width: 768px) {
-    .about-content {
-      flex-direction: column;
-    }
-  
-    .map-container {
-      max-width: 80%;
-      margin-right: 0;
-      margin-bottom: 20px;
-    }
-  
-    .text-content {
-      max-width: 100%;
-      padding: 0;
-    }
   }
 
 
@@ -554,16 +630,60 @@ section {
 
 /* Mobile View Adjustments */
 @media (max-width: 768px) {
+
+    .hero-section {
+        min-height: 180vh;
+        position: relative;
+        height: 100%;
+        background-color: rgb(197, 191, 226) !important;
+        color: #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        overflow: hidden;
+    }
+
     .hero-content {
-        flex-direction: column; /* Stack image and text */
+        display: flex;
+        flex-direction: row; 
+        justify-content: center; 
+        align-items: center; 
+        height: 100vh; /* Ensure it takes full viewport height */
         text-align: center;
+        margin: 0; /* Ensure there's no margin */
+        padding: 0; /* Ensure there's no padding */
+        width: 100%; /* Take full width of the viewport */
+        box-sizing: border-box; /* Ensure padding doesn't affect width */
+
+    }
+
+    .hero-text {
+        max-width: 300px;
+        margin: 0 auto;
+    }
+    
+    .hero-title {
+        font-family: "Gochi Hand", cursive;
+      font-weight: 400;
+        font-size: 60px;
+        font-style: normal;
+        color: #3e335f; 
+        margin: 0; 
+    }
+    .hero-par {
+        font-family: "Nanum Pen Script", cursive;
+        font-weight: 400;
+        font-size: 32px;
+        color: #3e335f; 
+        margin: 0; 
     }
 
     .hero-img {
+        margin-top: 70px;
         margin-right: 0;
         margin-bottom: 20px;
-        width: 100%;
-        max-width: 300px; /* Maintain max width */
+        max-width: 500px; /* Maintain max width */
     }
 
     .icon {

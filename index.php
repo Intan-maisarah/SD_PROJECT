@@ -58,7 +58,9 @@ include 'services.php';
     <section class="hero-section" id="home">
     <div class="hero-overlay"></div>
     <div class="hero-content">
+        <div class="hero-img">
         <img src="assets/images/printing.gif" class="hero-img" alt="Printing GIF">
+        </div>
         <div class="hero-text">
             <h1 class="hero-title">Let Us Handle All Your Printing Needs.</h1>            
             <p class="hero-par">Your on-the-go printing service!</p>
@@ -99,12 +101,8 @@ include 'services.php';
     <i class="fa fa-comments icon"></i>
     <i class="fa fa-lightbulb icon"></i>
     <i class="fa fa-code icon"></i>
-
     </div>
 </section>
-
-
-
 
     <section id="services">
         <div class="container">

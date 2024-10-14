@@ -1,0 +1,320 @@
+/* Preloader Styling */
+.preloader {
+    position: fixed; 
+    left: 0;
+    top: 0;
+    width: 100%; 
+    height: 100%; 
+    background: rgba(255, 255, 255, 0.8); 
+    display: flex; 
+    justify-content: center; 
+    align-items: center; 
+    z-index: 9999; 
+}
+
+/* Printer Styling */
+.printer {
+    position: relative;
+    width: 120px; 
+    height: 120px; 
+}
+
+.printer-top {
+    width: 80px;
+    height: 20px;
+    background: #666; 
+    border-radius: 10px 10px 0 0; 
+    position: absolute;
+    top: 0;
+    left: 20px; 
+}
+
+.paper-input-slot {
+    width: 80px;
+    height: 10px;
+    background: #444; 
+    border-radius: 3px; 
+    position: absolute;
+    top: 20px; 
+    left: 20px; 
+}
+
+.printer-body {
+    width: 120px;
+    height: 60px; /* Height of the printer body */
+    background: #333; /* Dark gray for the body */
+    border-radius: 5px; /* Slightly rounded corners */
+    position: absolute;
+    top: 30px; /* Positioning below the printer top */
+    display: flex; /* Flexbox for centering paper */
+    justify-content: center;
+    align-items: center;
+}
+
+.paper {
+    width: 80px;
+    height: 50px; /* Height of the paper */
+    background: #fff; /* White for the paper */
+    border: 2px solid #333; /* Border for the paper */
+    border-radius: 3px; /* Rounded corners */
+    position: relative;
+    animation: paper-print 2s infinite; /* Animation for printing effect */
+}
+
+.printer-tray {
+    width: 100px;
+    height: 10px;
+    background: #333; /* Dark gray for the printer tray */
+    border-radius: 0 0 5px 5px; /* Rounded bottom corners */
+    position: absolute;
+    bottom: 0; /* Align at the bottom of the printer */
+}
+
+/* Animation for the Paper Printing Effect */
+@keyframes paper-print {
+    0% {
+        transform: translateY(0); /* Start position */
+    }
+    50% {
+        transform: translateY(20px); /* Move down */
+    }
+    100% {
+        transform: translateY(0); /* Return to start */
+    }
+}
+
+/* Table Styling */
+
+.table-container {
+    overflow-x: auto; /* Enable horizontal scrolling */
+    width: 100%; /* Ensure it takes the full width */
+}
+
+table {
+    width: 100%; /* Full width */
+    border-collapse: collapse; /* Collapse borders */
+    font-family: Arial, sans-serif; /* Font style */
+}
+
+th, td {
+    text-align: left; /* Left align text */
+    padding: 12px; /* Cell padding */
+    border: 1px solid #ddd; /* Add border to each cell */
+}
+
+th {
+    background-color: #f2f2f2; /* Light gray for header */
+    color: #333; /* Dark gray text */
+    font-weight: bold; /* Bold font */
+    text-align: center; /* Center align header */
+}
+
+tr:nth-child(even) {
+    background-color: #f9f9f9; /* Alternating row colors */
+}
+
+tr:hover {
+    background-color: #f1f1f1; /* Highlight on hover */
+}
+
+/* Link Styling */
+a {
+    color: #1a73e8; /* Link color */
+    text-decoration: none; /* Remove underline */
+}
+
+a:hover {
+    text-decoration: underline; /* Underline on hover */
+}
+
+/* Responsive Styling for Phones */
+@media screen and (max-width: 600px) {
+    .table-container {
+        padding: 0 10px; /* Add padding around the table */
+        overflow-x: auto;
+    }
+
+    table {
+         /* Allow horizontal scroll */
+        white-space: nowrap; /* Prevent line breaks */
+    }
+
+    th, td {
+        width: 100%; /* Full width */
+    }
+
+    th {
+        background-color: #f0f0f0; /* Slightly different header color */
+    }
+
+    /* Button Styling Adjustments */
+    .button {
+        max-width: 100px; /* Full width buttons */
+        padding: 12px; /* Button padding */
+        font-size: 15px; /* Larger font size */
+    }
+}
+
+/* Responsive Styling for Tablets */
+@media screen and (min-width: 601px) and (max-width: 1024px) {
+    table {
+        display: table; /* Regular table display */
+        overflow: visible; /* Ensure it displays correctly */
+    }
+
+    th, td {
+        padding: 15px; /* Slightly larger padding */
+    }
+
+    /* Button Styling Adjustments */
+    .button {
+        max-width: 100px; /* Allow buttons to have default width */
+        padding: 10px 20px; /* Adjust padding for buttons */
+        font-size: 16px; /* Increase font size for readability */
+    }
+
+    /* Input Field Adjustments */
+    input[type="text"], 
+    input[type="email"], 
+    input[type="password"], 
+    textarea[name="address"], 
+    input[type="number"], 
+    select {
+        width: 90%; /* Adjust width for better fitting */
+    }
+
+    /* Modal Styles */
+    .modal-content {
+        width: 80%; /* Adjust modal width for tablet */
+        max-width: 600px; /* Limit the maximum width */
+    }
+}
+
+/* Responsive Styling for Laptops and Larger Screens */
+@media screen and (min-width: 1025px) {
+    /* Keep table layout as normal */
+    table {
+        display: table; /* Regular display for larger screens */
+    }
+}
+
+/* Form and Input Field Styling */
+input[type="text"], 
+input[type="email"], 
+input[type="password"], 
+textarea[name="address"], 
+input[type="number"], 
+select {
+    width: 95%; /* Input width */
+    padding: 10px; /* Input padding */
+    border: 1px solid #ccc; /* Border */
+    border-radius: 4px; /* Rounded corners */
+}
+
+input[type="submit"] {
+    background-color: #28a745; /* Green background */
+    color: white; /* White text */
+    padding: 10px 15px; /* Button padding */
+    border: none; /* No border */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor */
+}
+
+input[type="submit"]:hover {
+    background-color: #218838; /* Darker green on hover */
+}
+
+/* Button Styling */
+.button {
+    display: inline-block; /* Inline block for buttons */
+    padding: 10px 15px; /* Button padding */
+    border: none; /* No border */
+    border-radius: 4px; /* Rounded corners */
+    cursor: pointer; /* Pointer cursor */
+    margin: 5px; /* Margin around buttons */
+    transition: background-color 0.3s ease, color 0.3s ease; /* Transition effects */
+}
+
+.button-edit {
+    background-color: #4c7aaf; /* Blue */
+    color: white; /* White text */
+}
+
+.button-edit:hover {
+    background-color: #385c85; /* Darker blue on hover */
+}
+
+.button-add {
+    background-color: #46a54b; /* Green */
+    color: white; /* White text */
+}
+
+.button-add:hover {
+    background-color: #36682e; /* Darker green on hover */
+}
+
+.button-delete {
+    background-color: #f44336; /* Red */
+    color: white; /* White text */
+}
+
+.button-delete:hover {
+    background-color: #e53935; /* Darker red on hover */
+}
+
+.button-back {
+    background-color: #007bff; /* Blue */
+    color: white; /* White text */
+}
+
+.button-back:hover {
+    background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Alert Styles */
+.alert {
+    padding: 15px; /* Alert padding */
+    margin-bottom: 20px; /* Margin below alert */
+    border: 1px solid transparent; /* Border */
+    border-radius: 4px; /* Rounded corners */
+}
+
+.alert-success {
+    color: #155724; /* Dark green text */
+    background-color: #d4edda; /* Light green background */
+    border-color: #c3e6cb; /* Green border */
+}
+
+.alert-danger {
+    color: #721c24; /* Dark red text */
+    background-color: #f8d7da; /* Light red background */
+    border-color: #f5c6cb; /* Red border */
+}
+
+/* Modal Styles */
+.modal {
+    display: flex; /* Flexbox for centering */
+    align-items: center; /* Center vertically */
+    justify-content: center; /* Center horizontally */
+    position: fixed; /* Fixed position */
+    top: 0; /* Align to top */
+    left: 0; /* Align to left */
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    background-color: rgba(0, 0, 0, 0.5); /* Dark semi-transparent background */
+    z-index: 9999; /* On top of other elements */
+}
+
+.modal-content {
+    background-color: white; /* White background */
+    padding: 20px; /* Padding */
+    border-radius: 4px; /* Rounded corners */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Shadow effect */
+    width: 90%; /* Full width on mobile */
+    max-width: 500px; /* Maximum width */
+}
+
+img {
+width: 50px;
+height: 50px;
+}

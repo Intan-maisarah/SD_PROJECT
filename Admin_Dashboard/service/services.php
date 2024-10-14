@@ -1,5 +1,3 @@
-<!-- services.php -->
-
 <?php
 ob_start();
 ini_set('display_errors', 1);
@@ -71,123 +69,16 @@ $conn->close();
     <link rel="icon" type="image/png" sizes="16x16" href="../assets/images/favicon.png" />
     <!-- Custom CSS -->
     <link href="../dist/css/style.min.css" rel="stylesheet" />
+    <link href="style.css" rel="stylesheet">
     
-    <style>
-        /* Preloader styles */
-        .preloader {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            flex-direction: column;
-        }
-
-        /* Printer styling */
-        .printer {
-            position: relative;
-            width: 120px;
-            height: 120px;
-        }
-
-        .printer-top {
-            width: 80px;
-            height: 20px;
-            background: #666;
-            border-radius: 10px 10px 0 0;
-            position: absolute;
-            top: 0;
-            left: 20px;
-        }
-
-        .paper-input-slot {
-            width: 80px;
-            height: 10px;
-            background: #444;
-            border-radius: 3px;
-            position: absolute;
-            top: 20px;
-            left: 20px;
-        }
-
-        .printer-body {
-            width: 120px;
-            height: 60px;
-            background: #333;
-            border-radius: 5px;
-            position: absolute;
-            top: 30px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .paper {
-            width: 80px;
-            height: 50px;
-            background: #fff;
-            border: 2px solid #333;
-            border-radius: 3px;
-            position: relative;
-            animation: paper-print 2s infinite;
-        }
-
-        .printer-tray {
-            width: 100px;
-            height: 10px;
-            background: #333;
-            border-radius: 0 0 5px 5px;
-            position: absolute;
-            bottom: 0;
-            left: 10px;
-        }
-
-        /* Animation for the paper printing effect */
-        @keyframes paper-print {
-            0% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(20px);
-            }
-            100% {
-                transform: translateY(0);
-            }
-        }
-    </style>
+    
 </head>
 
 <body>
     <div id="main-wrapper" data-layout="vertical" data-navbarbg="skin5" data-sidebartype="full" data-header-position="absolute">
         
-        <header class="topbar" data-navbarbg="skin5">
-            <nav class="navbar top-navbar navbar-expand-md navbar-dark">
-                <div class="navbar-header" data-logobg="skin5">
-                    <a class="navbar-brand" href="admin_page.html">
-                        <b class="logo-icon">
-                            <img src="../../assets/images/logo.png" alt="homepage" style="width: 60px; height: auto;" />
-                        </b>
-                    </a>
-                </div>
-                <div class="navbar-collapse collapse" id="navbarSupportedContent" data-navbarbg="skin5">
-                    <ul class="navbar-nav float-end">
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle text-muted waves-effect waves-dark pro-pic" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <img src="../assets/images/users/1.jpg" alt="user" class="rounded-circle" width="31" />
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end user-dd animated" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item" href="pages_profile.php"><i class="mdi mdi-account m-r-5 m-l-5"></i> My Profile</a>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-            </nav>
-        </header>
+    <?php include '../sidebar/header.php'; ?>
+
         
         <?php
             if ($usertype === 'ADMIN') {
@@ -211,7 +102,10 @@ $conn->close();
                     $query = "SELECT * FROM services";
                     $result = mysqli_query($conn, $query);
                 
-                    echo "<h2>Service List</h2>";
+                    echo "<div>
+                        <h2 '>Service List</h2>
+                        <a href='services.php?action=add' class ='button button-add'>Add Service</a>
+                    </div>";
                     if (isset($_SESSION['message'])): ?>
                         <div class="alert alert-<?php echo $_SESSION['msg_type']; ?> alert-dismissible fade show" role="alert">
                             <?php echo $_SESSION['message']; ?>
@@ -222,93 +116,9 @@ $conn->close();
                         unset($_SESSION['message']);
                         unset($_SESSION['msg_type']);
                     endif;
-                    echo "<style>
+                  
+                    echo "<div class='table-container'>";
 
-                             .alert {
-                                padding: 15px;
-                                margin-bottom: 20px;
-                                border: 1px solid transparent;
-                                border-radius: 4px;
-                            }
-                            .alert-success {
-                                color: #155724;
-                                background-color: #d4edda;
-                                border-color: #c3e6cb;
-                            }
-                            .alert-danger {
-                                color: #721c24;
-                                background-color: #f8d7da;
-                                border-color: #f5c6cb;
-                            }
-                            .close {
-                                float: right;
-                                font-size: 1.5rem;
-                                font-weight: bold;
-                                line-height: 1;
-                                color: #000;
-                                text-shadow: 0 1px 0 #fff;
-                                opacity: .5;
-                                cursor: pointer;
-                            }
-
-                            table {
-                              width: 100%;
-                              border-collapse: collapse;
-                              font-family: Arial, sans-serif;
-                            }
-                
-                            th, td {
-                              text-align: left;
-                              padding: 12px;
-                              border-bottom: 1px solid #ddd;
-                            }
-                
-                            th {
-                              background-color: #f2f2f2;
-                              color: #333;
-                              font-weight: bold;
-                              text-align: center;
-                            }
-                
-                            tr:nth-child(even) {
-                              background-color: #f9f9f9;
-                            }
-                
-                            tr:hover {
-                              background-color: #f1f1f1;
-                            }
-                
-                            a {
-                              color: #1a73e8;
-                              text-decoration: none;
-                            }
-                
-                            a:hover {
-                              text-decoration: underline;
-                            }
-                
-                            img {
-                              max-width: 100px;
-                              height: auto;
-                            }
-                
-                            @media screen and (max-width: 600px) {
-                              table, th, td {
-                                width: 100%;
-                                display: block;
-                              }
-                
-                              th, td {
-                                text-align: left;
-                                padding: 10px;
-                              }
-                
-                              th {
-                                background-color: #f0f0f0;
-                              }
-                            }
-                          </style>";
-                
                     echo "<table>";
                     echo "<tr><th>ID</th><th>Name</th><th>Description</th><th>Status</th><th>Image</th><th>Actions</th></tr>";
                 
@@ -327,14 +137,14 @@ $conn->close();
                         }
                 
                         echo "<td>
-                                <a href='services.php?action=edit&service_id=" . $row['service_id'] . "' style='display: inline-block; padding: 8px 16px; text-align: center; text-decoration: none; background-color: #1a73e8; color: white; border-radius: 4px; margin-right: 8px;'>Edit</a>
-                                <a href='services.php?action=delete&service_id=" . $row['service_id'] . "' style='display: inline-block; padding: 8px 16px; text-align: center; text-decoration: none; background-color: #e53935; color: white; border-radius: 4px;' onclick='return confirm(\"Are you sure you want to delete?\")'>Delete</a>
+                                <a href='services.php?action=edit&service_id=" . $row['service_id'] . "' class= 'button button-edit'>Edit</a> |
+                                <a href='services.php?action=delete&service_id=" . $row['service_id'] . "' class = 'button button-delete' onclick='return confirm(\"Are you sure you want to delete?\")'>Delete</a>
                               </td>";
                         echo "</tr>";
                     }
                 
                     echo "</table>";
-                    echo "<br><a href='services.php?action=add' style='background-color: #00b300; padding: 10px 20px; color: white; text-decoration: none; border-radius: 5px;'>Add New Service</a>";
+                    echo "</div>";
                 
                     break;
                 
@@ -401,73 +211,10 @@ $conn->close();
                             header("Location: services.php?action=view");
                             exit;
                         }
-                    ?>
-                    
-                    <style>
-                        table {
-                            width: 100%;
-                            border-collapse: collapse;
-                            font-family: Arial, sans-serif;
-                            margin-top: 20px;
-                        }
-                    
-                        th, td {
-                            text-align: left;
-                            padding: 12px;
-                            border-bottom: 1px solid #ddd;
-                        }
-                    
-                        th {
-                            background-color: #f2f2f2;
-                            color: #333;
-                            font-weight: bold;
-                        }
-                    
-                        tr:nth-child(even) {
-                            background-color: #f9f9f9;
-                        }
-                    
-                        tr:hover {
-                            background-color: #f1f1f1;
-                        }
-                    
-                        input[type="text"], input[type="number"], select {
-                            width: 95%;
-                            padding: 10px;
-                            border: 1px solid #ccc;
-                            border-radius: 4px;
-                        }
-                    
-                        input[type="submit"] {
-                            background-color: #28a745;
-                            color: white;
-                            padding: 10px 15px;
-                            border: none;
-                            border-radius: 4px;
-                            cursor: pointer;
-                        }
-                    
-                        input[type="submit"]:hover {
-                            background-color: #218838;
-                        }
-                    
-                        .remove-btn {
-                            background-color: #dc3545;
-                            color: white;
-                            padding: 5px 10px;
-                            border: none;
-                            border-radius: 4px;
-                            cursor: pointer;
-                            margin-left: 10px;
-                        }
-                    
-                        .add-more {
-                            margin-top: 20px;
-                        }
-                    </style>
+                    ?>                        
                     
                     <h2>Add New Service</h2>
-                    <form action="services.php?action=add" method="POST" enctype="multipart/form-data"> <!-- Add enctype -->
+                    <form action="services.php?action=add" method="POST" enctype="multipart/form-data"> 
                         <table>
                             <tr>
                                 <th>Service Name</th>
@@ -489,13 +236,13 @@ $conn->close();
                             <tr>
                                 <th>Image</th>
                                 <td>
-                                    <input type="file" name="image" id="image" class="form-control" required> <!-- Make sure the file input is required -->
+                                    <input type="file" name="image" id="image" class="form-control" required> 
                                 </td>
                             </tr>
                             <tr>
                                       <td colspan="2" style="text-align: center;">
-                                          <input type="submit" value="Add Service" style="padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                                          <button onclick="history.go(-1);" style="padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">
+                                          <input type="submit" value="Add Service" class = "button button-edit" >
+                                          <button onclick="history.go(-1);" class = "button button-back">
                                              Back</button>
 
                                       </td>
@@ -575,7 +322,6 @@ $conn->close();
                         }
                         }
                         
-                    
                   
                       // Fetch the current details of the service
                       $selectQuery = "SELECT * FROM services WHERE service_id = ?";
@@ -587,51 +333,6 @@ $conn->close();
                       if ($selectResult->num_rows > 0) {
                           $service = $selectResult->fetch_assoc();
                           ?>
-                          <style>
-                              table {
-                                  width: 100%;
-                                  border-collapse: collapse;
-                                  font-family: Arial, sans-serif;
-                                  margin-top: 20px;
-                              }
-                              th, td {
-                                  text-align: left;
-                                  padding: 12px;
-                                  border-bottom: 1px solid #ddd;
-                              }
-                              th {
-                                  background-color: #f2f2f2;
-                                  color: #333;
-                                  font-weight: bold;
-                              }
-                              tr:nth-child(even) {
-                                  background-color: #f9f9f9;
-                              }
-                              tr:hover {
-                                  background-color: #f1f1f1;
-                              }
-                              input[type="text"], input[type="number"], select {
-                                  width: 95%;
-                                  padding: 10px;
-                                  border: 1px solid #ccc;
-                                  border-radius: 4px;
-                              }
-                              input[type="submit"] {
-                                  background-color: #28a745;
-                                  color: white;
-                                  padding: 10px 15px;
-                                  border: none;
-                                  border-radius: 4px;
-                                  cursor: pointer;
-                              }
-                              input[type="submit"]:hover {
-                                  background-color: #218838;
-                              }
-                              h2 {
-                                  margin-top: 20px;
-                                  color: #333;
-                              }
-                          </style>
                           <h2>Edit Service</h2>
                           <form action="" method="POST" enctype="multipart/form-data">
                               <table>
@@ -665,8 +366,8 @@ $conn->close();
                                   </tr>
                                   <tr>
                                       <td colspan="2" style="text-align: center;">
-                                          <input type="submit" value="Update Service" style="padding: 10px 15px; background-color: #28a745; color: white; border: none; border-radius: 4px; cursor: pointer;">
-                                          <button onclick="history.go(-1);" style="padding: 10px 15px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px;">
+                                          <input type="submit" value="Update Service" class="button button-edit">
+                                          <button onclick="history.go(-1);" class="button button-back">
                                              Back</button>
 
                                       </td>
@@ -708,7 +409,6 @@ $conn->close();
                     echo "<div>Invalid action.</div>";
             }
             ?>
-
             <footer class="footer text-center">
                 All Rights Reserved by Infinity Printing
             </footer>
