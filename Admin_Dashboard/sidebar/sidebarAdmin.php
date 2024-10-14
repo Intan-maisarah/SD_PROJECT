@@ -100,6 +100,9 @@ $conn->close();
           <a class="sidebar-link waves-effect waves-dark sidebar-link" href="../service/services.php" aria-expanded="false"><i class="mdi mdi-briefcase"></i><span class="hide-menu">Services</span></a>
         </li>
         <li class="sidebar-item">
+          <a class="sidebar-link waves-effect waves-dark sidebar-link" href="../service/order.php" aria-expanded="false"><i class="mdi mdi-cart"></i><span class="hide-menu">Orders</span></a>
+        </li>
+        <li class="sidebar-item">
           <a class="sidebar-link waves-effect waves-dark sidebar-link" href="table_basic.html" aria-expanded="false"><i class="mdi mdi-border-all"></i><span class="hide-menu">Table</span></a>
         </li>
       </ul>
