@@ -1,14 +1,12 @@
 <?php
 session_start();
-include "../connection.php"; // Ensure this file contains the database connection setup
+include "../connection.php"; 
 include "user.php";
 
-// Handle form submission
 if (isset($_POST['signin'])) {
     $username = mysqli_real_escape_string($conn, $_POST['username']);
     $password = $_POST['password'];
 
-    // Prepare the SQL query
     $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
     $stmt->bind_param('s', $username);
     $stmt->execute();
@@ -18,9 +16,7 @@ if (isset($_POST['signin'])) {
         $row = $result->fetch_assoc();
         $hashed_password = $row['password'];
 
-        // Verify the password
         if (password_verify($password, $hashed_password)) {
-            // Correct password, set session variables
             $_SESSION['signin'] = true;
             $_SESSION['user_id'] = $row['id'];
             $_SESSION['username'] = $row['username'];
@@ -38,15 +34,12 @@ if (isset($_POST['signin'])) {
             }
 
         } else {
-            // Incorrect password
             $_SESSION['error'] = 'Incorrect Username or Password';
         }
     } else {
-        // No user found with the entered username
         $_SESSION['error'] = 'Incorrect Username or Password';
     }
 
-    // Redirect to the same page to display error messages
     header("Location: signin.php");
     exit();
 }
@@ -166,7 +159,6 @@ if (isset($_POST['signin'])) {
                 </form>
                 <!-- Success/Error message -->
                 <div id="modalMessage" class="mt-3">
-                    <!-- Message will be injected here by JavaScript -->
                 </div>
             </div>
         </div>
@@ -179,29 +171,23 @@ if (isset($_POST['signin'])) {
 
     <script>
 $(document).ready(function() {
-    // Handle form submission
     $('#forgotPasswordForm').on('submit', function(e) {
-        e.preventDefault(); // Prevent default form submission
+        e.preventDefault();
 
         var email = $('#email').val();
 
-        // Clear any previous messages
         $('#modalMessage').html('');
 
-        // Perform AJAX request to submit form data
         $.ajax({
-            url: 'forgot_password.php', // PHP file to handle the request
+            url: 'forgot_password.php', 
             method: 'POST',
             data: { email: email, submit_email: true },
             success: function(response) {
-                // Show success message if email was sent successfully
                 $('#modalMessage').html('<div class="alert alert-success">A password reset link has been sent to your email.</div>');
                 
-                // Optionally clear the email field after submission
                 $('#email').val('');
             },
             error: function() {
-                // Show error message if there was an issue
                 $('#modalMessage').html('<div class="alert alert-danger">There was an error sending the reset link. Please try again later.</div>');
             }
         });

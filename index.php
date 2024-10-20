@@ -61,6 +61,9 @@ session_start();
             <p class="hero-par">Your on-the-go printing service!</p>
             <button class="hero-btn" onclick="window.location.href='user/signin.php'">Get Started</button>
         </div>
+        <div class="arrow">
+            <img src="assets/images/arrow.png">
+        </div>
     </div>
     <div class="icon-container">
     <i class="fa fa-print icon"></i>
@@ -111,10 +114,42 @@ session_start();
             your specific needs. From business materials to personal projects,
              we provide customized solutions with precision and care.</h3>
     </div>
+    <div class="goals-content">
+    <div class="goals-header">
+        <div class="moon">
+            <img src="assets/images/moon.png" alt="Moon Image">
+        </div>
+        <h1>Our goals.</h1>
+    </div>
+        <div class="goals-cards-container">
+            <!-- Goal Card 1 -->
+            <div class="goal-card">
+                <img src="path-to-image-1.jpg" alt="Goal 1 Image">
+                <p>We make printing simple and fast, so you can focus on what matters.</p>
+            </div>
+            <!-- Goal Card 2 -->
+            <div class="goal-card">
+                <img src="path-to-image-2.jpg" alt="Goal 2 Image">
+                <p>Short description for goal 2.</p>
+            </div>
+            <!-- Goal Card 3 -->
+            <div class="goal-card">
+                <img src="path-to-image-3.jpg" alt="Goal 3 Image">
+                <p>Short description for goal 3.</p>
+            </div>
+        </div>
 </section>
 
+<div class="wave-container">
+  <svg class="wave2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
+    <path fill="#d6d1f0" d="M0,64L48,85.3C96,107,192,149,288,176C384,203,480,213,576,218.7C672,224,768,224,864,213.3C960,203,1056,181,1152,181.3C1248,181,1344,203,1392,213.3L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+  </svg>
+</div>
+
+
+
     <!-- Footer -->
-    <footer class="text-white" style="background-color: #74b3ce; padding: 40px 0;">
+    <footer class="text-white" style="background-color: #A7C7E7; padding: 40px 0;">
         <div class="container">
             <div class="row">
                 <div class="col-md-6">

@@ -9,7 +9,7 @@ function getUserType($conn, $username) {
         $row = mysqli_fetch_assoc($res);
         return $row['userType'];
     } else {
-        return null; // or handle the error
+        return null; 
     }
 }
 

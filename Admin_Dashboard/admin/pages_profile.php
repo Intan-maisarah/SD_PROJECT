@@ -1,25 +1,16 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-// Include your database connection file
 include '../../connection.php';
 
-// Start session if not already started
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Check if user is logged in by checking if the session variable is set
 if (!isset($_SESSION['user_id'])) {
     die("User not logged in.");
 }
 
-// Fetch the logged-in user's ID from the session
 $user_id = $_SESSION['user_id'];
 
-// Query to get the user's profile data
 $query = "SELECT name, username, email, contact, address, profile_pic FROM users WHERE id = ?";
 $stmt = $conn->prepare($query);
 
@@ -31,7 +22,6 @@ $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Check if the query returned any rows
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $name = $row['name'] ?? "N/A";
@@ -51,11 +41,8 @@ if ($result->num_rows > 0) {
 
 }
 
-// Close the statement and connection
 $stmt->close();
-
 $profilePicPath = !empty($profile_pic) ? htmlspecialchars($profile_pic) : '../assets/profile_pic/default-placeholder.png';
-
 $conn->close();
 ?>
 
@@ -203,6 +190,9 @@ $conn->close();
 }
 
   </style>
+
+<link rel="stylesheet" href="../service/style.css">
+
   
   <!--[if lt IE 9]>
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>

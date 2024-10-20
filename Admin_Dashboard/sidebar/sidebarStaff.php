@@ -1,26 +1,18 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Ensure the session is started and check if user ID is set
 if (!isset($_SESSION['user_id'])) {
     echo "User not logged in.<br>";
     exit;
 }
 
-
-// Include the database connection
 require '../../connection.php';
 
-// Fetch the logged-in user's ID from the session
 $user_id = $_SESSION['user_id'];
 $userEmail = '';
 
-// Prepare and execute a query to get the user's email
 $sql = "SELECT email FROM users WHERE id = ?";
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
@@ -42,14 +34,11 @@ if ($result->num_rows > 0) {
     $userEmail = "Email not found";
 }
 
-// Close statement and connection
 $stmt->close();
 
 $profilePicPath = !empty($profile_pic) ? htmlspecialchars($profile_pic) : '../assets/profile_pic/default-placeholder.png';
 
 $conn->close();
-
-// Debugging output for email
 ?>
 
 <!-- Sidebar HTML Structure -->
@@ -138,12 +127,12 @@ $conn->close();
 <style>
     /* CSS */
 #Userdd {
-    color: black; /* Change the text color of the <a> tag */
-    text-decoration: none; /* Remove underline from <a> tag */
+    color: black;
+    text-decoration: none;
 }
 
 #Userdd .hide-menu {
-    color: grey; /* Ensure email text color is set */
+    color: grey;
 }
 
 </style>

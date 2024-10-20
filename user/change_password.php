@@ -1,8 +1,6 @@
 <?php
 session_start();
-require '../connection.php'; // Include database connection
-
-// Function to validate password
+require '../connection.php'; 
 function validatePassword($password) {
     return preg_match('/.{8,}/', $password) &&
            preg_match('/[A-Z]/', $password) &&
@@ -10,12 +8,9 @@ function validatePassword($password) {
            preg_match('/[!@#$%^&*(),.?":{}|<>]/', $password);
 }
 
-// Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Get user ID from session (ensure the user is logged in and session is active)
-    $user_id = $_SESSION['user_id']; // Assuming you have the user_id stored in session after login
+    $user_id = $_SESSION['user_id']; 
 
-    // Get the form data
     $currentPassword = $_POST['currentPassword'];
     $newPassword = $_POST['newPassword'];
     $confirmPassword = $_POST['confirmPassword'];
@@ -26,7 +21,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (!validatePassword($newPassword)) {
         echo "<script>alert('New password does not meet the requirements.');</script>";
     } else {
-        // Fetch the current password hash from the database
         $query = "SELECT password FROM users WHERE id = ?";
         $stmt = $conn->prepare($query);
         $stmt->bind_param('i', $user_id);
@@ -35,17 +29,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $stmt->fetch();
         $stmt->close();
 
-        // Verify if the current password matches the hashed password in the database
         if (password_verify($currentPassword, $hashedPassword)) {
             // Hash the new password before storing it in the database
             $newHashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
 
-            // Update the password in the database
             $updateQuery = "UPDATE users SET password = ? WHERE id = ?";
             $updateStmt = $conn->prepare($updateQuery);
             $updateStmt->bind_param('si', $newHashedPassword, $user_id);
 
-            // Execute the query and check if the update is successful
             if ($updateStmt->execute()) {
                 echo "<script>alert('Your password has been updated successfully!'); window.location.href='index.php';</script>";
             } else {
@@ -157,7 +148,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         const confirmPasswordInput = document.getElementById('confirmPassword');
         const requirementsMessage = document.getElementById('requirementsMessage');
 
-        // Function to validate password
         function validatePassword(password) {
             const minLength = /.{8,}/;
             const upperCase = /[A-Z]/;
@@ -173,10 +163,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             if (!validatePassword(newPassword)) {
                 requirementsMessage.innerText = 'Password must be at least 8 characters long, include at least one uppercase letter, one number, and one special character.';
-                event.preventDefault(); // Prevent form submission
+                event.preventDefault(); 
             } else if (newPassword !== confirmPassword) {
                 requirementsMessage.innerText = 'New passwords do not match.';
-                event.preventDefault(); // Prevent form submission
+                event.preventDefault(); 
             }
         });
     });

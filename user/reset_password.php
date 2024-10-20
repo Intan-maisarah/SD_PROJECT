@@ -1,29 +1,23 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-session_start();
-require '../connection.php'; // Your database connection
+
+require '../connection.php'; 
 
 if (isset($_POST['submit_password'])) {
     $token = $_GET['token'] ?? '';
     $new_password = $_POST['new_password'] ?? '';
 
-    // Validate token and new password
     if (empty($token) || empty($new_password)) {
         $_SESSION['error'] = 'Invalid token or password';
         header('Location: reset_password.php?token=' . urlencode($token));
         exit();
     }
 
-    // Validate the new password
     if (strlen($new_password) < 8 || !preg_match('/[A-Z]/', $new_password) || !preg_match('/[0-9]/', $new_password) || !preg_match('/[@$!%*?&#]/', $new_password)) {
         $_SESSION['error'] = 'Password must be at least 8 characters long and include at least one uppercase letter, one number, and one special character.';
         header('Location: reset_password.php?token=' . urlencode($token));
         exit();
     }
 
-    // Check token and its expiration in the database
     $stmt = $conn->prepare("SELECT reset_token, reset_token_expiration FROM users WHERE reset_token = ?");
     $stmt->bind_param('s', $token);
     $stmt->execute();
@@ -33,14 +27,11 @@ if (isset($_POST['submit_password'])) {
         $stored_token = $row['reset_token'];
         $token_expiration = $row['reset_token_expiration'];
 
-        // Check if the token is expired
         if ($token_expiration > date('Y-m-d H:i:s')) {
-            // Token is valid, update the password
             $hashed_password = password_hash($new_password, PASSWORD_DEFAULT);
             $stmt = $conn->prepare("UPDATE users SET password = ?, reset_token = NULL, reset_token_expiration = NULL WHERE reset_token = ?");
             $stmt->bind_param('ss', $hashed_password, $token);
             if ($stmt->execute()) {
-                // Set success message and redirect with JavaScript
                 echo "<script>
                     alert('Your password has been reset');
                     window.location.href = 'signin.php';
@@ -149,31 +140,27 @@ button:hover {
             var password = document.getElementById('new_password').value;
             var errorMessage = '';
 
-            // Check password length
             if (password.length < 8) {
                 errorMessage += 'Password must be at least 8 characters long.\n';
             }
 
-            // Check for at least one uppercase letter
             if (!/[A-Z]/.test(password)) {
                 errorMessage += 'Password must include at least one uppercase letter.\n';
             }
 
-            // Check for at least one number
             if (!/[0-9]/.test(password)) {
                 errorMessage += 'Password must include at least one number.\n';
             }
 
-            // Check for at least one special character
             if (!/[@$!%*?&#]/.test(password)) {
                 errorMessage += 'Password must include at least one special character.\n';
             }
 
             if (errorMessage) {
                 alert(errorMessage);
-                return false; // Prevent form submission
+                return false; 
             }
-            return true; // Allow form submission
+            return true; 
         }
     </script>
 </head>
@@ -184,10 +171,9 @@ button:hover {
 
     <div class="message">
         <?php
-        // Show error messages if any
         if (isset($_SESSION['error'])) {
             echo "<p class='error'>" . $_SESSION['error'] . "</p>";
-            unset($_SESSION['error']); // Clear the message after displaying
+            unset($_SESSION['error']);
         }
         ?>
     </div>

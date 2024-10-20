@@ -53,7 +53,8 @@ session_start();
     <section id="about">
   <div class="container">
     <h2>About Us</h2>
-    <div class="about-content">
+    <h3>Your easy on-the-go printing service</h3>
+   <!-- <div class="about-content">
       <div class="pic-container">
         <img 
           src="assets/images/kedai2.jpg"
@@ -73,11 +74,11 @@ session_start();
           Whether you need quick access to printed materials or efficient management of your printing needs, Infinity Printing is here to serve you anytime, anywhere.
         </p>
       </div>
-    </div>
+    </div>-->
   </div>
 </section>
     <!-- Footer -->
-    <footer class="text-white" style="background-color: #74b3ce; padding: 40px 0;">
+    <footer class="text-white" style="background-color: #A7C7E7; padding: 40px 0;">
         <div class="container">
             <div class="row">
                 <div class="col-md-6">
