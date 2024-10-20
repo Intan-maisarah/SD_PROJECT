@@ -1,5 +1,5 @@
 <?php
-session_start();
+include 'services.php';
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -50,67 +50,29 @@ session_start();
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="hero-section" id="home">
-    <div class="hero-content">
-        <div class="hero-img">
-        <img src="assets/images/printing.gif" class="hero-img" alt="Printing GIF">
-        </div>
-        <div class="hero-text">
-            <h1 class="hero-title">Let Us Handle All Your Printing Needs.</h1>            
-            <p class="hero-par">Your on-the-go printing service!</p>
-            <button class="hero-btn" onclick="window.location.href='user/signin.php'">Get Started</button>
-        </div>
-    </div>
-    <div class="icon-container">
-    <i class="fa fa-print icon"></i>
-    <i class="fa fa-file icon"></i>
-    <i class="fa fa-paperclip icon"></i>
-    <i class="fa fa-envelope icon"></i>
-    <i class="fa fa-cloud icon"></i>
-    <i class="fa fa-paper-plane icon"></i>
-    <i class="fa fa-cogs icon"></i>
-    <i class="fa fa-laptop icon"></i>
-    <i class="fa fa-printer icon"></i>
-    <i class="fa fa-camera icon"></i>
-    <i class="fa fa-image icon"></i>
-    <i class="fa fa-pencil-alt icon"></i>
-    <i class="fa fa-users icon"></i>
-    <i class="fa fa-globe icon"></i>
-    <i class="fa fa-check-circle icon"></i>
-    <i class="fa fa-thumbs-up icon"></i>
-    <i class="fa fa-heart icon"></i>
-    <i class="fa fa-star icon"></i>
-    <i class="fa fa-bell icon"></i>
-    <i class="fa fa-music icon"></i>
-    <i class="fa fa-calendar icon"></i>
-    <i class="fa fa-clock icon"></i>
-    <i class="fa fa-shopping-cart icon"></i>
-    <i class="fa fa-bolt icon"></i>
-    <i class="fa fa-chart-line icon"></i>
-    <i class="fa fa-map icon"></i>
-    <i class="fa fa-folder-open icon"></i>
-    <i class="fa fa-signal icon"></i>
-    <i class="fa fa-users-cog icon"></i>
-    <i class="fa fa-comments icon"></i>
-    <i class="fa fa-lightbulb icon"></i>
-    <i class="fa fa-code icon"></i>
-    </div>
-</section>
+    <section id="services">
+        <div class="container">
+            <h2>Our Services</h2>
+            <div class="service-container">
+            <?php
+            if (!empty($services)) {
+                foreach ($services as $service) {
+                    echo '<div class="service-item">';
+                    echo '<h2>'.htmlspecialchars($service['service_name']).'</h2>';
+                    echo '<p>'.htmlspecialchars($service['service_description']).'</p>';
+                    if (!empty($service['image'])) {
+                        $imagePath = 'assets/images/'.htmlspecialchars($service['image']);
+                        echo '<img src="'.$imagePath.'" alt="'.htmlspecialchars($service['service_name']).'">';
+                    }
 
-<div class="wave-container">
-  <svg class="wave" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
-    <path fill="#ffd166" d="M0,64L48,85.3C96,107,192,149,288,176C384,203,480,213,576,218.7C672,224,768,224,864,213.3C960,203,1056,181,1152,181.3C1248,181,1344,203,1392,213.3L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-  </svg>
-</div>
-
-<section class="extra-section" id="extra">
-    <div class="extra-content">
-        <h1>The best solution for your work.</h1>
-        <h3>Experience high-quality, professional printing services designed to meet 
-            your specific needs. From business materials to personal projects,
-             we provide customized solutions with precision and care.</h3>
-    </div>
+                    echo '</div>';
+                }
+            } else {
+                echo '<p>No services available at the moment.</p>';
+            }
+?>
+            </div>
+        </div>
 </section>
 
     <!-- Footer -->
@@ -154,6 +116,7 @@ session_start();
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+   
 
 </body>
 </html>

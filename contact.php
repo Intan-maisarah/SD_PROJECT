@@ -50,67 +50,51 @@ session_start();
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="hero-section" id="home">
-    <div class="hero-content">
-        <div class="hero-img">
-        <img src="assets/images/printing.gif" class="hero-img" alt="Printing GIF">
+    <section id="contact">
+<div class="contact-container">
+    <div class="contact-info">
+        <h2>Get in Touch with Us</h2>
+        <p>Feel free to contact us anytime. We will get back to you as soon as we can!</p>
+            <ul class="list-unstyled">
+                <li>
+                <p>Email us at</p>
+                <a href="mailto:infinity.utmkl@gmail.com" class="links">infinity.utmkl@gmail.com</a>
+                </li>
+                <li>
+                <p>Call us at</p>
+                <a href="tel:+60142272646" class="links">+6014 2272-646</a>
+                </li>
+                <li>
+                <p>We're located here:</p>
+                <span>Gurney Mall, Lot 1-30, Jln Maktab, 54000 Kuala Lumpur</span>
+                </li>
+                <li>
+                <p>Our business hours:</p>
+                <span>Mon-Fri: 9 AM - 6 PM</span>
+                </li>
+            </ul>
+    </div>
+    <div class="contact-form">
+        <form id="feedbackForm">
+        <div class="form-group">
+            <input type="text" id="name" name="name" class="form-control" placeholder="Full Name" required>
         </div>
-        <div class="hero-text">
-            <h1 class="hero-title">Let Us Handle All Your Printing Needs.</h1>            
-            <p class="hero-par">Your on-the-go printing service!</p>
-            <button class="hero-btn" onclick="window.location.href='user/signin.php'">Get Started</button>
+        <div class="form-group">
+            <input type="email" id="email" name="email" class="form-control" placeholder="Email Address" required>
         </div>
+        <div class="form-group">
+            <textarea id="message" name="message" class="form-control" rows="5" placeholder="Your Message" required></textarea>
+        </div>
+        <button type="submit" class="btn">Send Message</button>
+        </form>
     </div>
-    <div class="icon-container">
-    <i class="fa fa-print icon"></i>
-    <i class="fa fa-file icon"></i>
-    <i class="fa fa-paperclip icon"></i>
-    <i class="fa fa-envelope icon"></i>
-    <i class="fa fa-cloud icon"></i>
-    <i class="fa fa-paper-plane icon"></i>
-    <i class="fa fa-cogs icon"></i>
-    <i class="fa fa-laptop icon"></i>
-    <i class="fa fa-printer icon"></i>
-    <i class="fa fa-camera icon"></i>
-    <i class="fa fa-image icon"></i>
-    <i class="fa fa-pencil-alt icon"></i>
-    <i class="fa fa-users icon"></i>
-    <i class="fa fa-globe icon"></i>
-    <i class="fa fa-check-circle icon"></i>
-    <i class="fa fa-thumbs-up icon"></i>
-    <i class="fa fa-heart icon"></i>
-    <i class="fa fa-star icon"></i>
-    <i class="fa fa-bell icon"></i>
-    <i class="fa fa-music icon"></i>
-    <i class="fa fa-calendar icon"></i>
-    <i class="fa fa-clock icon"></i>
-    <i class="fa fa-shopping-cart icon"></i>
-    <i class="fa fa-bolt icon"></i>
-    <i class="fa fa-chart-line icon"></i>
-    <i class="fa fa-map icon"></i>
-    <i class="fa fa-folder-open icon"></i>
-    <i class="fa fa-signal icon"></i>
-    <i class="fa fa-users-cog icon"></i>
-    <i class="fa fa-comments icon"></i>
-    <i class="fa fa-lightbulb icon"></i>
-    <i class="fa fa-code icon"></i>
-    </div>
-</section>
+  </div>
 
-<div class="wave-container">
-  <svg class="wave" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
-    <path fill="#ffd166" d="M0,64L48,85.3C96,107,192,149,288,176C384,203,480,213,576,218.7C672,224,768,224,864,213.3C960,203,1056,181,1152,181.3C1248,181,1344,203,1392,213.3L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-  </svg>
-</div>
-
-<section class="extra-section" id="extra">
-    <div class="extra-content">
-        <h1>The best solution for your work.</h1>
-        <h3>Experience high-quality, professional printing services designed to meet 
-            your specific needs. From business materials to personal projects,
-             we provide customized solutions with precision and care.</h3>
-    </div>
+  <div class="map-container">
+  <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d15934.826999217967!2d101.7216456!3d3.1717061!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31cc37a3f442ec45%3A0xc85fb666f112d900!2sInfinity%20Printing%20and%20Stationery!5e0!3m2!1sen!2smy!4v1729328998724!5m2!1sen!2smy" 
+    width="800" height="600" style="border:0;" allowfullscreen="" loading="lazy" 
+    referrerpolicy="no-referrer-when-downgrade"></iframe>
+  </div>
 </section>
 
     <!-- Footer -->
@@ -154,6 +138,6 @@ session_start();
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
+    <script src="assets/ipasss.js"></script>
 </body>
 </html>
