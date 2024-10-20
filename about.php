@@ -26,7 +26,7 @@ session_start();
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <nav>
-                    <a href="index.php" class="active">Home</a>
+                    <a href="index.php">Home</a>
                     <a href="servicepage.php">Services</a>
                     <a href="about.php">About</a>
                     <a href="contact.php">Contact</a>
@@ -50,104 +50,33 @@ session_start();
         </div>
     </nav>
 
-    <!-- Hero Section -->
-    <section class="hero-section" id="home">
-    <div class="hero-content">
-        <div class="hero-img">
-        <img src="assets/images/printing.gif" class="hero-img" alt="Printing GIF">
-        </div>
-        <div class="hero-text">
-            <h1 class="hero-title">Let Us Handle All Your Printing Needs.</h1>            
-            <p class="hero-par">Your on-the-go printing service!</p>
-            <button class="hero-btn" onclick="window.location.href='user/signin.php'">Get Started</button>
-        </div>
-        <div class="arrow">
-            <img src="assets/images/arrow.png">
-        </div>
-    </div>
-    <div class="icon-container">
-    <i class="fa fa-print icon"></i>
-    <i class="fa fa-file icon"></i>
-    <i class="fa fa-paperclip icon"></i>
-    <i class="fa fa-envelope icon"></i>
-    <i class="fa fa-cloud icon"></i>
-    <i class="fa fa-paper-plane icon"></i>
-    <i class="fa fa-cogs icon"></i>
-    <i class="fa fa-laptop icon"></i>
-    <i class="fa fa-printer icon"></i>
-    <i class="fa fa-camera icon"></i>
-    <i class="fa fa-image icon"></i>
-    <i class="fa fa-pencil-alt icon"></i>
-    <i class="fa fa-users icon"></i>
-    <i class="fa fa-globe icon"></i>
-    <i class="fa fa-check-circle icon"></i>
-    <i class="fa fa-thumbs-up icon"></i>
-    <i class="fa fa-heart icon"></i>
-    <i class="fa fa-star icon"></i>
-    <i class="fa fa-bell icon"></i>
-    <i class="fa fa-music icon"></i>
-    <i class="fa fa-calendar icon"></i>
-    <i class="fa fa-clock icon"></i>
-    <i class="fa fa-shopping-cart icon"></i>
-    <i class="fa fa-bolt icon"></i>
-    <i class="fa fa-chart-line icon"></i>
-    <i class="fa fa-map icon"></i>
-    <i class="fa fa-folder-open icon"></i>
-    <i class="fa fa-signal icon"></i>
-    <i class="fa fa-users-cog icon"></i>
-    <i class="fa fa-comments icon"></i>
-    <i class="fa fa-lightbulb icon"></i>
-    <i class="fa fa-code icon"></i>
-    </div>
+    <section id="about">
+  <div class="container">
+    <h2>About Us</h2>
+    <h3>Your easy on-the-go printing service</h3>
+   <!-- <div class="about-content">
+      <div class="pic-container">
+        <img 
+          src="assets/images/kedai2.jpg"
+          width="100%" 
+          height="100%" 
+          style="border:0;" 
+          allowfullscreen="" 
+          loading="lazy" 
+          referrerpolicy="no-referrer-when-downgrade">
+        </img>
+      </div>
+      <div class="text-content">
+        <p>
+          Welcome to <strong>Infinity Printing & Stationery Service</strong>, your go-to solution for remote document printing and delivery.
+          Our platform allows you to easily upload your documents, track order statuses, and choose between convenient pickup appointments or delivery within a 1km range.
+          With a focus on reducing wait times and improving service quality, we offer a streamlined experience for customers, staff, and administrators alike. 
+          Whether you need quick access to printed materials or efficient management of your printing needs, Infinity Printing is here to serve you anytime, anywhere.
+        </p>
+      </div>
+    </div>-->
+  </div>
 </section>
-
-<div class="wave-container">
-  <svg class="wave" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
-    <path fill="#ffd166" d="M0,64L48,85.3C96,107,192,149,288,176C384,203,480,213,576,218.7C672,224,768,224,864,213.3C960,203,1056,181,1152,181.3C1248,181,1344,203,1392,213.3L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-  </svg>
-</div>
-
-<section class="extra-section" id="extra">
-    <div class="extra-content">
-        <h1>The best solution for your work.</h1>
-        <h3>Experience high-quality, professional printing services designed to meet 
-            your specific needs. From business materials to personal projects,
-             we provide customized solutions with precision and care.</h3>
-    </div>
-    <div class="goals-content">
-    <div class="goals-header">
-        <div class="moon">
-            <img src="assets/images/moon.png" alt="Moon Image">
-        </div>
-        <h1>Our goals.</h1>
-    </div>
-        <div class="goals-cards-container">
-            <!-- Goal Card 1 -->
-            <div class="goal-card">
-                <img src="path-to-image-1.jpg" alt="Goal 1 Image">
-                <p>We make printing simple and fast, so you can focus on what matters.</p>
-            </div>
-            <!-- Goal Card 2 -->
-            <div class="goal-card">
-                <img src="path-to-image-2.jpg" alt="Goal 2 Image">
-                <p>Short description for goal 2.</p>
-            </div>
-            <!-- Goal Card 3 -->
-            <div class="goal-card">
-                <img src="path-to-image-3.jpg" alt="Goal 3 Image">
-                <p>Short description for goal 3.</p>
-            </div>
-        </div>
-</section>
-
-<div class="wave-container">
-  <svg class="wave2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
-    <path fill="#d6d1f0" d="M0,64L48,85.3C96,107,192,149,288,176C384,203,480,213,576,218.7C672,224,768,224,864,213.3C960,203,1056,181,1152,181.3C1248,181,1344,203,1392,213.3L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
-  </svg>
-</div>
-
-
-
     <!-- Footer -->
     <footer class="text-white" style="background-color: #A7C7E7; padding: 40px 0;">
         <div class="container">

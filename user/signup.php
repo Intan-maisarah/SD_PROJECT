@@ -9,10 +9,8 @@ include "../connection.php";
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-// Include PHPMailer files
 require '../vendor/autoload.php';
 
-// Initialize error message variable
 $error_message = '';
 $success_message = '';
 
@@ -22,20 +20,16 @@ if (isset($_POST['register'])) {
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
 
-    // Check if email is valid
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error_message = 'Invalid email format.';
     } 
-    // Check if passwords match
     elseif ($password !== $confirm_password) {
         $error_message = 'Passwords do not match. Please try again.';
     } 
-    // Check password length
     elseif (strlen($password) < 8) {
         $error_message = 'Password must be at least 8 characters long.';
     } 
     else {
-        // Check if email already exists
         $check = "SELECT * FROM users WHERE email=?";
         $stmt = $conn->prepare($check);
         $stmt->bind_param('s', $email);
@@ -45,10 +39,8 @@ if (isset($_POST['register'])) {
         if ($res->num_rows > 0) {
             $error_message = 'This email is already in use. Please try another email or log in if you already have an account.';
         } else {
-            // Hash the password before storing it
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
-            // Insert user into the database with a verification token
             $verification_token = bin2hex(random_bytes(16));
             $sql = "INSERT INTO users(username, email, password, verification_token, is_verified) VALUES(?, ?, ?, ?, 0)";
             $stmt = $conn->prepare($sql);
@@ -56,16 +48,14 @@ if (isset($_POST['register'])) {
             $result = $stmt->execute();
 
             if ($result) {
-                // Send verification email
                 $mail = new PHPMailer(true);
             
                 try {
-                    // Server settings
                     $mail->isSMTP();
                     $mail->Host = 'smtp.gmail.com';
                     $mail->SMTPAuth = true;
-                    $mail->Username = 'dayangziha@gmail.com'; // Replace with your email
-                    $mail->Password = 'fknw ujbi ecku tqmn'; // Use environment variables for security
+                    $mail->Username = 'dayangziha@gmail.com'; 
+                    $mail->Password = 'fknw ujbi ecku tqmn'; 
                     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                     $mail->Port = 587;
             
@@ -82,10 +72,8 @@ if (isset($_POST['register'])) {
             
                     $mail->send();
             
-                    // Set session variable to trigger alert
                     $_SESSION['email_sent'] = true;
                     
-                    // Redirect after successful email send
                     header("Location: signin.php");
                     exit();
                 } catch (Exception $e) {
@@ -234,10 +222,9 @@ if (isset($_POST['register'])) {
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         document.addEventListener('DOMContentLoaded', function() {
-    // Check if the session variable is set
     <?php if (isset($_SESSION['email_sent']) && $_SESSION['email_sent']): ?>
     alert('Verification link has been sent to your email. Please check your inbox.');
-    <?php unset($_SESSION['email_sent']); // Clear the session variable ?>
+    <?php unset($_SESSION['email_sent']);  ?>
     <?php endif; ?>
 });
 
@@ -251,17 +238,14 @@ if (isset($_POST['register'])) {
                 errorMessage += 'Password must be at least 8 characters long.\n';
             }
 
-            // Check for at least one uppercase letter
             if (!/[A-Z]/.test(password)) {
                 errorMessage += 'Password must include at least one uppercase letter.\n';
             }
 
-            // Check for at least one number
             if (!/[0-9]/.test(password)) {
                 errorMessage += 'Password must include at least one number.\n';
             }
 
-            // Check for at least one special character
             if (!/[@$!%*?&#]/.test(password)) {
                 errorMessage += 'Password must include at least one special character.\n';
             }
@@ -272,7 +256,7 @@ if (isset($_POST['register'])) {
 
             if (errorMessage) {
                 alert(errorMessage);
-                event.preventDefault(); // Prevent form submission
+                event.preventDefault(); 
             } else if (!checkbox.checked) {
                 event.preventDefault();
                 alert('You must agree to the terms of service before registering.');

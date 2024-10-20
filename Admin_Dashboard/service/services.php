@@ -1,29 +1,21 @@
 <?php
 ob_start();
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Ensure the session is started and check if user ID is set
 if (!isset($_SESSION['user_id'])) {
     echo "User not logged in.<br>";
     exit;
 }
 
-// Include the database connection
 require '../../connection.php';
 
-// Fetch the logged-in user's ID from the session
 $user_id = $_SESSION['user_id'];
 $adminEmail = '';
 $usertype = '';
 $profile_pic = '';
 
-// Prepare and execute a query to get the user's email and usertype
 $sql = "SELECT email, usertype, profile_pic FROM users WHERE id = ?";
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
@@ -48,7 +40,6 @@ if ($result->num_rows > 0) {
     exit;
 }
 
-// Close statement and connection
 $stmt->close();
 $conn->close();
 
@@ -90,15 +81,12 @@ $conn->close();
         
         <div class="page-wrapper">
             <?php
-            // Include database connection
             include('../../connection.php');
 
-            // Check if action is set in the URL
             $action = isset($_GET['action']) ? $_GET['action'] : 'view';
 
             switch ($action) {
                 case 'view':
-                    // View services
                     $query = "SELECT * FROM services";
                     $result = mysqli_query($conn, $query);
                 
@@ -112,7 +100,6 @@ $conn->close();
                             
                         </div>
                         <?php
-                        // Unset message after displaying it
                         unset($_SESSION['message']);
                         unset($_SESSION['msg_type']);
                     endif;
@@ -129,7 +116,6 @@ $conn->close();
                         echo "<td>" . $row['service_description'] . "</td>";
                         echo "<td>" . $row['status'] . "</td>";
                 
-                        // Display the image, if available
                         if (!empty($row['image'])) {
                             echo "<td><img src='" . $row['image'] . "' alt='" . htmlspecialchars($row['service_name']) . "'></td>";
                         } else {
@@ -151,21 +137,17 @@ $conn->close();
 
                     case 'add':
                         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                            // Initialize variables
                             $service_id = isset($_POST['service_id']) ? $_POST['service_id'] : null; // Handle optional service_id
                             $service_name = $_POST['service_name'];
                             $service_description = $_POST['service_description'];
                             $status = $_POST['status'];
-                            $imageURL = ""; // Initialize image URL
+                            $imageURL = ""; 
                     
-                            // Check if the image file was uploaded
                             if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
-                                // Define the destination path
                                 $targetDirectory = "../../assets/images/uploads/";
                                 $imageName = basename($_FILES['image']['name']);
                                 $targetFilePath = $targetDirectory . $imageName;
                     
-                                // Create the directory if it doesn't exist
                                 if (!is_dir($targetDirectory)) {
                                     if (!mkdir($targetDirectory, 0755, true)) {
                                         echo "<div>Error creating directory.</div>";
@@ -173,9 +155,8 @@ $conn->close();
                                     }
                                 }
                     
-                                // Attempt to move the uploaded file to the target directory
                                 if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFilePath)) {
-                                    $imageURL = $targetFilePath; // Store the file path for the database
+                                    $imageURL = $targetFilePath; 
                                 } else {
                                     echo "<div>Error uploading image.</div>";
                                     exit;
@@ -185,12 +166,10 @@ $conn->close();
                                 exit;
                             }
                     
-                            // Prepare and execute the insert query
                             $insertQuery = "INSERT INTO services (service_id, service_name, service_description, status, image) VALUES (?, ?, ?, ?, ?)";
                             $insertStmt = $conn->prepare($insertQuery);
                     
                             if ($insertStmt) {
-                                // Use null if service_id is not provided, adjust the bind_param accordingly
                                 $insertStmt->bind_param("sssss", $service_id, $service_name, $service_description, $status, $imageURL);
                                 $insertStmt->execute();
                     
@@ -207,7 +186,6 @@ $conn->close();
                                 exit;
                             }
                     
-                            // Redirect to services view page
                             header("Location: services.php?action=view");
                             exit;
                         }
@@ -256,35 +234,29 @@ $conn->close();
                     
 
                     case 'edit':
-                        // Edit service
                         $service_id = $_GET['service_id'];
                     
                         if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                             $service_name = $_POST['service_name'];
                             $service_description = $_POST['service_description'];
                             $status = $_POST['status'];
-                            $imageURL = $_POST['image']; // Keep existing image by default
+                            $imageURL = $_POST['image']; 
                             
-                            // Define the destination path for the new image
                             $targetDirectory = "../../assets/images/uploads/";
                     
-                            // Check if the image is uploaded
                             if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
                                 $imageName = $_FILES['image']['name'];
                                 $targetFilePath = $targetDirectory . basename($imageName);
                                 $imageFileType = strtolower(pathinfo($targetFilePath, PATHINFO_EXTENSION));
                     
-                                // Validate the image file type
                                 $allowedFormats = ["jpg", "jpeg", "png", "gif"];
                                 if (in_array($imageFileType, $allowedFormats)) {
-                                    // Create the directory if it doesn't exist
                                     if (!is_dir($targetDirectory)) {
                                         mkdir($targetDirectory, 0755, true);
                                     }
                     
-                                    // Attempt to move the uploaded file
                                     if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFilePath)) {
-                                        $imageURL = $targetFilePath; // Update with the new image URL
+                                        $imageURL = $targetFilePath; 
                                     } else {
                                         echo "<div>Error uploading image.</div>";
                                         exit;
@@ -295,25 +267,21 @@ $conn->close();
                                 }
                             }
                     
-                            // Update service details in the database
                         $updateQuery = "UPDATE services SET service_name = ?, status = ?, service_description = ?, image = ? WHERE service_id = ?";
                         $updateStmt = $conn->prepare($updateQuery);
                         $updateStmt->bind_param("ssssi", $service_name, $status, $service_description, $imageURL, $service_id);
 
                         if ($updateStmt->execute()) {
-                            // Check if the query executed and the row was affected
                             if ($updateStmt->affected_rows > 0) {
                                 $_SESSION['message'] = "Service updated successfully!";
                                 $_SESSION['msg_type'] = "success";
                             } else {
-                                // No rows were updated (data may not have changed)
                                 $_SESSION['message'] = "No changes made to the service.";
                                 $_SESSION['msg_type'] = "warning";
                             }
                             header("Location: services.php?action=view");
                             exit;
                         } else {
-                            // Log the error or display it
                             error_log("Error updating service: " . $updateStmt->error);
                             $_SESSION['message'] = "Error updating service.";
                             $_SESSION['msg_type'] = "danger";
@@ -321,9 +289,6 @@ $conn->close();
                             exit;
                         }
                         }
-                        
-                  
-                      // Fetch the current details of the service
                       $selectQuery = "SELECT * FROM services WHERE service_id = ?";
                       $selectStmt = $conn->prepare($selectQuery);
                       $selectStmt->bind_param("i", $service_id);

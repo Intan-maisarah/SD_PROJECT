@@ -10,7 +10,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $message = htmlspecialchars($_POST['message']);
     
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        http_response_code(400); // Bad request
+        http_response_code(400);
         exit('Invalid email format');
     }
 
@@ -34,10 +34,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $mail->Body    = "Name: $name\nEmail: $email\n\nMessage:\n$message";
 
         $mail->send();
-        http_response_code(200); // Success
+        http_response_code(200); 
         echo 'Feedback sent successfully';
     } catch (Exception $e) {
-        http_response_code(500); // Internal server error
+        http_response_code(500); 
         echo 'Message could not be sent. Mailer Error: ' . $mail->ErrorInfo;
     }
 }

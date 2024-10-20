@@ -1,41 +1,32 @@
-
 <?php
 ob_start();
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Ensure the session is started and check if user ID is set
 if (!isset($_SESSION['user_id'])) {
-    echo "User not logged in.<br>";
+    echo 'User not logged in.<br>';
     exit;
 }
 
-// Include the database connection
 require '../../connection.php';
 
-// Fetch the logged-in user's ID from the session
 $user_id = $_SESSION['user_id'];
 $adminEmail = '';
 $usertype = '';
 $profile_pic = '';
 
-// Prepare and execute a query to get the user's email and usertype
-$sql = "SELECT email, usertype, profile_pic FROM users WHERE id = ?";
+$sql = 'SELECT email, usertype, profile_pic FROM users WHERE id = ?';
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
-    echo "Prepare statement failed: " . $conn->error . "<br>";
+    echo 'Prepare statement failed: '.$conn->error.'<br>';
     exit;
 }
 $stmt->bind_param('i', $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 if (!$result) {
-    echo "Get result failed: " . $stmt->error . "<br>";
+    echo 'Get result failed: '.$stmt->error.'<br>';
     exit;
 }
 
@@ -45,11 +36,10 @@ if ($result->num_rows > 0) {
     $usertype = $row['usertype'];
     $profile_pic = $row['profile_pic'];
 } else {
-    echo "User not found.<br>";
+    echo 'User not found.<br>';
     exit;
 }
 
-// Close statement and connection
 $stmt->close();
 $conn->close();
 
@@ -108,7 +98,7 @@ $conn->close();
     } else {
         include '../sidebar/sidebarStaff.php';
     }
-    ?>
+?>
     
     <!-- ============================================================== -->
     <!-- Page wrapper -->
@@ -116,136 +106,118 @@ $conn->close();
     <div class="page-wrapper">
    <!--php coding for spec-->
    <?php
-// Connect to the database
-include('../../connection.php'); // Include your database connection file
+include '../../connection.php';
 
-// Check if action is set in the URL
 $action = isset($_GET['action']) ? $_GET['action'] : 'view';
 
-switch($action) {
+switch ($action) {
     case 'view':
-        // View customers
-        $query = "SELECT * FROM specification";
-$result = mysqli_query($conn, $query);
+        $query = 'SELECT * FROM specification';
+        $result = mysqli_query($conn, $query);
 
-echo "<div>
+        echo "<div>
         <h2>Print Specification</h2>
         <a href='printspec.php?action=add' class = 'button button-add'>Add Print Specification</a>
       </div>";
 
-
-if (isset($_SESSION['message'])): ?>
+        if (isset($_SESSION['message'])) { ?>
     <div class="alert alert-<?php echo $_SESSION['msg_type']; ?> alert-dismissible fade show" role="alert">
         <?php echo $_SESSION['message']; ?>
         
     </div>
     <?php
-    // Unset message after displaying it
-    unset($_SESSION['message']);
-    unset($_SESSION['msg_type']);
-endif;
+            unset($_SESSION['message']);
+            unset($_SESSION['msg_type']);
+        }
 
-echo "<div class='table-container'>";
+        echo "<div class='table-container'>";
 
-echo "<table>";
-echo "<tr><th>ID</th><th>Specification Name</th><th>Specification Type</th><th>Price</th><th>Status</th><th>Actions</th></tr>";
+        echo '<table>';
+        echo '<tr><th>ID</th><th>Specification Name</th><th>Specification Type</th><th>Price</th><th>Status</th><th>Actions</th></tr>';
 
-while ($row = mysqli_fetch_assoc($result)) {
-  echo "<tr>";
-  echo "<td>" . $row['id'] . "</td>";
-  echo "<td>" . $row['spec_name'] . "</td>";
-  echo "<td>" . $row['spec_type'] . "</td>";
-  echo "<td>" . $row['price'] . "</td>";
-  echo "<td>" . $row['status'] . "</td>";
-  echo "<td>
-  <a href='printspec.php?action=edit&id=" . $row['id'] . "' class='button button-edit'>Edit</a> |
+        while ($row = mysqli_fetch_assoc($result)) {
+            echo '<tr>';
+            echo '<td>'.$row['id'].'</td>';
+            echo '<td>'.$row['spec_name'].'</td>';
+            echo '<td>'.$row['spec_type'].'</td>';
+            echo '<td>'.$row['price'].'</td>';
+            echo '<td>'.$row['status'].'</td>';
+            echo "<td>
+  <a href='printspec.php?action=edit&id=".$row['id']."' class='button button-edit'>Edit</a> |
   <a href='javascript:void(0);'
      class='button button-delete'
-     onclick='openDeleteModal(\"" . addslashes($row['spec_name']) . "\", " . $row['id'] . ")'>Delete</a>
+     onclick='openDeleteModal(\"".addslashes($row['spec_name']).'", '.$row['id'].")'>Delete</a>
   </td>";
-  echo "</tr>";
-}
+            echo '</tr>';
+        }
 
-
-echo "</table>";
-echo "</div>";
+        echo '</table>';
+        echo '</div>';
         break;
 
-            case 'edit':
-                if (isset($_GET['id']) && is_numeric($_GET['id'])) {
-                    $id = intval($_GET['id']); // Ensure $id is an integer
+    case 'edit':
+        if (isset($_GET['id']) && is_numeric($_GET['id'])) {
+            $id = intval($_GET['id']);
 
-                    // Fetch the existing specification from the database
-                    $stmt = $conn->prepare("SELECT * FROM specification WHERE id = ?");
-                    $stmt->bind_param('i', $id);
-                    $stmt->execute();
-                    $result = $stmt->get_result();
+            $stmt = $conn->prepare('SELECT * FROM specification WHERE id = ?');
+            $stmt->bind_param('i', $id);
+            $stmt->execute();
+            $result = $stmt->get_result();
 
-                    if ($result && $result->num_rows > 0) {
-                        $spec = $result->fetch_assoc();
+            if ($result && $result->num_rows > 0) {
+                $spec = $result->fetch_assoc();
+            } else {
+                echo 'Specification not found!';
+                exit;
+            }
+
+            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                $spec_type = $_POST['spec_type'];
+                $price = $_POST['price'];
+                $status = $_POST['status'];
+                $spec_name = $spec['spec_name'];
+
+                $apply_price_to_all = isset($_POST['apply_price_to_all']) ? 1 : 0;
+                $apply_status_to_all = isset($_POST['apply_status_to_all']) ? 1 : 0;
+
+                if ($apply_price_to_all && $apply_status_to_all) {
+                    $updateQuery = 'UPDATE specification SET price = ?, status = ? WHERE spec_name = ?';
+                    $updatestmt = $conn->prepare($updateQuery);
+                    $updatestmt->bind_param('sss', $price, $status, $spec_name);
+                } elseif ($apply_price_to_all) {
+                    $updateQuery = 'UPDATE specification SET price = ? WHERE spec_name = ?';
+                    $updatestmt = $conn->prepare($updateQuery);
+                    $updatestmt->bind_param('ss', $price, $spec_name);
+                } elseif ($apply_status_to_all) {
+                    $updateQuery = 'UPDATE specification SET status = ? WHERE spec_name = ?';
+                    $updatestmt = $conn->prepare($updateQuery);
+                    $updatestmt->bind_param('ss', $status, $spec_name);
+                } else {
+                    $updateQuery = 'UPDATE specification SET spec_type = ?, price = ?, status = ? WHERE id = ?';
+                    $updatestmt = $conn->prepare($updateQuery);
+                    $updatestmt->bind_param('sssi', $spec_type, $price, $status, $id);
+                }
+
+                if ($updatestmt->execute()) {
+                    if ($updatestmt->affected_rows > 0) {
+                        $_SESSION['message'] = 'Print specification updated successfully!';
+                        $_SESSION['msg_type'] = 'success';
                     } else {
-                        echo "Specification not found!";
-                        exit;
+                        $_SESSION['message'] = 'No changes made to the specification.';
+                        $_SESSION['msg_type'] = 'warning';
                     }
+                    header('Location: printspec.php?action=view');
+                    exit;
+                } else {
+                    error_log('Error updating specification: '.$conn->error);
+                    $_SESSION['message'] = 'Error updating print specification.';
+                    $_SESSION['msg_type'] = 'danger';
+                    header('Location: printspec.php?action=view');
+                    exit;
+                }
+            }
 
-                    // Handle form submission for editing the specification
-                    if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                      $spec_type = $_POST['spec_type'];
-                      $price = $_POST['price'];
-                      $status = $_POST['status'];
-                      $spec_name = $spec['spec_name']; // Fetch the current specification name
-                  
-                      $apply_price_to_all = isset($_POST['apply_price_to_all']) ? 1 : 0;
-                      $apply_status_to_all = isset($_POST['apply_status_to_all']) ? 1 : 0;
-                  
-                      // If both checkboxes are checked, update price and status for all specification types under the same spec name
-                      if ($apply_price_to_all && $apply_status_to_all) {
-                          $updateQuery = "UPDATE specification SET price = ?, status = ? WHERE spec_name = ?";
-                          $updatestmt = $conn->prepare($updateQuery);
-                          $updatestmt->bind_param('sss', $price, $status, $spec_name);
-                  
-                      // If only the price checkbox is checked, update the price for all specification types under the same spec name
-                      } elseif ($apply_price_to_all) {
-                          $updateQuery = "UPDATE specification SET price = ? WHERE spec_name = ?";
-                          $updatestmt = $conn->prepare($updateQuery);
-                          $updatestmt->bind_param('ss', $price, $spec_name);
-                  
-                      // If only the status checkbox is checked, update the status for all specification types under the same spec name
-                      } elseif ($apply_status_to_all) {
-                          $updateQuery = "UPDATE specification SET status = ? WHERE spec_name = ?";
-                          $updatestmt = $conn->prepare($updateQuery);
-                          $updatestmt->bind_param('ss', $status, $spec_name);
-                  
-                      // Otherwise, update only the current specification
-                      } else {
-                          $updateQuery = "UPDATE specification SET spec_type = ?, price = ?, status = ? WHERE id = ?";
-                          $updatestmt = $conn->prepare($updateQuery);
-                          $updatestmt->bind_param('sssi', $spec_type, $price, $status, $id);
-                      }
-                  
-                      // Execute the update query
-                      if ($updatestmt->execute()) {
-                          if ($updatestmt->affected_rows > 0) {
-                              $_SESSION['message'] = "Print specification updated successfully!";
-                              $_SESSION['msg_type'] = "success";
-                          } else {
-                              $_SESSION['message'] = "No changes made to the specification.";
-                              $_SESSION['msg_type'] = "warning";
-                          }
-                          header("Location: printspec.php?action=view");
-                          exit;
-                      } else {
-                          error_log("Error updating specification: " . $conn->error);
-                          $_SESSION['message'] = "Error updating print specification.";
-                          $_SESSION['msg_type'] = "danger";
-                          header("Location: printspec.php?action=view");
-                          exit;
-                      }
-                  }
-                  
-                  
-
-                    ?>
+            ?>
                     
 
                         <h2>Edit Specification</h2>
@@ -266,7 +238,6 @@ echo "</div>";
                                     <td>
                                         <input type="number" step="0.01" name="price" value="<?php echo htmlspecialchars($spec['price']); ?>" required>
                                         <br>
-                                        <!-- Checkbox to apply price to all specification types under the same specification name -->
                                         <label>
                                             <input type="checkbox" name="apply_price_to_all" value="1"> Apply price to all specification types under this specification name
                                         </label>
@@ -276,11 +247,14 @@ echo "</div>";
                                     <th>Status</th>
                                     <td>
                                         <select name="status" required>
-                                            <option value="available" <?php if ($spec['status'] == 'available') echo 'selected'; ?>>Available</option>
-                                            <option value="unavailable" <?php if ($spec['status'] == 'unavailable') echo 'selected'; ?>>Unavailable</option>
+                                            <option value="available" <?php if ($spec['status'] == 'available') {
+                                                echo 'selected';
+                                            } ?>>Available</option>
+                                            <option value="unavailable" <?php if ($spec['status'] == 'unavailable') {
+                                                echo 'selected';
+                                            } ?>>Unavailable</option>
                                         </select>
                                         <br>
-                                        <!-- Checkbox to apply status to all specification types under the same specification name -->
                                         <label>
                                             <input type="checkbox" name="apply_status_to_all" value="1"> Apply status to all specification types under this specification name
                                         </label>
@@ -288,7 +262,7 @@ echo "</div>";
                                 </tr>
                                 <tr>
                                     <td colspan="2" style="text-align: center;">
-                                        <input type="submit" value="Update Print Specification" class="button button-edit">
+                                        <input type="submit" value="Update" class="button button-edit">
                                         <button onclick="history.go(-1);" class="button button-back">
                                             Back
                                         </button>
@@ -300,60 +274,51 @@ echo "</div>";
 
 
                     <?php
-                } else {
-                    echo "No specification ID provided!";
-                }
-                break;
+        } else {
+            echo 'No specification ID provided!';
+        }
+        break;
 
-     
+    case 'add':
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $spec_name = $_POST['spec_name'];
+            $spec_types = $_POST['spec_type'];
+            $prices = $_POST['price'];
+            $statuses = $_POST['status'];
 
-        case 'add':
-          if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-              // Handle form submission for adding new specification and types
-              $spec_name = $_POST['spec_name'];
-              $spec_types = $_POST['spec_type']; // This will be an array
-              $prices = $_POST['price']; // This will be an array
-              $statuses = $_POST['status']; // This will be an array
-        
-              // Prepare the statement
-              $insertstmt = $conn->prepare("INSERT INTO specification (spec_name, spec_type, price, status) VALUES (?, ?, ?, ?)");
-      
-              // Loop through the specification types and prices
-              foreach ($spec_types as $index => $spec_type) {
-                $price = floatval($prices[$index]); // Get the corresponding price
-                  $status = $statuses[$index]; // Get the corresponding status
-                  
-                  // Bind parameters
-                  $insertstmt->bind_param('ssds', $spec_name, $spec_type, $price, $status);
-                  
-                  if ($insertstmt->execute()) {
+            $insertstmt = $conn->prepare('INSERT INTO specification (spec_name, spec_type, price, status) VALUES (?, ?, ?, ?)');
+
+            foreach ($spec_types as $index => $spec_type) {
+                $price = floatval($prices[$index]);
+                $status = $statuses[$index];
+
+                $insertstmt->bind_param('ssds', $spec_name, $spec_type, $price, $status);
+
+                if ($insertstmt->execute()) {
                     if ($insertstmt->affected_rows > 0) {
-                        $_SESSION['message'] = "Specification added successfully!";
-                        $_SESSION['msg_type'] = "success"; 
+                        $_SESSION['message'] = 'Specification added successfully!';
+                        $_SESSION['msg_type'] = 'success';
                     } else {
-                        $_SESSION['message'] = "Error adding specification.";
-                        $_SESSION['msg_type'] = "danger";
-                        header("Location: printspec.php?action=view");
+                        $_SESSION['message'] = 'Error adding specification.';
+                        $_SESSION['msg_type'] = 'danger';
+                        header('Location: printspec.php?action=view');
                         exit;
                     }
                 } else {
-                    // Log the error or display it
-                    error_log("Error adding specification: " . $insertstmt->error);
-                    $_SESSION['message'] = "Error adding specification.";
-                    $_SESSION['msg_type'] = "danger";
-                    header("Location: printspec.php?action=view");
+                    error_log('Error adding specification: '.$insertstmt->error);
+                    $_SESSION['message'] = 'Error adding specification.';
+                    $_SESSION['msg_type'] = 'danger';
+                    header('Location: printspec.php?action=view');
                     exit;
                 }
             }
-              
-              // Close the statement
-              $insertstmt->close();
-              
-              // Redirect to view the list of specifications
-              header("Location: printspec.php?action=view");
-              exit;
-          } else {
-              ?>
+
+            $insertstmt->close();
+
+            header('Location: printspec.php?action=view');
+            exit;
+        } else {
+            ?>
 
             <h2>Add Specification</h2>
 
@@ -399,9 +364,8 @@ echo "</div>";
 
                 <br><br>
 
-                <!-- Neatly aligned buttons -->
-                <div class="button-container">
-                    <input type="submit" value="Add Specification" class="button button-add">
+                <div class="button-container" style="justify-content: center">
+                    <input type="submit" value="Add" class="button button-add">
                     <button type="button" onclick="window.history.back();" class="button button-back">Back</button>
                 </div>
             </form>
@@ -416,12 +380,12 @@ echo "</div>";
                         const firstPrice = priceInputs[0].value;
                         if (!firstPrice) {
                             alert("Please enter the price for the first specification type before applying the same price to others.");
-                            this.checked = false; // Uncheck the checkbox if no price is entered
+                            this.checked = false;  
                             return;
                         }
                         priceInputs.forEach((input, index) => {
                             if (index > 0) {
-                                input.value = firstPrice;  // Auto-fill the same price in all other fields
+                                input.value = firstPrice;   
                             }
                         });
                     }
@@ -445,7 +409,7 @@ echo "</div>";
                             <tr>
                                 <th>Status</th>
                                 <td>
-                                    <select name="status[]" style="width: 200px; height: 40px;"> <!-- Make the dropdown bigger -->
+                                    <select name="status[]" style="width: 200px; height: 40px;">
                                         <option value="available">Available</option>
                                         <option value="unavailable">Unavailable</option>
                                     </select>
@@ -458,12 +422,11 @@ echo "</div>";
 
                     specTypeSection.appendChild(newEntry);
 
-                    // If checkbox is checked, auto-fill the new price field
                     if (document.getElementById('same-price-checkbox').checked) {
                         const priceInputs = document.querySelectorAll('.price-input');
                         const firstPrice = priceInputs[0].value;
                         if (firstPrice) {
-                            priceInputs[priceInputs.length - 1].value = firstPrice; // Fill the last added price input
+                            priceInputs[priceInputs.length - 1].value = firstPrice;  
                         }
                     }
                 }
@@ -475,47 +438,42 @@ echo "</div>";
 
       
               <?php
-          }
-          break;
-      
-          case 'delete':
-            if (isset($_POST['specification_name'])) {
-                $specName = $_POST['specification_name']; 
-                $deleteAll = isset($_POST['delete_all']) ? $_POST['delete_all'] : 0;
-    
-                if ($deleteAll) {
-                    // Delete all specifications related to the selected name
-                    $deleteQuery = "DELETE FROM specification WHERE spec_name = ?";
+        }
+        break;
+
+    case 'delete':
+        if (isset($_POST['specification_name'])) {
+            $specName = $_POST['specification_name'];
+            $deleteAll = isset($_POST['delete_all']) ? $_POST['delete_all'] : 0;
+
+            if ($deleteAll) {
+                $deleteQuery = 'DELETE FROM specification WHERE spec_name = ?';
+                $stmt = $conn->prepare($deleteQuery);
+                $stmt->bind_param('s', $specName);
+                $stmt->execute();
+
+                if ($stmt->affected_rows > 0) {
+                }
+            } else {
+                if (isset($_POST['specification_id'])) {
+                    $specId = $_POST['specification_id'];
+                    $deleteQuery = 'DELETE FROM specification WHERE id = ?';
                     $stmt = $conn->prepare($deleteQuery);
-                    $stmt->bind_param("s", $specName);
+                    $stmt->bind_param('i', $specId);
                     $stmt->execute();
-    
+
                     if ($stmt->affected_rows > 0) {
-                    }
-                } else {
-                    // Delete only the clicked specification
-                    if (isset($_POST['specification_id'])) { 
-                        $specId = $_POST['specification_id']; 
-                        $deleteQuery = "DELETE FROM specification WHERE id = ?";
-                        $stmt = $conn->prepare($deleteQuery);
-                        $stmt->bind_param("i", $specId); 
-                        $stmt->execute();
-    
-                        if ($stmt->affected_rows > 0) {
-                            // Successful deletion logic, but no echo to prevent output
-                        }
                     }
                 }
             }
-    
-            // Redirect to view page after deletion
-            header("Location: printspec.php?action=view");
-            exit; // Stop further script execution to prevent HTML from rendering
-            break;
+        }
 
-        
+        header('Location: printspec.php?action=view');
+        exit;
+        break;
+
     default:
-        header("Location: printspec.php?action=view");
+        header('Location: printspec.php?action=view');
         break;
 }
 ?>
@@ -550,35 +508,30 @@ function openDeleteModal(specificationName, specificationId) {
     document.getElementById('deleteModal').style.display = 'block';
 }
 
-// Function to close the modal
 function closeModal() {
     document.getElementById('deleteModal').style.display = 'none';
 }
 
-// Handle the delete confirmation
 document.getElementById('confirmDelete').addEventListener('click', function() {
     const specificationName = document.getElementById('specificationName').value;
     const specificationId = document.getElementById('specificationId').value;
     const deleteAll = document.getElementById('deleteAllSpecsCheckbox').checked;
     
-    // Send data to the server to delete the specific record or all related ones
     deleteSpecification(specificationId, specificationName, deleteAll);
     closeModal();
 });
 
-// AJAX function to handle the deletion
 function deleteSpecification(specificationId, specificationName, deleteAll) {
     const xhr = new XMLHttpRequest();
     xhr.open("POST", "printspec.php?action=delete", true);
     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
-    // Send whether to delete all related specifications or just the one
     xhr.send("specification_id=" + specificationId + "&specification_name=" + specificationName + "&delete_all=" + (deleteAll ? 1 : 0));
 
     xhr.onload = function() {
     if (xhr.status === 200) {
-        console.log(xhr.responseText); // Log response for debugging (optional)
-        location.reload(); // Reload the page without showing an alert
+        console.log(xhr.responseText); 
+        location.reload(); 
     }
 }
 }
@@ -590,7 +543,7 @@ function deleteSpecification(specificationId, specificationName, deleteAll) {
     <!-- Footer -->
     <!-- ============================================================== -->
     <footer class="footer text-center">
-      All Rights Reserved by Infinity Printing. Designed and Developed by <a href="https://www.wrappixel.com">WrapPixel</a>.
+      All Rights Reserved by Infinity Printing. Designed and Developed by <a href="https:www.wrappixel.com">WrapPixel</a>.
     </footer>
   </div>
   </div>

@@ -18,22 +18,6 @@
     </nav>
 </header>
 
-<style>
-    #sidebarToggle {
-        display: none; /* Hide by default */
-        position: absolute; /* Position it absolutely */
-        right: 20px; /* Adjust as needed to place it on the right */
-        top: 15px; /* Adjust the vertical position as needed */
-        background-color: red; /* Temporary color to check visibility */
-    }
-
-    @media (max-width: 768px) { /* Adjust the max-width as needed */
-        #sidebarToggle {
-            display: block; /* Show on mobile/tablet */
-        }
-    }
-</style>
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('sidebarToggle').addEventListener('click', function() {

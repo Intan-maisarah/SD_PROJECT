@@ -1,25 +1,16 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-// Include your database connection file
 include '../../connection.php';
 
-// Start session if not already started
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Check if user is logged in by checking if the session variable is set
 if (!isset($_SESSION['user_id'])) {
     die("User not logged in.");
 }
 
-// Fetch the logged-in user's ID from the session
 $user_id = $_SESSION['user_id'];
 
-// Query to get the user's profile data
 $query = "SELECT name, username, email, contact, address, profile_pic FROM users WHERE id = ?";
 $stmt = $conn->prepare($query);
 
@@ -31,7 +22,6 @@ $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Check if the query returned any rows
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $name = $row['name'] ?? "N/A";
@@ -50,8 +40,6 @@ if ($result->num_rows > 0) {
     $profile_pic = '../assets/profile_pic/default-placeholder.png'; 
 
 }
-
-// Close the statement and connection
 $stmt->close();
 
 $profilePicPath = !empty($profile_pic) ? htmlspecialchars($profile_pic) : '../assets/profile_pic/default-placeholder.png';
@@ -207,93 +195,7 @@ $conn->close();
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-    <style>
-    .preloader {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.8);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-  flex-direction: column;
-}
-
-/* Printer styling */
-.printer {
-  position: relative;
-  width: 120px;
-  height: 120px;
-}
-
-.printer-top {
-  width: 80px;
-  height: 20px;
-  background: #666;
-  border-radius: 10px 10px 0 0;
-  position: absolute;
-  top: 0;
-  left: 20px;
-}
-
-.paper-input-slot {
-  width: 80px;
-  height: 10px;
-  background: #444;
-  border-radius: 3px;
-  position: absolute;
-  top: 20px;
-  left: 20px;
-}
-
-.printer-body {
-  width: 120px;
-  height: 60px;
-  background: #333;
-  border-radius: 5px;
-  position: absolute;
-  top: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.paper {
-  width: 80px;
-  height: 50px;
-  background: #fff;
-  border: 2px solid #333;
-  border-radius: 3px;
-  position: relative;
-  animation: paper-print 2s infinite;
-}
-
-.printer-tray {
-  width: 100px;
-  height: 10px;
-  background: #333;
-  border-radius: 0 0 5px 5px;
-  position: absolute;
-  bottom: 0;
-  left: 10px;
-}
-
-/* Animation for the paper printing effect */
-@keyframes paper-print {
-  0% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(20px);
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
-  </style>
+    <link rel="stylesheet" href="../service/style.css">
 </head>
 
 <body>

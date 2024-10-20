@@ -1,27 +1,20 @@
 <?php
 ob_start();
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Ensure the session is started and check if user ID is set
 if (!isset($_SESSION['user_id'])) {
     echo "User not logged in.<br>";
     exit;
 }
 
-// Include the database connection
 require '../../connection.php';
 
-// Fetch the logged-in user's ID from the session
 $user_id = $_SESSION['user_id'];
 $adminEmail = '';
 $usertype = '';
 
-// Prepare and execute a query to get the user's email and usertype
 $sql = "SELECT email, usertype FROM users WHERE id = ?";
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
@@ -45,7 +38,6 @@ if ($result->num_rows > 0) {
     exit;
 }
 
-// Close statement and connection
 $stmt->close();
 $conn->close();
 ?>
@@ -106,7 +98,6 @@ $conn->close();
                             
                         </div>
                         <?php
-                        // Unset message after displaying it
                         unset($_SESSION['message']);
                         unset($_SESSION['msg_type']);
                       endif;
@@ -149,19 +140,16 @@ $conn->close();
                             $updateStmt->bind_param("ssssi", $name, $email, $contact, $address, $id);
                             
                             if ($updateStmt->execute()) {
-                                // Check if the query executed and the row was affected
                                 if ($updateStmt->affected_rows > 0) {
                                     $_SESSION['message'] = "Staff updated successfully!";
                                     $_SESSION['msg_type'] = "success";
                                 } else {
-                                    // No rows were updated (data may not have changed)
                                     $_SESSION['message'] = "No changes made to the staff.";
                                     $_SESSION['msg_type'] = "warning";
                                 }
                                 header("Location: staff.php?action=view");
                                 exit;
                             } else {
-                                // Log the error or display it
                                 error_log("Error updating staff: " . $conn->error);
                                 $_SESSION['message'] = "Error updating staff.";
                                 $_SESSION['msg_type'] = "danger";
@@ -248,21 +236,17 @@ $conn->close();
                         $contact = $_POST['contact'];
                         $address = $_POST['address'];
                         $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
-                        // Prepare the insert query using placeholders
-                        $insertQuery = "INSERT INTO users (username, name, email, contact, address, password, userType, is_verified) 
+                      $insertQuery = "INSERT INTO users (username, name, email, contact, address, password, userType, is_verified) 
                         VALUES (?, ?, ?, ?, ?, ?, 'STAFF', '0')";
                         $insertStmt = $conn->prepare($insertQuery);
 
-                        // Bind the parameters (username, name, email, contact, address, password)
-                        $insertStmt->bind_param("ssssss", $username, $name, $email, $contact, $address, $password);
+                      $insertStmt->bind_param("ssssss", $username, $name, $email, $contact, $address, $password);
 
-                        // Execute the query
                         $insertStmt->execute();
 
-                        // Check if the insertion was successful
                         if ($insertStmt->affected_rows > 0) {
                         $_SESSION['message'] = "Staff added successfully!";
-                        $_SESSION['msg_type'] = "success"; // 'success', 'danger', 'info', etc.
+                        $_SESSION['msg_type'] = "success"; 
                         header("Location: staff.php?action=view");
                         exit;
                         } else {
