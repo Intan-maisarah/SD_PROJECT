@@ -357,7 +357,7 @@ switch ($action) {
                             </tr>
                         </table>
                         <br>
-                        <button type="button" class="button button-delete" onclick="removeType(this)">Remove Type</button>
+                        <button type="button" class="button button-delete" onclick="removeType(this)">Delete Type</button>
                         <button type="button" class="button button-add" onclick="addType()">Add More Types</button>
                     </div>
                 </div>
