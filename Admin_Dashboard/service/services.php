@@ -90,8 +90,8 @@ $conn->close();
                     $query = "SELECT * FROM services";
                     $result = mysqli_query($conn, $query);
                 
-                    echo "<div>
-                        <h2 '>Service List</h2>
+                    echo "<div class='list-header'>
+                        <h2>Service List</h2>
                         <a href='services.php?action=add' class ='button button-add'>Add Service</a>
                     </div>";
                     if (isset($_SESSION['message'])): ?>
@@ -267,7 +267,7 @@ $conn->close();
                                 }
                             }
                     
-                        $updateQuery = "UPDATE services SET service_name = ?, status = ?, service_description = ?, image = ? WHERE service_id = ?";
+                        $updateQuery = "  SET service_name = ?, status = ?, service_description = ?, image = ? WHERE service_id = ?";
                         $updateStmt = $conn->prepare($updateQuery);
                         $updateStmt->bind_param("ssssi", $service_name, $status, $service_description, $imageURL, $service_id);
 
@@ -331,7 +331,7 @@ $conn->close();
                                   </tr>
                                   <tr>
                                       <td colspan="2" style="text-align: center;">
-                                          <input type="submit" value="Update Service" class="button button-edit">
+                                          <input type="submit" value="Update" class="button button-edit">
                                           <button onclick="history.go(-1);" class="button button-back">
                                              Back</button>
 

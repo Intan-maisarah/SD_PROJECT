@@ -54,18 +54,14 @@ session_start();
   <div class="container">
     <h2>About Us</h2>
     <h3>Your easy on-the-go printing service</h3>
+
+    <div class="about-content">
+        <div class="kedai">
+            <img src="assets/images/kedai2.jpg">
+        </div>
+    </div>
    <!-- <div class="about-content">
-      <div class="pic-container">
-        <img 
-          src="assets/images/kedai2.jpg"
-          width="100%" 
-          height="100%" 
-          style="border:0;" 
-          allowfullscreen="" 
-          loading="lazy" 
-          referrerpolicy="no-referrer-when-downgrade">
-        </img>
-      </div>
+    
       <div class="text-content">
         <p>
           Welcome to <strong>Infinity Printing & Stationery Service</strong>, your go-to solution for remote document printing and delivery.

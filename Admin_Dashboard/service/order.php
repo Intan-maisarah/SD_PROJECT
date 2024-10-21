@@ -233,7 +233,7 @@ switch ($action) {
                             </tr>
                             <tr>
                                 <td colspan="2" style="text-align: center;">
-                                    <input type="submit" value="Update order">
+                                    <input type="submit" value="Update">
                                     <button onclick="history.go(-1);" class="button button-back">Back</button>
                                 </td>
                             </tr>

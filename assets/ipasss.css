@@ -436,25 +436,6 @@ section {
   .about-content {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #cedeee;
-    background-size: cover;
-    background-position: center;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-  }
-  
-  .pic-container {
-    flex: 1;
-    max-width: 35%;
-    height: 500px;
-    margin-left: 50px;
-    margin-right: 20px;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
   }
   
   .text-content {

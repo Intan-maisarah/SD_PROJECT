@@ -115,7 +115,7 @@ switch ($action) {
         $query = 'SELECT * FROM specification';
         $result = mysqli_query($conn, $query);
 
-        echo "<div>
+        echo "<div class='list-header'>
         <h2>Print Specification</h2>
         <a href='printspec.php?action=add' class = 'button button-add'>Add Print Specification</a>
       </div>";

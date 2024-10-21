@@ -88,7 +88,7 @@ $conn->close();
                     $query = "SELECT * FROM users WHERE userType = 'STAFF'";
                     $result = mysqli_query($conn, $query);
 
-                    echo "<div>
+                    echo "<div class='list-header'>
                         <h2>Staff List</h2>
                         <a href='staff.php?action=add' class='button button-add' >Add Staff</a>
                     </div>";
@@ -194,7 +194,7 @@ $conn->close();
                             
                             <tr>
                                       <td colspan="2" style="text-align: center;">
-                                          <input type="submit" value="Update Staff" class="button button-edit">
+                                          <input type="submit" value="Update" class="button button-edit">
                                           <button onclick="history.go(-1);" class="button button-back">
                                              Back</button>
 
