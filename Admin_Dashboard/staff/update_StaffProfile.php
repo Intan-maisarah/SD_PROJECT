@@ -1,33 +1,22 @@
 <?php
-// Enable error reporting for debugging
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-// Include your database connection file
 include '../../connection.php';
 
-// Start session if not already started
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Fetch the user's profile data
 $user_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : null;
 
-// Initialize message variables
 $message = '';
 $success = '';
 $error = '';
 
-// Query to get the user's profile data
 $query = "SELECT name, username, email, contact, address, profile_pic FROM users WHERE id = ?";
 $stmt = $conn->prepare($query);
-$stmt->bind_param("i", $user_id); // Bind user ID dynamically
+$stmt->bind_param("i", $user_id); 
 $stmt->execute();
 $result = $stmt->get_result();
 
-// Fetch user data
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $name = $row['name'] ?? "N/A";
@@ -35,29 +24,26 @@ if ($result->num_rows > 0) {
     $email = $row['email'] ?? "N/A";
     $contact = $row['contact'] ?? "N/A";
     $address = $row['address'] ?? "N/A";
-    $profile_pic = $row['profile_pic'] ?? '../assets/profile_pic/default-placeholder.png'; // Default placeholder
+    $profile_pic = $row['profile_pic'] ?? '../assets/profile_pic/default-placeholder.png';
 } else {
-    // Default values if no user found
     $name = "N/A";
     $usernames = "N/A";
     $email = "N/A";
     $contact = "N/A";
     $address = "N/A";
-    $profile_pic = '../assets/profile_pic/default-placeholder.png'; // Default placeholder
+    $profile_pic = '../assets/profile_pic/default-placeholder.png'; 
 }
 
-// Handle form submission
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Sanitize input data
     $name = $_POST['name'] ?? $name;
     $email = $_POST['email'] ?? $email;
     $contact = $_POST['contact'] ?? $contact;
     $address = $_POST['address'] ?? $address;
-    $uploadOk = 1; // Flag to check upload status
+    $uploadOk = 1; 
 
     // Profile picture upload
     if (isset($_FILES['profile_pic']) && $_FILES['profile_pic']['error'] == 0) {
-        $target_dir = "../assets/profile_pic/"; // Define upload directory
+        $target_dir = "../assets/profile_pic/"; 
         $target_file = $target_dir . basename($_FILES["profile_pic"]["name"]);
         $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
         
@@ -84,39 +70,34 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if ($uploadOk == 0) {
             $error = "File upload failed due to errors: $error";
         } else {
-            // If everything is ok, try to upload the file
             if (move_uploaded_file($_FILES["profile_pic"]["tmp_name"], $target_file)) {
-                // Save the full path in the database
                 $profile_pic = '../assets/profile_pic/' . basename($_FILES["profile_pic"]["name"]); // Full path for database
             } else {
                 $error = "Error uploading the file.";
             }
         }
     } else {
-        // If no new picture is uploaded, retain the existing profile picture from the database
         $stmt = $conn->prepare("SELECT profile_pic FROM users WHERE id = ?");
         $stmt->bind_param("i", $user_id);
         $stmt->execute();
         $result = $stmt->get_result();
         if ($result->num_rows > 0) {
             $row = $result->fetch_assoc();
-            $profile_pic = $row['profile_pic']; // Retain existing profile picture
+            $profile_pic = $row['profile_pic']; 
         }
     }
 
     
 
-    // Update user details in the database
     $stmt = $conn->prepare("UPDATE users SET name = ?, email = ?, contact = ?, address = ?, profile_pic = ? WHERE id = ?");
     $stmt->bind_param("sssssi", $name, $email, $contact, $address, $profile_pic, $user_id);
 
     if ($stmt->execute()) {
         $success = "Profile updated successfully.";
     } else {
-        $error = "Error updating profile: " . $stmt->error; // Capture and display SQL errors
+        $error = "Error updating profile: " . $stmt->error; 
     }
 
-    // Construct message output
     if (!empty($success)) {
         $message = '<div class="alert alert-success" role="alert">' . htmlspecialchars($success) . '</div>';
     }
@@ -124,22 +105,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $message = '<div class="alert alert-danger" role="alert">' . htmlspecialchars($error) . '</div>';
     }
 
-    // Store message in session and redirect to avoid form resubmission
     $_SESSION['message'] = $message;
     header('Location: ' . $_SERVER['PHP_SELF']);
     exit();
 }
 
-// Display messages only under the Edit Profile heading
 if (isset($_SESSION['message'])) {
     $message = $_SESSION['message'];
-    unset($_SESSION['message']); // Clear the message after displaying it
+    unset($_SESSION['message']); 
 }
 
 $profilePicPath = !empty($profile_pic) ? htmlspecialchars($profile_pic) : '../assets/profile_pic/default-placeholder.png';
 
 
-$conn->close(); // Close the database connection
+$conn->close(); 
 ?>
 
 
@@ -300,93 +279,7 @@ $conn->close(); // Close the database connection
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-    <style>
-    .preloader {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.8);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-  flex-direction: column;
-}
-
-/* Printer styling */
-.printer {
-  position: relative;
-  width: 120px;
-  height: 120px;
-}
-
-.printer-top {
-  width: 80px;
-  height: 20px;
-  background: #666;
-  border-radius: 10px 10px 0 0;
-  position: absolute;
-  top: 0;
-  left: 20px;
-}
-
-.paper-input-slot {
-  width: 80px;
-  height: 10px;
-  background: #444;
-  border-radius: 3px;
-  position: absolute;
-  top: 20px;
-  left: 20px;
-}
-
-.printer-body {
-  width: 120px;
-  height: 60px;
-  background: #333;
-  border-radius: 5px;
-  position: absolute;
-  top: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.paper {
-  width: 80px;
-  height: 50px;
-  background: #fff;
-  border: 2px solid #333;
-  border-radius: 3px;
-  position: relative;
-  animation: paper-print 2s infinite;
-}
-
-.printer-tray {
-  width: 100px;
-  height: 10px;
-  background: #333;
-  border-radius: 0 0 5px 5px;
-  position: absolute;
-  bottom: 0;
-  left: 10px;
-}
-
-/* Animation for the paper printing effect */
-@keyframes paper-print {
-  0% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(20px);
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
-  </style>
+    <link rel="stylesheet" href="../service/style.css">
 </head>
 
 <body>

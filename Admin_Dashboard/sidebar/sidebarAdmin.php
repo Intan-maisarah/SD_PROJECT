@@ -1,7 +1,4 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -16,7 +13,6 @@ $user_id = $_SESSION['user_id'];
 $adminEmail = '';
 $profile_pic = '';
 
-// Prepare and execute a query to get the user's email
 $sql = "SELECT email, profile_pic FROM users WHERE id = ?";
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
@@ -39,11 +35,8 @@ if ($result->num_rows > 0) {
     $adminEmail = "Email not found";
 }
 
-// Close statement and connection
 $stmt->close();
 $profilePicPath = !empty($profile_pic) ? htmlspecialchars($profile_pic) : '../assets/profile_pic/default-placeholder.png';
-
-
 $conn->close();
 
 ?>
@@ -122,59 +115,54 @@ $conn->close();
 <style>
     /* CSS */
 #Userdd {
-    color: black; /* Change the text color of the <a> tag */
-    text-decoration: none; /* Remove underline from <a> tag */
+    color: black; 
+    text-decoration: none; 
 }
 
 #Userdd .hide-menu {
-    color: grey; /* Ensure email text color is set */
+    color: grey; 
 }
 
 .left-sidebar {
-    width: 250px; /* Width of your sidebar */
+    width: 250px; 
     transition: width 0.3s ease;
 }
 
 .left-sidebar.collapsed {
-    width: 60px; /* Adjust width when collapsed */
+    width: 60px; 
 }
 
-/* Sidebar item visibility */
 .sidebar-item {
-    display: flex; /* Keep items in a row */
-    align-items: center; /* Center vertically */
+    display: flex;
+    align-items: center; 
 }
 
 .sidebar-item .hide-menu {
-    display: inline-block; /* Show menu text when not collapsed */
+    display: inline-block; 
 }
 
-/* Handle collapsed state */
 .collapsed .sidebar-item .hide-menu {
-    display: none; /* Hide menu text when collapsed */
+    display: none; 
 }
 
 .collapsed .sidebar-link {
-    justify-content: center; /* Center the icons */
+    justify-content: center; 
 }
 
-/* User profile adjustments */
 .collapsed .user-content {
-    display: none; /* Hide user content in collapsed mode */
+    display: none; 
 }
 
 .collapsed .user-pic img {
-    width: 30px; /* Adjust image size */
+    width: 30px; 
 }
 
-/* Optional: Adjust padding for collapsed state */
 .collapsed .sidebar-link {
-    padding: 15px; /* Adjust as needed */
+    padding: 15px; 
 }
 
-/* Sidebar background */
 .left-sidebar {
-    background-color: #f8f9fa; /* Adjust as needed */
+    background-color: #f8f9fa; 
 }
 
 

@@ -177,6 +177,33 @@ section {
     height: 100vh; 
 }
 
+.arrow {
+  position: absolute; 
+  right: 10%; 
+  transform: translateX(-50%) rotate(-35deg); 
+  top: 65%; 
+  margin-top: 20px; 
+  opacity: 0;
+  animation: moveArrow 1s ease-out forwards; /
+}
+
+.arrow img {
+  width: 120px; 
+  height: auto;
+}
+
+@keyframes moveArrow {
+  0% {
+      right: 5%;
+      opacity: 0;
+  }
+  100% {
+      top: 65%; 
+      opacity: 1; 
+  }
+}
+
+
 .wave-container {
     position: relative;
     width: 100%;
@@ -184,24 +211,33 @@ section {
     line-height: 0;
   }
   
-  /* Wave SVG */
-  .wave {
+  .wave{
     position: relative;
     display: block;
     width: 100%;
     height: 150px;
-    fill: rgb(214, 209, 240); 
+    fill: #d6d1f0; 
     transform: rotate(180deg);
     margin-top: -5px;
   }
 
-  .wave path {
-    stroke-width: 0;
-    fill: rgb(214, 209, 240); 
+  .wave2 {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 500px;
+    fill: #d6d1f0; 
   }
 
-  .extra-section {
+.wave path {
+    stroke-width: 0;
+    fill: #d6d1f0; 
+  }
+
+.extra-section {
     background-color: white;
+    padding: 20px 20px !important;
+    min-height: 50vh !important;
   }
 
 .extra-content {
@@ -228,6 +264,82 @@ section {
   text-align: left;
   width: 50%;
 }
+
+.goals-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.goals-header {
+  position: relative;
+  text-align: center;
+  margin-top: 20px;
+}
+
+.moon {
+  position: absolute;
+  top: -25px; 
+  left: 20%;
+  transform: translateX(-50%);
+}
+
+.moon img {
+  width: 250px; 
+  height: auto;
+  animation: twinkle 2s infinite ease-in-out;
+}
+
+@keyframes twinkle {
+  0%, 100% {
+      opacity: 1;
+      transform: scale(1); 
+  }
+  50% {
+      opacity: 0.6; 
+      transform: scale(1.1); 
+  }
+}
+
+.goals-content h1 {
+  font-family: "Prompt", sans-serif;
+  font-weight: 500;
+  font-size: 2.5rem;
+  color: #333;
+  margin: 60px 0;
+}
+
+.goals-cards-container {
+  display: flex;
+  justify-content: space-around; 
+  gap: 20px; 
+  flex-wrap: wrap;
+}
+
+.goal-card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 20px;
+  width: 250px; 
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+}
+
+.goal-card img {
+  width: 100%;
+  height: auto;
+  border-radius: 8px; 
+  margin-bottom: 15px;
+}
+
+.goal-card p {
+  font-size: 16px;
+  color: #555;
+}
+
+
 
 /* Services Section */
 #services {
@@ -298,7 +410,7 @@ section {
 /* about section */
 #about {
     padding: 60px 20px;
-    background-color: #96a9c1;
+    background-color: #bacce2;
     margin-top: 100px;
   }
   
@@ -307,38 +419,23 @@ section {
     margin: 0 auto;
     padding: 0 15px;
     max-height: 700px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
   
   #about h2 {
     font-size: 3.0em;
     font-weight: bold;
-    color: #feeeee;
+    color: #000000;
     text-align: center;
+    margin-top: 100px;
     margin-bottom: 20px;
   }
   
   .about-content {
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #cedeee;
-    background-size: cover;
-    background-position: center;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-  }
-  
-  .pic-container {
-    flex: 1;
-    max-width: 35%;
-    height: 500px;
-    margin-left: 50px;
-    margin-right: 20px;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
   }
   
   .text-content {
@@ -491,6 +588,15 @@ section {
       width: 100%;
       padding: 20px;
     }
+
+    .goals-cards-container {
+      flex-direction: column; 
+      align-items: center;
+  }
+
+  .goal-card {
+      width: 90%; 
+  }
   }
 
 /* button styles */
@@ -612,6 +718,10 @@ section {
     font-size: 35px;
     background-color: #526794;
     color: white;
+}
+.hero-btn:hover{
+  background-color: #485a83;
+  color: white;
 }
 
 .btn {

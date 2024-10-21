@@ -7,7 +7,6 @@ error_reporting(E_ALL);
 
 include "../connection.php";
 
-// Check if token is provided
 if (isset($_GET['token'])) {
     $token = $_GET['token'];
 
@@ -19,7 +18,6 @@ if (isset($_GET['token'])) {
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
-        // Token is valid, activate the user
         $updateQuery = "UPDATE users SET is_verified = 1, verification_token = NULL WHERE verification_token = ?";
         $updateStmt = $conn->prepare($updateQuery);
         $updateStmt->bind_param('s', $token);
@@ -43,7 +41,6 @@ if (isset($_GET['token'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Email Verification</title>
-    <!-- Link to CSS file -->
     <style>
         /* General Body Styles */
 body {

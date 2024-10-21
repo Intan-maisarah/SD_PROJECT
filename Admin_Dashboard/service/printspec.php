@@ -1,9 +1,5 @@
 <?php
 ob_start();
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
@@ -119,7 +115,7 @@ switch ($action) {
         $query = 'SELECT * FROM specification';
         $result = mysqli_query($conn, $query);
 
-        echo "<div>
+        echo "<div class='list-header'>
         <h2>Print Specification</h2>
         <a href='printspec.php?action=add' class = 'button button-add'>Add Print Specification</a>
       </div>";

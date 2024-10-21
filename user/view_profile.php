@@ -1,20 +1,12 @@
 <?php
-// Display errors for debugging purposes (disable in production)
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-// Include the database connection file
 include '../connection.php';
 session_start();
 
-// Fetch user ID from session
 $user_id = $_SESSION['user_id'] ?? null;
 if (!$user_id) {
     die('User not logged in.');
 }
 
-// Fetch user data
 $query = "SELECT name, username, email, contact, address FROM users WHERE id = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $user_id);
@@ -36,7 +28,6 @@ if ($result->num_rows > 0) {
     $address = "N/A";
 }
 
-// Update user data if form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
     $name = $_POST['name'];
@@ -55,7 +46,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         if ($stmt->execute()) {
             $success = "Profile updated successfully.";
-            // Refresh the page to show updated profile data
             header("Location: view_profile.php");
             exit();
         } else {
@@ -181,7 +171,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <script src="https://code.jquery.com/jquery-1.10.2.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
 <script type="text/javascript">
-    // Toggle between view and edit profile sections
     function toggleInsert() {
         var viewSection = document.getElementById('viewProfile');
         var editSection = document.getElementById('editProfile');
@@ -206,18 +195,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    // Handle image upload and preview
     document.getElementById('imageInput').addEventListener('change', function(event) {
         const file = event.target.files[0];
 
         if (file) {
-            // Ensure file size is under 5MB
             if (file.size > 5 * 1024 * 1024) {
                 alert('File size exceeds 5 MB');
                 return;
             }
 
-            // Preview the uploaded image
             const reader = new FileReader();
             reader.onload = function(e) {
                 document.getElementById('profileImage').src = e.target.result;
@@ -225,22 +211,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             };
             reader.readAsDataURL(file);
 
-            // Image upload logic (AJAX)
             const formData = new FormData();
             formData.append('image', file);
 
-            // Example AJAX request
-            // fetch('/upload-endpoint', {
-            //     method: 'POST',
-            //     body: formData
-            // })
-            // .then(response => response.json())
-            // .then(data => console.log('Image uploaded successfully:', data))
-            // .catch(error => console.error('Error uploading image:', error));
+            
         }
     });
 
-    // Save changes and update profile view
     function saveChanges() {
         var username = document.getElementById('inputUsername').value;
         var name = document.getElementById('inputName').value;
@@ -255,51 +232,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         document.getElementById('displayContact').textContent = contact;
     }
 
-    document.addEventListener("DOMContentLoaded", function() {
-        const marker = document.getElementById("marker");
-        const navLinks = document.querySelectorAll("nav a");
-        const sections = document.querySelectorAll("section"); // Ensure all your sections have the correct IDs like #home, #services, etc.
-
-        // Function to move the marker
-        function moveMarker(element) {
-            marker.style.width = element.offsetWidth + "px";
-            marker.style.left = element.offsetLeft + "px";
-        }
-
-        // IntersectionObserver callback
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    // Get the active section ID
-                    const sectionId = entry.target.id;
-
-                    // Find the corresponding nav link
-                    const activeLink = document.querySelector(`nav a[href="#${sectionId}"]`);
-
-                    // Remove active class from all links and add to the current one
-                    navLinks.forEach(link => link.classList.remove("active"));
-                    activeLink.classList.add("active");
-
-                    // Move the marker
-                    moveMarker(activeLink);
-                }
-            });
-        }, {
-            threshold: 0.5  // Trigger when 50% of the section is visible
-        });
-
-        // Observe each section
-        sections.forEach(section => observer.observe(section));
-
-        // Add click event listeners to each navigation link for click-based marker movement
-        navLinks.forEach(link => {
-            link.addEventListener("click", function() {
-                navLinks.forEach(nav => nav.classList.remove("active"));
-                this.classList.add("active");
-                moveMarker(this);
-            });
-        });
-    });
+    
 </script>
 </body>
 </html>

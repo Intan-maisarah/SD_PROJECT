@@ -3,40 +3,34 @@ ob_start();
 ?>
 
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Ensure the session is started and check if user ID is set
 if (!isset($_SESSION['user_id'])) {
-    echo "User not logged in.<br>";
+    echo 'User not logged in.<br>';
     exit;
 }
 
-// Include the database connection
 require '../../connection.php';
 
-// Fetch the logged-in user's ID from the session
 $user_id = $_SESSION['user_id'];
 $adminEmail = '';
 $usertype = '';
 $profile_pic = '';
 
-// Prepare and execute a query to get the user's email and usertype
-$sql = "SELECT email, usertype, profile_pic FROM users WHERE id = ?";
+$sql = 'SELECT email, usertype, profile_pic FROM users WHERE id = ?';
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
-    echo "Prepare statement failed: " . $conn->error . "<br>";
+    echo 'Prepare statement failed: '.$conn->error.'<br>';
     exit;
 }
 $stmt->bind_param('i', $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 if (!$result) {
-    echo "Get result failed: " . $stmt->error . "<br>";
+    echo 'Get result failed: '.$stmt->error.'<br>';
     exit;
 }
 
@@ -46,11 +40,10 @@ if ($result->num_rows > 0) {
     $usertype = $row['usertype'];
     $profile_pic = $row['profile_pic'];
 } else {
-    echo "User not found.<br>";
+    echo 'User not found.<br>';
     exit;
 }
 
-// Close statement and connection
 $stmt->close();
 $conn->close();
 
@@ -89,138 +82,170 @@ $conn->close();
     } else {
         include '../sidebar/sidebarStaff.php';
     }
-    ?>
+?>
     
     <!-- Page wrapper -->
     <div class="page-wrapper">
-   <!-- PHP coding for customer -->
    <?php
-// Connect to the database
-include('../../connection.php'); 
+include '../../connection.php';
 
 $action = isset($_GET['action']) ? $_GET['action'] : 'view';
 
-switch($action) {
+switch ($action) {
     case 'view':
-        $query = "SELECT * FROM `order`";
+        $query = 'SELECT order_id, document_upload, status FROM `order`';
         $result = mysqli_query($conn, $query);
 
-        echo "<h2>Order List</h2>";
+        echo '<h2>Order List</h2>';
 
-        if (isset($_SESSION['message'])): ?>
+        if (isset($_SESSION['message'])) { ?>
             <div class="alert alert-<?php echo $_SESSION['msg_type']; ?> alert-dismissible fade show" role="alert">
                 <?php echo $_SESSION['message']; ?>
             </div>
-        <?php 
+        <?php
         unset($_SESSION['message']);
-        unset($_SESSION['msg_type']);
-        endif;
+            unset($_SESSION['msg_type']);
+        }
+
         echo "<div class='table-container'>";
-        echo "<table>";
-        echo "<tr><th>ID</th><th>Document</th><th>Status</th><th>Actions</th></tr>";
+        echo '<table>';
+        echo '<tr><th>ID</th><th>Document</th><th>Status</th><th>Action</th></tr>';
 
         while ($row = mysqli_fetch_assoc($result)) {
-            echo "<tr>";
-            echo "<td>" . $row['order_id'] . "</td>";
-            echo "<td>" . $row['document_upload'] . "</td>";
-            echo "<td>" . $row['order_status'] . "</td>";
+            echo '<tr>';
+            echo '<td>'.$row['order_id'].'</td>';
+            echo '<td>'.$row['document_upload'].'</td>';
+            echo '<td>'.$row['status'].'</td>';
             echo "<td>
-                  <a href='customer.php?action=edit&id=" . $row['id'] . "' class='button button-edit'>Edit</a> |
-                  <a href='customer.php?action=delete&id=" . $row['id'] . "' class='button button-delete' onclick='return confirm(\"Are you sure you want to delete?\")'>Delete</a>
+                  <a href='order.php?action=viewall&id=".$row['order_id']."' class='button button-add'>View</a> |
+                <a href='order.php?action=update&id=".$row['order_id']."' class='button button-edit'>Update</a>
                 </td>";
-            echo "</tr>";
+            echo '</tr>';
         }
-        echo "</table>";
-        echo "</div>";
+        echo '</table>';
+        echo '</div>';
         break;
 
-   /* case 'edit':
+    case 'viewall':
         if (isset($_GET['id'])) {
-            $id = $_GET['id'];
-            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                $name = $_POST['name'];
-                $email = $_POST['email'];
-                $contact = $_POST['contact'];
-                $address = $_POST['address'];
+            $order_id = $_GET['id'];
+            $query = "SELECT * FROM `order` WHERE order_id = $order_id";
+            $result = mysqli_query($conn, $query);
+            $order = mysqli_fetch_assoc($result);
 
-                $updateQuery = "UPDATE users SET name=?, email=?, contact=?, address=? WHERE id=?";
+            if ($order) {
+                echo '<h2>Order Details</h2>';
+                echo '<table>';
+                echo '<tr><th>Order ID</th><td>'.$order['order_id'].'</td></tr>';
+                echo '<tr><th>Customer Name</th><td>'.$order['customer_name'].'</td></tr>';
+                echo '<tr><th>Document Uploaded</th><td>'.$order['document_upload'].'</td></tr>';
+                echo '<tr><th>Order Date</th><td>'.$order['order_date'].'</td></tr>';
+                echo '<tr><th>Status</th><td>'.$order['status'].'</td></tr>';
+                echo '<tr><th>Total Price</th><td>RM'.$order['total_price'].'</td></tr>';
+                echo '</table>';
+
+                echo "<div style='text-align: center; margin-top: 20px;'>";
+                echo "<button onclick=\"history.go(-1);\" class='button button-back'>Back</button>";
+                echo '</div>';
+            } else {
+                echo '<p>Order not found.</p>';
+            }
+        } else {
+            echo '<p>No order ID provided.</p>';
+        }
+        break;
+
+    case 'update':
+        if (isset($_GET['id'])) {
+            $order_id = $_GET['id'];
+            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+                $status = $_POST['status'];
+
+                $updateQuery = 'UPDATE `order` SET status=? WHERE order_id=?';
                 $updateStmt = $conn->prepare($updateQuery);
-                $updateStmt->bind_param("ssssi", $name, $email, $contact, $address, $id);
-                
+                $updateStmt->bind_param('si', $status, $order_id);
+
                 if ($updateStmt->execute()) {
-                    $_SESSION['message'] = $updateStmt->affected_rows > 0 ? "Customer updated successfully!" : "No changes made.";
-                    $_SESSION['msg_type'] = "success";
-                    header("Location: customer.php?action=view");
+                    $_SESSION['message'] = $updateStmt->affected_rows > 0 ? 'Order updated successfully!' : 'No changes made.';
+                    $_SESSION['msg_type'] = 'success';
+                    header('Location: order.php?action=view');
                     exit;
                 }
             } else {
-                $fetchQuery = "SELECT * FROM users WHERE id = ?";
+                $fetchQuery = 'SELECT * FROM `order` WHERE order_id = ?';
                 $fetchStmt = $conn->prepare($fetchQuery);
-                $fetchStmt->bind_param("i", $id);
+                $fetchStmt->bind_param('i', $order_id);
                 $fetchStmt->execute();
                 $result = $fetchStmt->get_result();
-                $customer = $result->fetch_assoc();
+                $order = $result->fetch_assoc();
 
-                if (!$customer) {
-                    $_SESSION['message'] = "Customer not found.";
-                    $_SESSION['msg_type'] = "danger";
-                    header("Location: customer.php?action=view");
+                if (!$order) {
+                    $_SESSION['message'] = 'Order not found.';
+                    $_SESSION['msg_type'] = 'danger';
+                    header('Location: order.php?action=view');
                     exit;
                 }
                 ?>
-
-                <h2>Edit Customer</h2>
-                <form method="POST" action="">
-                    <table>
-                        <tr>
-                            <th>Username</th>
-                            <td><input type="text" name="username" value="<?php echo $customer['username']; ?>" readonly></td>
-                        </tr>
-                        <tr>
-                            <th>Name</th>
-                            <td><input type="text" name="name" value="<?php echo $customer['name']; ?>" required></td>
-                        </tr>
-                        <tr>
-                            <th>Email</th>
-                            <td><input type="email" name="email" value="<?php echo $customer['email']; ?>" required></td>
-                        </tr>
-                        <tr>
-                            <th>Phone Number</th>
-                            <td><input type="number" name="contact" value="<?php echo $customer['contact']; ?>" required></td>
-                        </tr>
-                        <tr>
-                            <th>Address</th>
-                            <td><input type="text" name="address" value="<?php echo $customer['address']; ?>" required></td>
-                        </tr>
-                        <tr>
-                            <td colspan="2" style="text-align: center;">
-                                <input type="submit" value="Update Customer">
-                                <button onclick="history.go(-1);" class="button button-back">Back</button>
-                            </td>
-                        </tr>
-                    </table>
-                </form>
-
-                <?php
+        
+                        <h2>Update Order</h2>
+                        <form method="POST" action="">
+                            <table>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <td><input type="text" name="orderID" value="<?php echo $order['order_id']; ?>" readonly></td>
+                                </tr>
+                                <tr>
+                                    <th>Customer Name</th>
+                                    <td><input type="text" name="name" value="<?php echo $order['customer_name']; ?>" readonly></td>
+                                </tr>
+                                <tr>
+                                    <th>Document</th>
+                                    <td><input type="text" name="document" value="<?php echo $order['document_upload']; ?>" readonly></td>
+                                </tr>
+                                <tr>
+                                    <th>Order Date</th>
+                                    <td><input type="text" name="date" value="<?php echo $order['order_date']; ?>" readonly></td>
+                                </tr>
+                                <tr>
+                                <th>Status</th>
+                                <td>
+                                    <select name="status" required>
+                                        <option value="done" <?php if (isset($order) && $order['status'] == 'DONE') {
+                                            echo 'selected';
+                                        } ?>>Done</option>
+                                        <option value="in_progress" <?php if (isset($order) && $order['status'] == 'IN PROGRESS') {
+                                            echo 'selected';
+                                        } ?>>In Progress</option>
+                                        <option value="pending" <?php if (isset($order) && $order['status'] == 'PENDING') {
+                                            echo 'selected';
+                                        } ?>>Pending</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Order Price</th>
+                                <td>
+                                    <div class="currency-input">
+                                        <span class="currency-label">RM</span>
+                                        <input type="text" name="price" value="<?php echo htmlspecialchars($order['total_price']); ?>" readonly>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2" style="text-align: center;">
+                                    <input type="submit" value="Update">
+                                    <button onclick="history.go(-1);" class="button button-back">Back</button>
+                                </td>
+                            </tr>
+                            </table>
+                        </form>
+        
+                        <?php
             }
         }
         break;
-
-    case 'delete':
-        $id = $_GET['id'];
-        $deleteQuery = "DELETE FROM users WHERE id = ?";
-        $deleteStmt = $conn->prepare($deleteQuery);
-        $deleteStmt->bind_param("i", $id);
-        if ($deleteStmt->execute()) {
-            $_SESSION['message'] = "Customer deleted successfully!";
-            $_SESSION['msg_type'] = "success";
-        } else {
-            $_SESSION['message'] = "Error deleting customer.";
-            $_SESSION['msg_type'] = "danger";
-        }
-        header("Location: customer.php?action=view");
-        break;*/
 }
+
 ?>
   <!-- ============================================================== -->
     <!-- Footer -->

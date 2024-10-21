@@ -1,24 +1,18 @@
 <?php
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 session_start();
-require '../../connection.php'; // Include database connection
+require '../../connection.php'; 
 
-// Check if user_id is set in session
 if (!isset($_SESSION['user_id'])) {
     die("User not logged in.");
 }
 
 $user_id = $_SESSION['user_id'];
 
-// Initialize variables
 $name = '';
 $email = '';
 $usernames = '';
 $profile_pic = '';
 
-// Fetch the current user details from the database
 $query = "SELECT name, email, username, password, profile_pic FROM users WHERE id = ?";
 $stmt = $conn->prepare($query);
 if ($stmt === false) {
@@ -30,17 +24,14 @@ $stmt->execute();
 $stmt->bind_result($name, $email, $usernames, $hashedPassword, $profile_pic);
 
 
-// Check if we have a result
 if (!$stmt->fetch()) {
     die("User not found.");
 }
 
-// Close the prepared statement
 $stmt->close();
 
 $profilePicPath = !empty($profile_pic) ? htmlspecialchars($profile_pic) : '../assets/profile_pic/default-placeholder.png';
 
-// Function to validate password
 function validatePassword($password) {
     return preg_match('/.{8,}/', $password) &&
            preg_match('/[A-Z]/', $password) &&
@@ -48,14 +39,11 @@ function validatePassword($password) {
            preg_match('/[!@#$%^&*(),.?":{}|<>]/', $password);
 }
 
-// Check if the form is submitted
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    // Get the form data
     $currentPassword = $_POST['currentPassword'];
     $newPassword = $_POST['newPassword'];
     $confirmPassword = $_POST['confirmPassword'];
 
-    // Check if new password and confirm password match
     if ($newPassword !== $confirmPassword) {
         $error = 'New passwords do not match.';
     } elseif (!validatePassword($newPassword)) {
@@ -65,12 +53,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                   - number
                   - uppercase letter';
     } else {
-        // Verify if the current password matches the hashed password in the database
         if (password_verify($currentPassword, $hashedPassword)) {
-            // Hash the new password before storing it in the database
             $newHashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
 
-            // Update the password in the database
             $updateQuery = "UPDATE users SET password = ? WHERE id = ?";
             $updateStmt = $conn->prepare($updateQuery);
             if ($updateStmt === false) {
@@ -79,14 +64,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             $updateStmt->bind_param('si', $newHashedPassword, $user_id);
 
-            // Execute the query and check if the update is successful
             if ($updateStmt->execute()) {
                 $success = 'Your password has been updated successfully!';
             } else {
                 $error = 'Failed to update the password. Please try again later.';
             }
 
-            // Close the update statement
             $updateStmt->close();
         } else {
             $error = 'Current password is incorrect.';
@@ -256,93 +239,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
       <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
       <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-    <style>
-    .preloader {
-  position: fixed;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.8);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 9999;
-  flex-direction: column;
-}
-
-/* Printer styling */
-.printer {
-  position: relative;
-  width: 120px;
-  height: 120px;
-}
-
-.printer-top {
-  width: 80px;
-  height: 20px;
-  background: #666;
-  border-radius: 10px 10px 0 0;
-  position: absolute;
-  top: 0;
-  left: 20px;
-}
-
-.paper-input-slot {
-  width: 80px;
-  height: 10px;
-  background: #444;
-  border-radius: 3px;
-  position: absolute;
-  top: 20px;
-  left: 20px;
-}
-
-.printer-body {
-  width: 120px;
-  height: 60px;
-  background: #333;
-  border-radius: 5px;
-  position: absolute;
-  top: 30px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.paper {
-  width: 80px;
-  height: 50px;
-  background: #fff;
-  border: 2px solid #333;
-  border-radius: 3px;
-  position: relative;
-  animation: paper-print 2s infinite;
-}
-
-.printer-tray {
-  width: 100px;
-  height: 10px;
-  background: #333;
-  border-radius: 0 0 5px 5px;
-  position: absolute;
-  bottom: 0;
-  left: 10px;
-}
-
-/* Animation for the paper printing effect */
-@keyframes paper-print {
-  0% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(20px);
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
-  </style>
+    <link rel="stylesheet" href="../service/style.css">
 </head>
 
 <body>
@@ -544,10 +441,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
             if (!validatePassword(newPassword)) {
                 requirementsMessage.innerText = 'Password must be at least 8 characters long, include at least one uppercase letter, one number, and one special character.';
-                event.preventDefault(); // Prevent form submission
+                event.preventDefault(); 
             } else if (newPassword !== confirmPassword) {
                 requirementsMessage.innerText = 'New passwords do not match.';
-                event.preventDefault(); // Prevent form submission
+                event.preventDefault(); 
             }
         });
     });

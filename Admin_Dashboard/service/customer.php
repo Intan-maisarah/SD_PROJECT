@@ -3,29 +3,24 @@ ob_start();
 ?>
 
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+
 
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Ensure the session is started and check if user ID is set
 if (!isset($_SESSION['user_id'])) {
     echo "User not logged in.<br>";
     exit;
 }
 
-// Include the database connection
 require '../../connection.php';
 
-// Fetch the logged-in user's ID from the session
 $user_id = $_SESSION['user_id'];
 $adminEmail = '';
 $usertype = '';
 $profile_pic = '';
 
-// Prepare and execute a query to get the user's email and usertype
 $sql = "SELECT email, usertype, profile_pic FROM users WHERE id = ?";
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
@@ -50,7 +45,6 @@ if ($result->num_rows > 0) {
     exit;
 }
 
-// Close statement and connection
 $stmt->close();
 $conn->close();
 
@@ -95,7 +89,6 @@ $conn->close();
     <div class="page-wrapper">
    <!-- PHP coding for customer -->
    <?php
-// Connect to the database
 include('../../connection.php'); 
 
 $action = isset($_GET['action']) ? $_GET['action'] : 'view';
@@ -197,7 +190,7 @@ switch($action) {
                         </tr>
                         <tr>
                             <td colspan="2" style="text-align: center;">
-                                <input type="submit" value="Update Customer">
+                                <input type="submit" value="Update">
                                 <button onclick="history.go(-1);" class="button button-back">Back</button>
                             </td>
                         </tr>

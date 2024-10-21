@@ -3,7 +3,6 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-// Include the database connection file
 include '../connection.php';
 
 session_start();
@@ -14,7 +13,6 @@ if (!$user_id) {
     die('User not logged in.');
 }
 
-// Fetch user data
 $query = "SELECT name, username, email, contact, address FROM users WHERE id = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $user_id);
@@ -36,7 +34,6 @@ if ($result->num_rows > 0) {
     $address = "N/A";
 }
 
-// Check if form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $username = $_POST['username'];
     $name = $_POST['name'];
@@ -73,149 +70,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <title>View Profile</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet">
-<!--<style type="text/css">
-    body {
-    font-family: Arial, sans-serif;
-    background-color: #f8f9fa;
-}
-
-.container-xl {
-    margin-top: 20px;
-}
-
-.nav-borders .nav-link {
-    color: #007bff;
-    border-bottom: 2px solid transparent;
-    padding-bottom: 0.25rem;
-    margin-right: 1rem;
-}
-
-.nav-borders .nav-link:hover {
-    border-bottom-color: #0062cc;
-}
-
-.nav-borders .nav-link.active {
-    border-bottom-color: #0062cc;
-}
-
-.card {
-    border: 1px solid rgba(0, 0, 0, 0.125);
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    background-color: white;
-}
-
-.card-header {
-    font-weight: bold;
-    font-size: 1.1rem;
-    background-color: #0062cc;
-    color: white;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
-    text-align: center;
-}
-
-.card-body img {
-    width: 150px;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 50%;
-}
-
-.card-body p {
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
-}
-
-.btn-secondary, .btn-primary {
-    width: 100%;
-    padding: 0.75rem;
-    border-radius: 5px;
-}
-
-.btn-secondary {
-    background-color: #6c757d;
-    border-color: #6c757d;
-}
-
-.btn-primary {
-    background-color: #0062cc;
-    border-color: #0062cc;
-}
-
-.btn-secondary:hover, .btn-primary:hover {
-    background-color: #004a99;
-    border-color: #004a99;
-}
-
-.form-control {
-    border-radius: 0.25rem;
-    border: 1px solid #ced4da;
-}
-
-.card-body label {
-    font-size: 0.9rem;
-    color: #6c757d;
-}
-
-#editProfile {
-    display: none;
-}
-
-img.img-account-profile {
-    width: 150px;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 50%;
-    border: 2px solid #dee2e6;
-}
-
-.small.font-italic.text-muted {
-    font-style: italic;
-    color: #6c757d;
-}
-
-.card-header {
-    font-weight: bold;
-}
-
-.mb-3 {
-    margin-bottom: 1rem !important;
-}
-
-.mb-4 {
-    margin-bottom: 1.5rem !important;
-}
-
-.gx-3 .col-md-6 {
-    padding-right: 0.75rem;
-    padding-left: 0.75rem;
-}
-
-.mt-0 {
-    margin-top: 0;
-}
-
-img:hover {
-    cursor: pointer;
-}
-
-input[type="file"] {
-    display: none;
-}
-
-@media (max-width: 768px) {
-    .nav-borders .nav-link {
-        font-size: 0.875rem;
-        padding-bottom: 0.2rem;
-        margin-right: 0.5rem;
-    }
-    .btn-secondary, .btn-primary {
-        width: 100%;
-        padding: 0.5rem;
-    }
-}
-
-</style>-->
 </head>
 <body>
     <div class="container-xl px-4 mt-4">
@@ -367,14 +221,7 @@ input[type="file"] {
             const formData = new FormData();
             formData.append('image', file);
 
-            // Example AJAX request
-            // fetch('/upload-endpoint', {
-            //     method: 'POST',
-            //     body: formData
-            // })
-            // .then(response => response.json())
-            // .then(data => console.log('Image uploaded successfully:', data))
-            // .catch(error => console.error('Error uploading image:', error));
+           
         }
     });
 
