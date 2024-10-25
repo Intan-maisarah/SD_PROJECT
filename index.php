@@ -28,8 +28,8 @@ session_start();
                 <nav>
                     <a href="index.php" class="active">Home</a>
                     <a href="servicepage.php">Services</a>
-                    <a href="about.php">About</a>
-                    <a href="contact.php">Contact</a>
+                    <a href="about.php">About Us</a>
+                    <a href="contact.php">Contact Us</a>
                 </nav>
                 <?php if (!isset($_SESSION['signin'])) { ?>
                     <div class="nav-item">
@@ -56,11 +56,22 @@ session_start();
         <div class="hero-img">
         <img src="assets/images/printing.gif" class="hero-img" alt="Printing GIF">
         </div>
+        <?php if (!isset($_SESSION['signin'])) { ?>
         <div class="hero-text">
             <h1 class="hero-title">Let Us Handle All Your Printing Needs.</h1>            
             <p class="hero-par">Your on-the-go printing service!</p>
-            <button class="hero-btn" onclick="window.location.href='user/signin.php'">Get Started</button>
+            <button class="hero-btn" onclick="window.location.href='user/signup.php'">Get Started</button>
         </div>
+        <?php } else { ?>
+            <div class="hero-text">
+            <h1 class="hero-title">Let Us Handle All Your Printing Needs.</h1>            
+            <p class="hero-par">Your on-the-go printing service!</p>
+            <form action="Admin_Dashboard/service/upload.php" method="post" enctype="multipart/form-data">
+        <input type="file" name="file" id="file" required>
+        <input type="submit" value="Upload Document">
+    </form>
+        </div>
+        <?php } ?>
         <div class="arrow">
             <img src="assets/images/arrow.png">
         </div>

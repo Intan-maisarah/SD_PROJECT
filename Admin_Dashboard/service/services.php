@@ -1,11 +1,14 @@
 <?php
 ob_start();
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('log_errors', 1);
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
 if (!isset($_SESSION['user_id'])) {
-    echo "User not logged in.<br>";
+    echo 'User not logged in.<br>';
     exit;
 }
 
@@ -16,17 +19,17 @@ $adminEmail = '';
 $usertype = '';
 $profile_pic = '';
 
-$sql = "SELECT email, usertype, profile_pic FROM users WHERE id = ?";
+$sql = 'SELECT email, usertype, profile_pic FROM users WHERE id = ?';
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
-    echo "Prepare statement failed: " . $conn->error . "<br>";
+    echo 'Prepare statement failed: '.$conn->error.'<br>';
     exit;
 }
 $stmt->bind_param('i', $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 if (!$result) {
-    echo "Get result failed: " . $stmt->error . "<br>";
+    echo 'Get result failed: '.$stmt->error.'<br>';
     exit;
 }
 
@@ -36,7 +39,7 @@ if ($result->num_rows > 0) {
     $usertype = $row['usertype'];
     $profile_pic = $row['profile_pic'];
 } else {
-    echo "User not found.<br>";
+    echo 'User not found.<br>';
     exit;
 }
 
@@ -77,119 +80,118 @@ $conn->close();
             } else {
                 include '../sidebar/sidebarStaff.php';
             }
-        ?>
+?>
         
         <div class="page-wrapper">
             <?php
-            include('../../connection.php');
+    include '../../connection.php';
 
-            $action = isset($_GET['action']) ? $_GET['action'] : 'view';
+$action = isset($_GET['action']) ? $_GET['action'] : 'view';
 
-            switch ($action) {
-                case 'view':
-                    $query = "SELECT * FROM services";
-                    $result = mysqli_query($conn, $query);
-                
-                    echo "<div class='list-header'>
+switch ($action) {
+    case 'view':
+        $query = 'SELECT * FROM services';
+        $result = mysqli_query($conn, $query);
+
+        echo "<div class='list-header'>
                         <h2>Service List</h2>
                         <a href='services.php?action=add' class ='button button-add'>Add Service</a>
                     </div>";
-                    if (isset($_SESSION['message'])): ?>
+        if (isset($_SESSION['message'])) { ?>
                         <div class="alert alert-<?php echo $_SESSION['msg_type']; ?> alert-dismissible fade show" role="alert">
                             <?php echo $_SESSION['message']; ?>
                             
                         </div>
                         <?php
-                        unset($_SESSION['message']);
-                        unset($_SESSION['msg_type']);
-                    endif;
-                  
-                    echo "<div class='table-container'>";
+            unset($_SESSION['message']);
+            unset($_SESSION['msg_type']);
+        }
 
-                    echo "<table>";
-                    echo "<tr><th>ID</th><th>Name</th><th>Description</th><th>Status</th><th>Image</th><th>Actions</th></tr>";
-                
-                    while ($row = mysqli_fetch_assoc($result)) {
-                        echo "<tr>";
-                        echo "<td>" . $row['service_id'] . "</td>";
-                        echo "<td>" . $row['service_name'] . "</td>";
-                        echo "<td>" . $row['service_description'] . "</td>";
-                        echo "<td>" . $row['status'] . "</td>";
-                
-                        if (!empty($row['image'])) {
-                            echo "<td><img src='" . $row['image'] . "' alt='" . htmlspecialchars($row['service_name']) . "'></td>";
-                        } else {
-                            echo "<td>No image available</td>";
-                        }
-                
-                        echo "<td>
-                                <a href='services.php?action=edit&service_id=" . $row['service_id'] . "' class= 'button button-edit'>Edit</a> |
-                                <a href='services.php?action=delete&service_id=" . $row['service_id'] . "' class = 'button button-delete' onclick='return confirm(\"Are you sure you want to delete?\")'>Delete</a>
+        echo "<div class='table-container'>";
+
+        echo '<table>';
+        echo '<tr><th>ID</th><th>Name</th><th>Description</th><th>Status</th><th>Image</th><th>Actions</th></tr>';
+
+        while ($row = mysqli_fetch_assoc($result)) {
+            echo '<tr>';
+            echo '<td>'.$row['service_id'].'</td>';
+            echo '<td>'.$row['service_name'].'</td>';
+            echo '<td>'.$row['service_description'].'</td>';
+            echo '<td>'.$row['status'].'</td>';
+
+            if (!empty($row['image'])) {
+                echo "<td><img src='".$row['image']."' alt='".htmlspecialchars($row['service_name'])."'></td>";
+            } else {
+                echo '<td>No image available</td>';
+            }
+
+            echo "<td>
+                                <a href='services.php?action=edit&service_id=".$row['service_id']."' class= 'button button-edit'>Edit</a> |
+                                <a href='services.php?action=delete&service_id=".$row['service_id']."' class = 'button button-delete' onclick='return confirm(\"Are you sure you want to delete?\")'>Delete</a>
                               </td>";
-                        echo "</tr>";
-                    }
-                
-                    echo "</table>";
-                    echo "</div>";
-                
-                    break;
-                
+            echo '</tr>';
+        }
 
-                    case 'add':
-                        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                            $service_id = isset($_POST['service_id']) ? $_POST['service_id'] : null; // Handle optional service_id
-                            $service_name = $_POST['service_name'];
-                            $service_description = $_POST['service_description'];
-                            $status = $_POST['status'];
-                            $imageURL = ""; 
-                    
-                            if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
-                                $targetDirectory = "../../assets/images/uploads/";
-                                $imageName = basename($_FILES['image']['name']);
-                                $targetFilePath = $targetDirectory . $imageName;
-                    
-                                if (!is_dir($targetDirectory)) {
-                                    if (!mkdir($targetDirectory, 0755, true)) {
-                                        echo "<div>Error creating directory.</div>";
-                                        exit;
-                                    }
-                                }
-                    
-                                if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFilePath)) {
-                                    $imageURL = $targetFilePath; 
-                                } else {
-                                    echo "<div>Error uploading image.</div>";
-                                    exit;
-                                }
-                            } else {
-                                echo "<div>No image uploaded or error in the upload.</div>";
-                                exit;
-                            }
-                    
-                            $insertQuery = "INSERT INTO services (service_id, service_name, service_description, status, image) VALUES (?, ?, ?, ?, ?)";
-                            $insertStmt = $conn->prepare($insertQuery);
-                    
-                            if ($insertStmt) {
-                                $insertStmt->bind_param("sssss", $service_id, $service_name, $service_description, $status, $imageURL);
-                                $insertStmt->execute();
-                    
-                                if ($insertStmt->affected_rows > 0) {
-                                    $_SESSION['message'] = "Service added successfully!";
-                                    $_SESSION['msg_type'] = "success";
-                                } else {
-                                    $_SESSION['message'] = "Error adding service.";
-                                    $_SESSION['msg_type'] = "danger";
-                                }
-                                $insertStmt->close();
-                            } else {
-                                echo "<div>Error preparing statement: " . $conn->error . "</div>";
-                                exit;
-                            }
-                    
-                            header("Location: services.php?action=view");
-                            exit;
-                        }
-                    ?>                        
+        echo '</table>';
+        echo '</div>';
+
+        break;
+
+    case 'add':
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $service_id = isset($_POST['service_id']) ? $_POST['service_id'] : null; // Handle optional service_id
+            $service_name = $_POST['service_name'];
+            $service_description = $_POST['service_description'];
+            $status = $_POST['status'];
+            $imageURL = '';
+
+            if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
+                $targetDirectory = '../../assets/images/uploads/';
+                $imageName = basename($_FILES['image']['name']);
+                $targetFilePath = $targetDirectory.$imageName;
+
+                if (!is_dir($targetDirectory)) {
+                    if (!mkdir($targetDirectory, 0755, true)) {
+                        echo '<div>Error creating directory.</div>';
+                        exit;
+                    }
+                }
+
+                if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFilePath)) {
+                    $imageURL = $targetFilePath;
+                } else {
+                    echo '<div>Error uploading image.</div>';
+                    exit;
+                }
+            } else {
+                echo '<div>No image uploaded or error in the upload.</div>';
+                exit;
+            }
+
+            $insertQuery = 'INSERT INTO services (service_id, service_name, service_description, status, image) VALUES (?, ?, ?, ?, ?)';
+            $insertStmt = $conn->prepare($insertQuery);
+
+            if ($insertStmt) {
+                $insertStmt->bind_param('sssss', $service_id, $service_name, $service_description, $status, $imageURL);
+                $insertStmt->execute();
+
+                if ($insertStmt->affected_rows > 0) {
+                    $_SESSION['message'] = 'Service added successfully!';
+                    $_SESSION['msg_type'] = 'success';
+                } else {
+                    $_SESSION['message'] = 'Error adding service.';
+                    $_SESSION['msg_type'] = 'danger';
+                }
+                $insertStmt->close();
+            } else {
+                echo '<div>Error preparing statement: '.$conn->error.'</div>';
+                exit;
+            }
+
+            header('Location: services.php?action=view');
+            exit;
+        }
+        ?>                        
                     
                     <h2>Add New Service</h2>
                     <form action="services.php?action=add" method="POST" enctype="multipart/form-data"> 
@@ -206,8 +208,12 @@ $conn->close();
                                 <th>Status</th>
                                 <td>
                                     <select name="status" required>
-                                        <option value="available" <?php if (isset($service) && $service['status'] == 'available') echo 'selected'; ?>>Available</option>
-                                        <option value="unavailable" <?php if (isset($service) && $service['status'] == 'unavailable') echo 'selected'; ?>>Unavailable</option>
+                                        <option value="available" <?php if (isset($service) && $service['status'] == 'available') {
+                                            echo 'selected';
+                                        } ?>>Available</option>
+                                        <option value="unavailable" <?php if (isset($service) && $service['status'] == 'unavailable') {
+                                            echo 'selected';
+                                        } ?>>Unavailable</option>
                                     </select>
                                 </td>
                             </tr>
@@ -231,73 +237,72 @@ $conn->close();
                     
                     <?php
                     break;
-                    
 
-                    case 'edit':
-                        $service_id = $_GET['service_id'];
-                    
-                        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-                            $service_name = $_POST['service_name'];
-                            $service_description = $_POST['service_description'];
-                            $status = $_POST['status'];
-                            $imageURL = $_POST['image']; 
-                            
-                            $targetDirectory = "../../assets/images/uploads/";
-                    
-                            if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
-                                $imageName = $_FILES['image']['name'];
-                                $targetFilePath = $targetDirectory . basename($imageName);
-                                $imageFileType = strtolower(pathinfo($targetFilePath, PATHINFO_EXTENSION));
-                    
-                                $allowedFormats = ["jpg", "jpeg", "png", "gif"];
-                                if (in_array($imageFileType, $allowedFormats)) {
-                                    if (!is_dir($targetDirectory)) {
-                                        mkdir($targetDirectory, 0755, true);
-                                    }
-                    
-                                    if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFilePath)) {
-                                        $imageURL = $targetFilePath; 
-                                    } else {
-                                        echo "<div>Error uploading image.</div>";
-                                        exit;
-                                    }
-                                } else {
-                                    echo "<div>Invalid image format. Only JPG, JPEG, PNG, and GIF are allowed.</div>";
-                                    exit;
-                                }
-                            }
-                    
-                        $updateQuery = "  SET service_name = ?, status = ?, service_description = ?, image = ? WHERE service_id = ?";
-                        $updateStmt = $conn->prepare($updateQuery);
-                        $updateStmt->bind_param("ssssi", $service_name, $status, $service_description, $imageURL, $service_id);
+    case 'edit':
+        $service_id = $_GET['service_id'];
 
-                        if ($updateStmt->execute()) {
-                            if ($updateStmt->affected_rows > 0) {
-                                $_SESSION['message'] = "Service updated successfully!";
-                                $_SESSION['msg_type'] = "success";
-                            } else {
-                                $_SESSION['message'] = "No changes made to the service.";
-                                $_SESSION['msg_type'] = "warning";
-                            }
-                            header("Location: services.php?action=view");
-                            exit;
-                        } else {
-                            error_log("Error updating service: " . $updateStmt->error);
-                            $_SESSION['message'] = "Error updating service.";
-                            $_SESSION['msg_type'] = "danger";
-                            header("Location: service.php?action=view");
-                            exit;
-                        }
-                        }
-                      $selectQuery = "SELECT * FROM services WHERE service_id = ?";
-                      $selectStmt = $conn->prepare($selectQuery);
-                      $selectStmt->bind_param("i", $service_id);
-                      $selectStmt->execute();
-                      $selectResult = $selectStmt->get_result();
-                  
-                      if ($selectResult->num_rows > 0) {
-                          $service = $selectResult->fetch_assoc();
-                          ?>
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $service_name = $_POST['service_name'];
+            $service_description = $_POST['service_description'];
+            $status = $_POST['status'];
+            $imageURL = $_POST['image'];
+
+            $targetDirectory = '../../assets/images/uploads/';
+
+            if (isset($_FILES['image']) && $_FILES['image']['error'] == 0) {
+                $imageName = $_FILES['image']['name'];
+                $targetFilePath = $targetDirectory.basename($imageName);
+                $imageFileType = strtolower(pathinfo($targetFilePath, PATHINFO_EXTENSION));
+
+                $allowedFormats = ['jpg', 'jpeg', 'png', 'gif'];
+                if (in_array($imageFileType, $allowedFormats)) {
+                    if (!is_dir($targetDirectory)) {
+                        mkdir($targetDirectory, 0755, true);
+                    }
+
+                    if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFilePath)) {
+                        $imageURL = $targetFilePath;
+                    } else {
+                        echo '<div>Error uploading image.</div>';
+                        exit;
+                    }
+                } else {
+                    echo '<div>Invalid image format. Only JPG, JPEG, PNG, and GIF are allowed.</div>';
+                    exit;
+                }
+            }
+
+            $updateQuery = 'UPDATE services SET service_name = ?, status = ?, service_description = ?, image = ? WHERE service_id = ?';
+            $updateStmt = $conn->prepare($updateQuery);
+            $updateStmt->bind_param('ssssi', $service_name, $status, $service_description, $imageURL, $service_id);
+
+            if ($updateStmt->execute()) {
+                if ($updateStmt->affected_rows > 0) {
+                    $_SESSION['message'] = 'Service updated successfully!';
+                    $_SESSION['msg_type'] = 'success';
+                } else {
+                    $_SESSION['message'] = 'No changes made to the service.';
+                    $_SESSION['msg_type'] = 'warning';
+                }
+                header('Location: services.php?action=view');
+                exit;
+            } else {
+                error_log('Error updating service: '.$updateStmt->error);
+                $_SESSION['message'] = 'Error updating service.';
+                $_SESSION['msg_type'] = 'danger';
+                header('Location: service.php?action=view');
+                exit;
+            }
+        }
+        $selectQuery = 'SELECT * FROM services WHERE service_id = ?';
+        $selectStmt = $conn->prepare($selectQuery);
+        $selectStmt->bind_param('i', $service_id);
+        $selectStmt->execute();
+        $selectResult = $selectStmt->get_result();
+
+        if ($selectResult->num_rows > 0) {
+            $service = $selectResult->fetch_assoc();
+            ?>
                           <h2>Edit Service</h2>
                           <form action="" method="POST" enctype="multipart/form-data">
                               <table>
@@ -317,8 +322,12 @@ $conn->close();
                                       <th>Status</th>
                                       <td>
                                           <select name="status" required>
-                                              <option value="available" <?php if ($service['status'] == 'available') echo 'selected'; ?>>Available</option>
-                                              <option value="unavailable" <?php if ($service['status'] == 'unavailable') echo 'selected'; ?>>Unavailable</option>
+                                              <option value="available" <?php if ($service['status'] == 'available') {
+                                                  echo 'selected';
+                                              } ?>>Available</option>
+                                              <option value="unavailable" <?php if ($service['status'] == 'unavailable') {
+                                                  echo 'selected';
+                                              } ?>>Unavailable</option>
                                           </select>
                                       </td>
                                   </tr>
@@ -341,39 +350,37 @@ $conn->close();
                           </form>
                           <br>
                           <?php
-                      } else {
-                          echo "<div>Service not found.</div>";
-                      }
-                      $selectStmt->close();
-                      break;
-                  
+        } else {
+            echo '<div>Service not found.</div>';
+        }
+        $selectStmt->close();
+        break;
 
-                case 'delete':
-                    // Delete service
-                    $service_id = $_GET['service_id'];
-                    $deleteQuery = "DELETE FROM services WHERE service_id = ?";
-                    $deleteStmt = $conn->prepare($deleteQuery);
-                    $deleteStmt->bind_param("i", $service_id);
-                    $deleteStmt->execute();
+    case 'delete':
+        // Delete service
+        $service_id = $_GET['service_id'];
+        $deleteQuery = 'DELETE FROM services WHERE service_id = ?';
+        $deleteStmt = $conn->prepare($deleteQuery);
+        $deleteStmt->bind_param('i', $service_id);
+        $deleteStmt->execute();
 
-                    if ($deleteStmt->affected_rows > 0) {
-                        $_SESSION['message'] = "Service deleted successfully!";
-                        $_SESSION['msg_type'] = "success";
-                        header("Location: services.php?action=view");
-                        exit;
-                    } else {
-                        $_SESSION['message'] = "Error deleting service.";
-                        $_SESSION['msg_type'] = "danger";
-                        header("Location: services.php?action=view");
-                        exit;
-                    }
-                    
-                
+        if ($deleteStmt->affected_rows > 0) {
+            $_SESSION['message'] = 'Service deleted successfully!';
+            $_SESSION['msg_type'] = 'success';
+            header('Location: services.php?action=view');
+            exit;
+        } else {
+            $_SESSION['message'] = 'Error deleting service.';
+            $_SESSION['msg_type'] = 'danger';
+            header('Location: services.php?action=view');
+            exit;
+        }
 
-                default:
-                    echo "<div>Invalid action.</div>";
-            }
-            ?>
+        // no break
+    default:
+        echo '<div>Invalid action.</div>';
+}
+?>
             <footer class="footer text-center">
                 All Rights Reserved by Infinity Printing
             </footer>

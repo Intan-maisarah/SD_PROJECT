@@ -413,18 +413,18 @@ section {
     background-color: #bacce2;
     margin-top: 100px;
   }
-  
-  #about .container {
-    max-width: 1500px;
-    margin: 0 auto;
-    padding: 0 15px;
-    max-height: 700px;
+
+  .about-container {
     display: flex;
     flex-direction: column;
-    align-items: center;
+  }
+
+  .about-title  {
+    display: flex;
+    justify-content: center;
   }
   
-  #about h2 {
+  .about-title h2 {
     font-size: 3.0em;
     font-weight: bold;
     color: #000000;
@@ -432,12 +432,12 @@ section {
     margin-top: 100px;
     margin-bottom: 20px;
   }
-  
-  .about-content {
+
+  .about-text {
     display: flex;
-    flex-wrap: wrap;
+    align-items: left;
   }
-  
+
   .text-content {
     flex: 1;
     max-width: 50%;

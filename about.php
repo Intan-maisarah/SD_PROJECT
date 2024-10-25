@@ -18,48 +18,19 @@ session_start();
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="index.php"><img src="assets/images/logo.png" alt="Logo" style="width: 100px; height: auto;"></a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <nav>
-                    <a href="index.php">Home</a>
-                    <a href="servicepage.php">Services</a>
-                    <a href="about.php">About</a>
-                    <a href="contact.php">Contact</a>
-                </nav>
-                <?php if (!isset($_SESSION['signin'])) { ?>
-                    <div class="nav-item">
-                        <button class="btn btn-primary rounded sm-4" onclick="window.location.href='user/signin.php'">Log In</button>
-                    </div>
-                    <div class="nav-item">
-                        <button class="btn btn-primary rounded sm-4" onclick="window.location.href='user/signup.php'">Sign Up</button>
-                    </div>
-                <?php } else { ?>
-                    <div class="nav-item">
-                        <button class="btn btn-primary rounded sm-4" onclick="window.location.href='logout.php'">Log Out</button>
-                    </div>
-                    <div class="nav-item">
-                        <button class="btn btn-primary rounded sm-4" onclick="window.location.href='user/view_profile.php'">Profile</button>
-                    </div>
-                <?php } ?>
-            </div>
-        </div>
-    </nav>
+    <?php include 'navbar.php'; ?>
 
     <section id="about">
-  <div class="container">
+  <div class="about-container">
+    <div class="about-title">
     <h2>About Us</h2>
     <h3>Your easy on-the-go printing service</h3>
-
-    <div class="about-content">
-        <div class="kedai">
-            <img src="assets/images/kedai2.jpg">
-        </div>
     </div>
+
+    <div class="about-text">
+        <h2>We ensure your ideas and creations are printed to perfection.</h2>
+    </div>
+
    <!-- <div class="about-content">
     
       <div class="text-content">
