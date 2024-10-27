@@ -172,7 +172,7 @@ section {
     padding-top: 0px;
     padding-left: 20px;
     padding-bottom: 0px;
-    background-color: rgb(214, 209, 240) !important;
+    background-color: rgb(230, 226, 247) !important;
     position: relative;
     height: 100vh; 
 }
@@ -203,6 +203,11 @@ section {
   }
 }
 
+#upload-form {
+  background-color: rgba(255, 255, 255, 0);
+  padding: 0px !important;
+}
+
 
 .wave-container {
     position: relative;
@@ -216,7 +221,7 @@ section {
     display: block;
     width: 100%;
     height: 150px;
-    fill: #d6d1f0; 
+    fill: rgb(230, 226, 247); 
     transform: rotate(180deg);
     margin-top: -5px;
   }
@@ -226,12 +231,12 @@ section {
     display: block;
     width: 100%;
     height: 500px;
-    fill: #d6d1f0; 
+    fill: rgb(230, 226, 247); 
   }
 
 .wave path {
     stroke-width: 0;
-    fill: #d6d1f0; 
+    fill: rgb(230, 226, 247); 
   }
 
 .extra-section {
@@ -344,7 +349,7 @@ section {
 /* Services Section */
 #services {
     padding: 60px 0;
-    background-color: rgba(244,238,240,255); 
+    background-color:rgb(255, 240, 232); 
     min-height: 300px;
     z-index: 1;
     margin-top: 100px;
@@ -353,11 +358,14 @@ section {
 #services .container {
     max-width: 1200px; 
     margin: 0 auto;
+    align-items: center;
 }
 
 #services h2 {
     text-align: center;
     margin-bottom: 20px;
+    font-family: "Prompt", sans-serif;
+    font-weight: 500;
     font-size: 2.5rem;
     color: #333;
 }
@@ -365,13 +373,14 @@ section {
 .service-container {
     display: flex;
     flex-wrap: wrap;
-    gap: 20px; 
+    gap: 40px; 
     justify-content: center; 
     margin-top: 20px;
+    width: 1200px;
 }
 
 .service-item {
-    flex: 1 1 calc(50% - 10px); 
+    flex: 1 1 calc(50% - 20px); 
     border: 1px solid #ddd; 
     border-radius: 8px; 
     overflow: hidden; 
@@ -384,7 +393,20 @@ section {
     align-items: center;
 }
 
-.service-item:hover {
+.service-item-small {
+  flex: calc(33.33% - 50px); 
+  border: 1px solid #ddd; 
+  border-radius: 8px; 
+  overflow: hidden; 
+  background-color: #fff; 
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
+  padding: 20px; 
+  box-sizing: border-box; 
+  transition: transform 0.3s ease; 
+  margin-bottom: 20px;
+}
+
+.service-item:hover, .service-item-small:hover {
     transform: scale(1.05);
 }
 
@@ -395,13 +417,21 @@ section {
     margin-bottom: 15px; 
 }
 
-.service-item h2 {
+.service-item-small img {
+  display: block;
+  width: 70%;
+  height: auto;
+  border-bottom: 1px solid #ddd; 
+  margin: 0 auto 15px; 
+}
+
+.service-item, .service-item-small h2 {
     font-size: 1.5rem;
     color: #333;
     margin-bottom: 10px;
 }
 
-.service-item p {
+.service-item, .service-item-small p {
     font-size: 1rem;
     color: #666;
 }
@@ -409,50 +439,117 @@ section {
 
 /* about section */
 #about {
-    padding: 60px 20px;
-    background-color: #bacce2;
-    margin-top: 100px;
-  }
+  position: relative;
+  background-color: #4bb3f97c; 
+  padding: 50px 0;
+}
 
-  .about-container {
-    display: flex;
-    flex-direction: column;
-  }
+.white-curved-section {
+  position: absolute; 
+  bottom: 0; 
+  left: 0;
+  width: 100%;
+  height: 650px;
+  background-color: rgb(249, 244, 236); 
+  border-top-left-radius: 70% 50px; 
+  border-top-right-radius: 70% 50px;
+  z-index: 0; 
+}
 
   .about-title  {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: center;
+    align-items: center;
+    margin-top: 100px;
   }
   
   .about-title h2 {
-    font-size: 3.0em;
-    font-weight: bold;
+    font-family: "Prompt", sans-serif;
+    font-weight: 600;
+    font-size: 3.5rem;
     color: #000000;
     text-align: center;
-    margin-top: 100px;
-    margin-bottom: 20px;
+  }
+
+  .swirl-icon {
+    position: absolute;
+    right: 37%;
+    top: 13%;
+    animation: swirlReveal 1.5s ease-out forwards; 
+  }
+
+  .swirl-icon img{
+   width: 100px;
+  }
+
+  @keyframes swirlReveal {
+    0% {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+  .about-images {
+    position: relative;
+    margin: 40px 10px;
+    display: flex;
+    flex-direction: row;
+    gap:20px;
+    justify-content: center;
+    z-index: 1;
+  }
+
+  .about-images img{
+    width: 350px;
+    height: 250px;
+    border-radius: 15px;
   }
 
   .about-text {
+    position: relative;
     display: flex;
-    align-items: left;
+    align-items: flex-start;
+    margin: 50px 150px;
+    padding: 0px 20px;
+    width:80%;
+    flex-direction: column;
+    z-index: 1;
   }
 
-  .text-content {
-    flex: 1;
-    max-width: 50%;
-    font-size: 1.8em;
-    color: #555;
-    line-height: 1.6;
-    text-align: justify;
-    padding: 0 15px;
+  .about-text h2{
+    font-family: "Prompt", sans-serif;
+    font-weight: 500;
+    font-size: 2.5rem;
+    color: #000000;
+    width: 50%;
   }
+
+  .about-para {
+    display: flex;
+    flex-direction: row;
+    gap:10%;
+    margin: 40px 0px;
+  }
+
+  .about-para p{
+    font-family: "Prompt", sans-serif;
+    font-weight: 300;
+    font-size: 1.5rem;
+    color: #000000;
+  }
+
 
   /* Contact Section Styling */
 #contact {
     padding: 60px 0;
-    background-color: #d6d1ef;
-    margin-top: 70px;
+    background-color: #bee1cb;
+    margin-top: 100px;
   }
   
   .contact-container {
@@ -463,11 +560,23 @@ section {
     margin: 0 auto;
     gap: 40px; 
   }
-  
+
+  .star-icon {
+    position: absolute;
+    right: 55%;
+    top: 17%;
+    animation: twinkle 2s infinite ease-in-out;
+  }
+
+  .star-icon img{
+   width: 50px;
+  }
+
   /* Contact form styling */
   .contact-form {
-    width: 48%;
+    width: 50%;
     padding: 40px;
+    margin-top: 10%;
   }
   
   .contact-form .form-group {
@@ -518,7 +627,7 @@ section {
   }
   
   form {
-    background-color: rgb(94 97 136);
+    background-color: rgb(94, 136, 114);
     border-radius: 10px;
     width: 100%;
     padding: 25px;
@@ -534,7 +643,7 @@ section {
   .contact-info h2 {
     font-family: "Prompt", sans-serif;
     font-weight: 500;
-    font-size: 2.5rem;
+    font-size: 4.0rem;
     margin-bottom: 15px;
     color: #333;
     text-align: left;
@@ -545,7 +654,7 @@ section {
     font-weight: 500;
     font-size: 1.2rem;
     text-align: left;
-    color: #666;
+    color: #483939;
   }
   
   .contact-info ul {
@@ -718,6 +827,7 @@ section {
     font-size: 35px;
     background-color: #526794;
     color: white;
+    
 }
 .hero-btn:hover{
   background-color: #485a83;
@@ -942,5 +1052,19 @@ section {
       display: flex; 
     flex-direction: column;
      }
+
+     .swirl-icon {
+      right: 35%;
+      top: 10%;
+    }
+
+    .white-curved-section {
+      height: 750px;
+    }
+
+    .star-icon {
+      right: 58%;
+      top: 22%;
+    }
   }
   

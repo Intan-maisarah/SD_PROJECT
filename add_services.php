@@ -1,3 +1,8 @@
+<?php
+session_start();
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,73 +10,99 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Infinity Printing</title>
+
+    <!-- External Styles and Fonts -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/ipasss.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nanum+Pen+Script&family=Shadows+Into+Light&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&family=Nanum+Pen+Script&family=Shadows+Into+Light&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@200;300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Inline Styles -->
     <style>
-        body {
-            background-color: #e1d8f0;
+        /* Container for document display and specifications */
+        .document-container {
+            margin: 20px auto;
+            max-width: 800px;
+            text-align: center;
         }
 
+        /* Paper Box Styling */
         #a4-box {
-    width: 80mm;
-    height: 100mm;
-    background-color: #d3d3d3; /* Changing to grey */
-    border: 1px solid #ccc;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    position: absolute;
-    top: 170px; /* Positioning */
-    left: 120px; /* Adjusting the position */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: Arial, sans-serif;
-    color: #555; /* Text color inside the box */
-}
+            width: 500px;
+            height: 600px;
+            border: 1px solid #ccc;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+            color: #555;
+            font-size: 18px;
+            margin: 20px 0;
+            position: relative; /* For positioning inner content */
+            overflow: hidden; /* Hide overflow */
+            cursor: pointer; /* Cursor change for clickable area */
+        }
 
-.add-btn {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    margin-top: 10px; /* Add some space above */
-    display: block;
-    margin-left: auto;
-    margin-right: auto; /* Center the button */
-}
+        /* PDF Viewer Styling */
+        #pdf-viewer {
+            width: 100%;
+            height: 100%;
+            position: absolute; /* Absolute positioning within the box */
+            top: 0;
+            left: 0;
+        }
 
-.button-container {
-    text-align: center;
-    margin: 20px auto;
-    position: absolute;
-    top: 400px; /* Adjusting position */
-    left: 50%;
-    transform: translateX(-50%); /* Center the button container horizontally */
-}
+        /* Button Styling */
+        .add-btn,
+        .checkout-btn,
+        .cancel-btn {
+            color: white;
+            padding: 10px 25px;
+            border: none;
+            border-radius: 20px;
+            margin: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            font-weight: bold;
+        }
 
-.checkout-btn {
-    background-color: #28a745;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    margin: 5px;
-}
+        .add-btn {
+            background-color: #3650a6;
+        }
 
-.cancel-btn {
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    margin: 5px;
-}
+        .checkout-btn {
+            background-color: #7be07b;
+        }
+
+        .cancel-btn {
+            background-color: #e07b7b;
+        }
+
+        /* Form Styling */
+        form label {
+            font-weight: 600;
+        }
+
+        form select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            margin-bottom: 15px;
+        }
+
+        /* Footer Styling */
+        footer {
+            background-color: #A7C7E7;
+            padding: 40px 0;
+        }
+
+        footer p,
+        footer span {
+            color: #333;
+        }
+
+        footer .contact-icon {
+            width: 24px;
+            height: auto;
+            margin-right: 10px;
+        }
     </style>
 </head>
 
@@ -79,58 +110,183 @@
     <!-- Navigation -->
     <?php include 'navbar.php'; ?>
 
-    <!-- A4 Paper Box Section -->
-    <section id="add-services" class="text-center">
-        <div class="container">
-            <h2>Add Services</h2>
-            <div id="a4-box"></div>
-            <div class="button-container">
-                <button class="add-btn">Add New Document</button>
-                <button class="checkout-btn">Checkout</button>
-                <button class="cancel-btn">Cancel</button>
+    <!-- Database Connection and Query -->
+    <?php
+    include 'connection.php';
+
+$order_id = $_GET['order_id'] ?? $_SESSION['order_id'] ?? 'no order id passed';
+echo 'Order ID: '.htmlspecialchars($order_id);
+
+$uploadedDocumentPath = '';
+
+if ($order_id) {
+    try {
+        // Query to retrieve the document path for the given order_id
+        $stmt = $conn->prepare('SELECT document_upload FROM orders WHERE order_id = ?');
+        $stmt->bind_param('i', $order_id);
+        $stmt->execute();
+        $stmt->bind_result($document_upload);
+        $stmt->fetch();
+        $stmt->close();
+
+        // Check if document_path is found and file exists
+        if ($document_upload && file_exists($document_upload)) {
+            $uploadedDocumentPath = $document_upload;
+        } else {
+            echo '<p>Document not found or file does not exist.</p>';
+        }
+    } catch (Exception $e) {
+        echo 'Error: '.$e->getMessage();
+    }
+}
+
+// Fetch print specifications
+try {
+    $query = "
+                        SELECT sn.spec_name, s.spec_type, s.price 
+                        FROM specification s
+                        JOIN spec_names sn ON s.spec_name_id = sn.id
+                        WHERE s.status = 'available'
+                    ";
+    $result = $conn->query($query);
+
+    $specification = [];
+    if ($result->num_rows > 0) {
+        while ($row = $result->fetch_assoc()) {
+            $specification[$row['spec_name']][] = $row['spec_type'];
+        }
+    }
+} catch (Exception $e) {
+    echo 'Error: '.$e->getMessage();
+}
+?>
+    
+    <section class="document-container">
+        <h2 class="mt-5">Print Details</h2>
+        
+        <!-- Display the Uploaded Document -->
+        <?php if (!empty($uploadedDocumentPath) && file_exists($uploadedDocumentPath)) { ?>
+            <div id="a4-box" onclick="openPdfModal()">
+                <div id="number-of-pages"></div>
+                <div id="pdf-viewer"></div> <!-- PDF viewer is now inside the paper box -->
             </div>
-        </div>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.8.335/pdf.min.js"></script>
+            <script>
+                const url = '<?php echo htmlspecialchars($uploadedDocumentPath); ?>'; // Path to your PDF file
+                const pdfjsLib = window['pdfjs-dist/build/pdf'];
+
+                pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.8.335/pdf.worker.min.js';
+
+                // Load the PDF document
+                pdfjsLib.getDocument(url).promise.then(function(pdf) {
+                    // Get the total number of pages
+                    const numPages = pdf.numPages;
+                    document.getElementById('number-of-pages').textContent = `Total Pages: ${numPages}`; // Display number of pages
+                    document.getElementById('page-count').value = numPages; 
+
+                    // Render the first page
+                    pdf.getPage(1).then(function(page) {
+                        const scale = 0.75;
+                        const viewport = page.getViewport({ scale: scale });
+                        const canvas = document.createElement('canvas');
+                        const context = canvas.getContext('2d');
+                        canvas.height = viewport.height;
+                        canvas.width = viewport.width;
+                        document.getElementById('pdf-viewer').appendChild(canvas);
+
+                        const renderContext = {
+                            canvasContext: context,
+                            viewport: viewport
+                        };
+                        page.render(renderContext);
+                    });
+                }).catch(function(error) {
+                    console.error('Error loading PDF: ', error);
+                });
+
+                function openPdfModal() {
+                    // Clear previous content in modal
+                    const modalViewer = document.getElementById('pdf-viewer-modal');
+                    modalViewer.innerHTML = '';
+
+                    // Load PDF in modal
+                    pdfjsLib.getDocument(url).promise.then(function(pdf) {
+                        const scale = 1.0; // Adjust scale as needed
+                        for (let i = 1; i <= pdf.numPages; i++) {
+                            pdf.getPage(i).then(function(page) {
+                                const viewport = page.getViewport({ scale: scale });
+                                const canvas = document.createElement('canvas');
+                                const context = canvas.getContext('2d');
+                                canvas.height = viewport.height;
+                                canvas.width = viewport.width;
+                                modalViewer.appendChild(canvas);
+
+                                const renderContext = {
+                                    canvasContext: context,
+                                    viewport: viewport
+                                };
+                                page.render(renderContext);
+                            });
+                        }
+                    }).catch(function(error) {
+                        console.error('Error loading PDF in modal: ', error);
+                    });
+                    $('#pdfModal').modal('show');
+                }
+            </script>
+
+        <?php } else { ?>
+            <p>No document uploaded.</p>
+        <?php } ?>
+        
+        <!-- Form for Specifications -->
+        <h4>Select Print Specifications:</h4>
+        <form method="POST" action="order_summary.php" class="container mt-4">
+            <input type="hidden" name="order_id" value="<?php echo htmlspecialchars($order_id); ?>">
+            <input type="hidden" id="page-count" name="page_count" value="0">
+            <?php foreach ($specification as $spec_name => $spec_types) { ?>
+                <label for="<?php echo strtolower($spec_name); ?>"><?php echo $spec_name; ?>:</label>
+                <select name="specification_id[]" id="<?php echo strtolower($spec_name); ?>">
+                    <?php foreach ($spec_types as $spec_type) { ?>
+                        <option value="<?php echo $spec_type; ?>"><?php echo $spec_type; ?></option>
+                    <?php } ?>
+                </select>
+            <?php } ?>
+            <input type="number" name="quantity" value="1" min="1" placeholder="Quantity" />
+            <input type="submit" value="Checkout" class="checkout-btn">
+            <button type="button" class="cancel-btn" onclick="window.location.href='index.php'">Cancel</button>
+        </form>
     </section>
 
-    <!-- Footer -->
-    <footer class="text-white" style="background-color: #A7C7E7; padding: 40px 0;">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <p>
-                        Our online printing service was inspired by the needs and creativity of students who constantly
-                        juggle tight deadlines and demanding schedules. With 24/7 document uploads and a convenient 1km
-                        delivery range, we provide the flexibility students need, ensuring their printing requirements are met
-                        anytime, anywhere.
-                    </p>
+    <!-- Modal for PDF Viewer -->
+    <div class="modal fade" id="pdfModal" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="pdfModalLabel">Document Viewer</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span>&times;</span>
+                    </button>
                 </div>
-                <div class="col-md-6">
-                    <ul class="list-unstyled">
-                        <li class="d-flex align-items-center mb-2">
-                            <img src="assets/images/location.png" alt="Location Icon" style="width: 24px; height: auto; margin-right: 10px;">
-                            <span>Gurney Mall, Lot 1-30, Jln Maktab, 54000 Kuala Lumpur</span>
-                        </li>
-                        <li class="d-flex align-items-center mb-2">
-                            <img src="assets/images/call.png" alt="Phone Icon" style="width: 24px; height: auto; margin-right: 10px;">
-                            <span>+6014 2272-647</span>
-                        </li>
-                        <li class="d-flex align-items-center mb-2">
-                            <img src="assets/images/mail.png" alt="Mail Icon" style="width: 24px; height: auto; margin-right: 10px;">
-                            <span>infinity.utmkl@gmail.com</span>
-                        </li>
-                        <li class="d-flex align-items-center">
-                            <img src="assets/images/bhours.png" alt="Business Hours Icon" style="width: 24px; height: auto; margin-right: 10px;">
-                            <span>Mon-Fri: 9 AM - 6 PM</span>
-                        </li>
-                    </ul>
+                <div class="modal-body" id="pdf-viewer-modal">
+                    <!-- PDF will be displayed here -->
                 </div>
             </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="text-center">
+        <div class="container">
+            <p>&copy; 2024 Infinity Printing. All rights reserved.</p>
+            <p><span class="contact-icon"><i class="fas fa-phone"></i></span> +6010-5190074, +6014 2272-646</p>
+            <p><span class="contact-icon"><i class="fas fa-envelope"></i></span> <a href="mailto:infinity.utmkl@gmail.com">infinity.utmkl@gmail.com</a></p>
         </div>
     </footer>
 
-    <!-- Scripts -->
+    <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </body>
 

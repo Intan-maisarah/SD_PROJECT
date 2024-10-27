@@ -18,37 +18,7 @@ session_start();
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="index.php"><img src="assets/images/logo.png" alt="Logo" style="width: 100px; height: auto;"></a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <nav>
-                    <a href="index.php" class="active">Home</a>
-                    <a href="servicepage.php">Services</a>
-                    <a href="about.php">About Us</a>
-                    <a href="contact.php">Contact Us</a>
-                </nav>
-                <?php if (!isset($_SESSION['signin'])) { ?>
-                    <div class="nav-item">
-                        <button class="btn btn-primary rounded sm-4" onclick="window.location.href='user/signin.php'">Log In</button>
-                    </div>
-                    <div class="nav-item">
-                        <button class="btn btn-primary rounded sm-4" onclick="window.location.href='user/signup.php'">Sign Up</button>
-                    </div>
-                <?php } else { ?>
-                    <div class="nav-item">
-                        <button class="btn btn-primary rounded sm-4" onclick="window.location.href='logout.php'">Log Out</button>
-                    </div>
-                    <div class="nav-item">
-                        <button class="btn btn-primary rounded sm-4" onclick="window.location.href='user/view_profile.php'">Profile</button>
-                    </div>
-                <?php } ?>
-            </div>
-        </div>
-    </nav>
+    <?php include 'navbar.php'; ?>
 
     <!-- Hero Section -->
     <section class="hero-section" id="home">
@@ -64,13 +34,14 @@ session_start();
         </div>
         <?php } else { ?>
             <div class="hero-text">
-            <h1 class="hero-title">Let Us Handle All Your Printing Needs.</h1>            
-            <p class="hero-par">Your on-the-go printing service!</p>
-            <form action="Admin_Dashboard/service/upload.php" method="post" enctype="multipart/form-data">
-        <input type="file" name="file" id="file" required>
-        <input type="submit" value="Upload Document">
-    </form>
-        </div>
+                <h1 class="hero-title">Let Us Handle All Your Printing Needs.</h1>            
+                <p class="hero-par">Your on-the-go printing service!</p>
+                <form id="upload-form" action="Admin_Dashboard/service/upload.php" method="post" enctype="multipart/form-data">
+                    <input type="file" name="file" id="file" required onchange="submitForm()" style="display:none;">
+                    <button type="button" class="hero-btn" onclick="document.getElementById('file').click();">Upload Document</button>               
+                </form>
+            </div>
+
         <?php } ?>
         <div class="arrow">
             <img src="assets/images/arrow.png">
@@ -200,6 +171,16 @@ session_start();
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script >
+    function submitForm() {
+    const form = document.getElementById('upload-form');
+    const loadingMessage = document.createElement('p'); // Create a loading message
+    loadingMessage.textContent = 'Uploading...'; // Set the message
+    document.querySelector('.hero-text').appendChild(loadingMessage); // Append it to the hero text area
+
+    form.submit(); // Submit the form automatically
+    }
+    </script>
 
 </body>
 </html>

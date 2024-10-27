@@ -23,7 +23,10 @@ session_start();
     <section id="contact">
 <div class="contact-container">
     <div class="contact-info">
-        <h2>Get in Touch with Us</h2>
+    <h2>Get in Touch with Us </h2>
+    <div class="star-icon">
+        <img src="assets/images/star.png">
+    </div>
         <p>Feel free to contact us anytime. We will get back to you as soon as we can!</p>
             <ul class="list-unstyled">
                 <li>

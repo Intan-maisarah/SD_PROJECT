@@ -44,6 +44,29 @@ session_start();
 ?>
             </div>
         </div>
+<hr>
+        <div class="container">
+            <h2>Printing Services</h2>
+            <div class="service-container">
+            <?php
+            if (!empty($servicesp)) {
+                foreach ($servicesp as $servicep) {
+                    echo '<div class="service-item-small">';
+                    echo '<h2>'.htmlspecialchars($servicep['service_name']).'</h2>';
+                    echo '<p>'.htmlspecialchars($servicep['service_description']).'</p>';
+                    if (!empty($service['image'])) {
+                        $imagePath = 'assets/images/'.htmlspecialchars($servicep['image']);
+                        echo '<img src="'.$imagePath.'" alt="'.htmlspecialchars($servicep['service_name']).'">';
+                    }
+
+                    echo '</div>';
+                }
+            } else {
+                echo '<p>No printing services available at the moment.</p>';
+            }
+?>
+            </div>
+        </div>
 </section>
 
     <!-- Footer -->
