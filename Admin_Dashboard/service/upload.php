@@ -7,6 +7,13 @@ ini_set('display_errors', 1);
 include '../../connection.php';
 session_start();
 
+function generateOrderId()
+{
+    $randomId = 'orderNum'.strtoupper(bin2hex(random_bytes(3))); // 3 bytes = 6 characters in hex
+
+    return $randomId;
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Fetch user ID from session (ensure the user is logged in)
     $userId = $_SESSION['user_id'] ?? null;
@@ -21,8 +28,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Use the original filename from the uploaded file
     $fileName = basename($_FILES['file']['name']);
-    $uploadFile = $uploadDir.$fileName; // Actual file path for moving
-    $dbFilePath = $fullPathForDatabase.$fileName; // Correct path to store in the database
+    // Generate a unique filename using order ID to prevent overwriting
+    $orderId = generateOrderId();
+    $uniqueFileName = $orderId.'_'.$fileName; // Prefixing the filename with order ID
+    $uploadFile = $uploadDir.$uniqueFileName; // Actual file path for moving
+    $dbFilePath = $fullPathForDatabase.$uniqueFileName; // Correct path to store in the database
 
     // Handle file upload errors
     if ($_FILES['file']['error'] !== UPLOAD_ERR_OK) {
@@ -40,9 +50,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     // Move the uploaded file
     if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadFile)) {
-        // Generate a new order ID
-        $orderId = uniqid('order_', true);
-
         // Prepare the SQL statement to insert order details
         $stmt = $conn->prepare('INSERT INTO orders (order_id, user_id, document_upload) VALUES (?, ?, ?)');
         if ($stmt) {
