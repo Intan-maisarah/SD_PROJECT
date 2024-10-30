@@ -44,16 +44,23 @@ curl_close($ch);
 
 $responseArray = json_decode($response, true);
 
-if (isset($responseArray[0]['billpaymentStatus']) && $responseArray[0]['billpaymentStatus'] === '1') {
-    // Payment confirmed, update the order status in the database
-    $updateStatusStmt = $conn->prepare('UPDATE orders SET payment_status = ? WHERE order_id = ?');
-    $payment_status = 'PAID';
-    $updateStatusStmt->bind_param('ss', $payment_status, $order_id);
+// Check payment status
+if (isset($responseArray[0]['billpaymentStatus'])) {
+    if ($responseArray[0]['billpaymentStatus'] === '1') {
+        // Payment confirmed, update the order status in the database
+        $updateStatusStmt = $conn->prepare('UPDATE orders SET payment_status = ? WHERE order_id = ?');
+        $payment_status = 'PAID';
+        $updateStatusStmt->bind_param('ss', $payment_status, $order_id);
 
-    if ($updateStatusStmt->execute()) {
-        $updateStatusStmt->close();
+        if ($updateStatusStmt->execute()) {
+            $updateStatusStmt->close();
+        } else {
+            echo 'Error updating order status: '.$updateStatusStmt->error;
+            exit;
+        }
     } else {
-        echo 'Error updating order status: '.$updateStatusStmt->error;
+        // Payment failed, redirect to payment failed page
+        header('Location: payment-fail.php?order_id='.urlencode($order_id));
         exit;
     }
 } else {
@@ -61,8 +68,8 @@ if (isset($responseArray[0]['billpaymentStatus']) && $responseArray[0]['billpaym
     exit;
 }
 
+// Display success page
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
