@@ -2,7 +2,48 @@
 session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
+include 'connection.php';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_order_id'])) {
+    $deleteOrderId = $_POST['delete_order_id'];
+
+    // Step 1: Retrieve the document path associated with this order
+    $stmt = $conn->prepare('SELECT document_upload FROM orders WHERE order_id = ?');
+    $stmt->bind_param('s', $deleteOrderId);
+    $stmt->execute();
+    $stmt->bind_result($documentPath);
+    $stmt->fetch();
+    $stmt->close();
+
+    // Debug: Print document path to check if it is correct
+    echo 'Document path: '.$documentPath.'<br>';
+
+    // Full path to document
+    $fullPath = $_SERVER['DOCUMENT_ROOT'].'/'.$documentPath;
+    echo 'Full path: '.$fullPath.'<br>';
+
+    // Step 2: Check if the document exists and delete it
+    if ($documentPath && file_exists($fullPath)) {
+        if (!unlink($fullPath)) {
+            echo json_encode(['status' => 'error', 'message' => 'Failed to delete document file.']);
+            exit;
+        }
+    } else {
+        echo 'File does not exist at: '.$fullPath.'<br>';
+    }
+
+    // Step 3: Delete the order record from the database
+    $stmt = $conn->prepare('DELETE FROM orders WHERE order_id = ?');
+    $stmt->bind_param('s', $deleteOrderId);
+    if ($stmt->execute()) {
+        echo json_encode(['status' => 'success', 'message' => 'Order and document deleted successfully.']);
+    } else {
+        echo json_encode(['status' => 'error', 'message' => 'Failed to delete order.']);
+    }
+    exit;
+}
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -123,7 +164,7 @@ if ($order_id) {
     try {
         // Query to retrieve the document path for the given order_id
         $stmt = $conn->prepare('SELECT document_upload FROM orders WHERE order_id = ?');
-        $stmt->bind_param('i', $order_id);
+        $stmt->bind_param('s', $order_id);
         $stmt->execute();
         $stmt->bind_result($document_upload);
         $stmt->fetch();
@@ -254,8 +295,8 @@ try {
             <?php } ?>
             <input type="number" name="quantity" value="1" min="1" placeholder="Quantity" />
             <input type="submit" value="Checkout" class="checkout-btn">
-            <button type="button" class="cancel-btn" onclick="window.location.href='index.php'">Cancel</button>
-        </form>
+            <button type="button" class="cancel-btn" onclick="cancelOrder('<?php echo $order_id; ?>')">Cancel</button>
+            </form>
     </section>
 
     <!-- Modal for PDF Viewer -->
@@ -275,6 +316,28 @@ try {
         </div>
     </div>
 
+    <!-- Cancel Order Modal -->
+    <div class="modal fade" id="cancelOrderModal" tabindex="-1" aria-labelledby="cancelOrderModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="cancelOrderModalLabel">Cancel Order</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to cancel this order? This action cannot be undone.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" id="confirmCancelButton" class="btn btn-danger">Confirm Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
     <!-- Footer -->
     <footer class="text-center">
         <div class="container">
@@ -285,9 +348,33 @@ try {
     </footer>
 
     <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        function cancelOrder(orderId) {
+            $('#cancelOrderModal').modal('show');
+            $('#confirmCancelButton').off('click').on('click', function() {
+                $.ajax({
+                    type: "POST",
+                    url: "",  // Posting to the same page
+                    data: { delete_order_id: orderId },
+                    success: function(response) {
+                        const data = JSON.parse(response);
+                        if (data.status === "success") {
+                            alert("Order cancelled successfully.");
+                            window.location.href='index.php';
+                         } else {
+                            alert("Error cancelling order.");
+                        }
+                    },
+                    error: function() {
+                        alert("Error processing the request.");
+                    }
+                });
+            });
+        }
+    </script>
 </body>
 
 </html>
