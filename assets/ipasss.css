@@ -225,6 +225,16 @@ section {
     margin-top: -5px;
   }
 
+  .wave-container2 {
+    position: absolute; 
+    left: 0; 
+    bottom: 0; 
+    width: 100vw; 
+    height: 500px; 
+    overflow: hidden;
+    z-index: 0; 
+}
+
   .wave2 {
     position: relative;
     display: block;
@@ -240,8 +250,9 @@ section {
 
 .extra-section {
     background-color: white;
-    padding: 20px 20px !important;
+    padding-bottom: 200px;    
     min-height: 50vh !important;
+    position: relative;
   }
 
 .extra-content {
@@ -274,6 +285,7 @@ section {
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  z-index: 2;
 }
 
 .goals-header {
@@ -464,7 +476,7 @@ section {
     margin-top: 100px;
   }
   
-  .about-title h2 {
+  .about-title h2, .store-title h2 {
     font-family: "Prompt", sans-serif;
     font-weight: 600;
     font-size: 3.5rem;
@@ -536,13 +548,43 @@ section {
     margin: 40px 0px;
   }
 
-  .about-para p{
+  .about-para p, .store-description p{
     font-family: "Prompt", sans-serif;
     font-weight: 300;
     font-size: 1.5rem;
     color: #000000;
   }
 
+  #store {
+    text-align: center;
+    padding: 40px 20px;
+    background-color: #4bb3f97c; 
+    min-height: 50vh !important;
+}
+
+.store-title h3 {
+    font-size: 1.5rem;
+    color: #555; 
+}
+
+.store-description {
+  width: 50%;
+  margin: 0 auto;
+}
+
+.store-images {
+  display: flex;
+  align-items: center; 
+  justify-content: center;
+  gap: 20px;
+}
+
+.store-image img {
+  max-width: 100%; 
+  height: 300px; 
+  object-fit: cover; 
+  border-radius: 10px; 
+}
 
   /* Contact Section Styling */
 #contact {
@@ -991,11 +1033,25 @@ section {
     .icon:nth-child(31) { bottom: 18%; left: 35%; }  
     .icon:nth-child(32) { top: 60%; right: 20%; }   
 
-
+   
     /*service*/
+
+    .service-container {
+      flex-direction: column;
+      width: 100%;
+      align-content: center;
+    }
+
+    .service-item img {
+      max-width: 700px;
+    }
+
     .service-item {
-        flex: 1 1 calc(50% - 20px); 
-        max-width: calc(50% - 20px); 
+      max-width: 600px;
+    }
+
+    .service-item-small{
+      max-width: 300px;
     }
     
     /*about*/

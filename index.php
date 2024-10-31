@@ -106,30 +106,26 @@ session_start();
         <div class="goals-cards-container">
             <!-- Goal Card 1 -->
             <div class="goal-card">
-                <img src="path-to-image-1.jpg" alt="Goal 1 Image">
+                <img src="assets/images/goal1.jpg" alt="Goal 1 Image">
                 <p>We make printing simple and fast, so you can focus on what matters.</p>
             </div>
             <!-- Goal Card 2 -->
             <div class="goal-card">
-                <img src="path-to-image-2.jpg" alt="Goal 2 Image">
-                <p>Short description for goal 2.</p>
+                <img src="assets/images/goal2.jpg" alt="Goal 2 Image">
+                <p>Every document is handled with care to ensure vibrant colors, crisp text, and long-lasting quality.</p>
             </div>
             <!-- Goal Card 3 -->
             <div class="goal-card">
-                <img src="path-to-image-3.jpg" alt="Goal 3 Image">
-                <p>Short description for goal 3.</p>
+                <img src="assets/images/goal3.jpg" alt="Goal 3 Image">
+                <p>We offer competitive pricing with no hidden fees, making professional printing accessible for everyone.</p>
             </div>
         </div>
-</section>
-
-<div class="wave-container">
+        <div class="wave-container2">
   <svg class="wave2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320" preserveAspectRatio="none">
     <path fill="#d6d1f0" d="M0,64L48,85.3C96,107,192,149,288,176C384,203,480,213,576,218.7C672,224,768,224,864,213.3C960,203,1056,181,1152,181.3C1248,181,1344,203,1392,213.3L1440,224L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
   </svg>
 </div>
-
-
-
+</section>
     <!-- Footer -->
     <footer class="text-white" style="background-color: #A7C7E7; padding: 40px 0;">
         <div class="container">

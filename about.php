@@ -21,32 +21,53 @@ session_start();
     <?php include 'navbar.php'; ?>
 
     <section id="about">
-    <div class="about-title">
-    <h2>About Us</h2>
-    <h3>Your easy on-the-go printing service</h3>
-    <div class="swirl-icon">
-        <img src="assets/images/swirl.png">
-    </div>
-    </div>
+        <div class="about-title">
+            <h2>About Us</h2>
+            <h3>Your easy on-the-go printing service</h3>
+            <div class="swirl-icon">
+                <img src="assets/images/swirl.png">
+            </div>
+        </div>
 
-    <div class="about-images">
-        <img src="assets/images/binding.jpg" alt="binding">
-        <img src="assets/images/phoneprint.png" alt="printer">
-        <img src="assets/images/lamination.jpeg" alt="laminate">
-    </div>
+        <div class="about-images">
+            <img src="assets/images/binding.jpg" alt="binding">
+            <img src="assets/images/phoneprint.png" alt="printer">
+            <img src="assets/images/lamination.jpeg" alt="laminate">
+        </div>
 
-    <div class="about-text">
-        <h2>We ensure your ideas and creations are printed to perfection.</h2>
-        <div class="about-para">
-        <p> Welcome to <strong>Infinity Printing & Stationery Service</strong>, your go-to solution for remote document printing and delivery.
-        Our platform allows you to easily upload your documents, track order statuses, and choose between convenient pickup appointments or delivery within a 1km range.</p>
-        <p>With a focus on reducing wait times and improving service quality, we offer a streamlined experience for customers, staff, and administrators alike. 
-        Whether you need quick access to printed materials or efficient management of your printing needs, Infinity Printing is here to serve you anytime, anywhere.</p>
+        <div class="about-text">
+            <h2>We ensure your ideas and creations are printed to perfection.</h2>
+            <div class="about-para">
+                <p> Welcome to <strong>Infinity Printing & Stationery Service</strong>, your go-to solution for remote document printing and delivery.
+                Our platform allows you to easily upload your documents, track order statuses, and choose between convenient pickup appointments or delivery within a 1km range.</p>
+                <p>With a focus on reducing wait times and improving service quality, we offer a streamlined experience for customers, staff, and administrators alike. 
+                Whether you need quick access to printed materials or efficient management of your printing needs, Infinity Printing is here to serve you anytime, anywhere.</p>
+            </div>
+        </div>
+        
+        <div class="white-curved-section"></div>
+    </section>
+
+   <!-- Store Section -->
+<section id="store">
+    <div class="store-title">
+        <h2>Visit Our Store</h2>
+        <h3>Your destination for quality printing services</h3>
+    </div>
+    <div class="store-images">
+        <div class="store-image">
+            <img src="assets/images/kedai.jpeg" alt="Our Store" class="img-fluid">
+        </div>
+        <div class="store-image">
+            <img src="assets/images/kedai2.jpg" alt="Another Store" class="img-fluid">
         </div>
     </div>
-
-  <div class="white-curved-section"></div>
+    <div class="store-description">
+        <p>Come visit us at our physical location to experience our printing services firsthand. Our friendly staff is ready to assist you with all your printing needs!</p>
+    </div>
 </section>
+
+
     <!-- Footer -->
     <footer class="text-white" style="background-color: #A7C7E7; padding: 40px 0;">
         <div class="container">
@@ -88,6 +109,7 @@ session_start();
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 
 </body>
 </html>

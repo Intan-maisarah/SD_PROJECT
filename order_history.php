@@ -4,16 +4,12 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 include 'connection.php';
 
-// Check if the user is logged in
 if (!isset($_SESSION['user_id'])) {
     header('Location: signin.php');
     exit;
 }
-
-// Get the user ID from the session
 $user_id = $_SESSION['user_id'];
 
-// Get the view parameter from the URL
 $view = $_GET['view'] ?? 'view';
 ?>
 <!DOCTYPE html>
@@ -83,12 +79,10 @@ $view = $_GET['view'] ?? 'view';
         switch ($view) {
             case 'view':
                 $stmt = $conn->prepare('
-                    SELECT o.order_id, o.payment_status, o.status, COALESCE(SUM(od.total_price), 0) AS total_price, 
-                           o.document_upload
+                  SELECT o.order_id, o.payment_status, o.status, o.total_order_price, 
+                    o.document_upload
                     FROM orders o
-                    LEFT JOIN order_details od ON o.order_id = od.order_id
                     WHERE o.user_id = ? AND o.payment_status = "paid"
-                    GROUP BY o.order_id, o.payment_status, o.status, o.document_upload
                     ORDER BY o.order_id DESC
                 ');
                 $stmt->bind_param('i', $user_id);
@@ -114,7 +108,7 @@ $view = $_GET['view'] ?? 'view';
                                 ?>
                                 <tr>
                                     <td><?php echo htmlspecialchars($row['order_id']); ?></td>
-                                    <td>RM <?php echo htmlspecialchars(number_format($row['total_price'], 2)); ?></td>
+                                    <td>RM <?php echo htmlspecialchars(number_format($row['total_order_price'], 2)); ?></td>
                                     <td><?php echo htmlspecialchars($cleaned_file_name); ?></td>
                                     <td><a href="order_history.php?view=view_payment_status&order_id=<?php echo $row['order_id']; ?>" class="btn btn-primary btn-sm">View Status</a></td>
                                 </tr>
@@ -122,7 +116,7 @@ $view = $_GET['view'] ?? 'view';
                         </tbody>
                     </table>
                 <?php } else { ?>
-                    <p class="no-orders">No paid orders found in your history.</p>
+                    <p class="no-orders">No orders found in your history.</p>
                 <?php } ?>
                 <?php $stmt->close();
                 break;
@@ -130,7 +124,6 @@ $view = $_GET['view'] ?? 'view';
             case 'view_payment_status':
                 $order_id = $_GET['order_id'] ?? null;
                 if ($order_id) {
-                    // Fetch the order payment status and status
                     $stmt = $conn->prepare('
                         SELECT o.payment_status, o.status 
                         FROM orders o
@@ -150,7 +143,6 @@ $view = $_GET['view'] ?? 'view';
                         exit;
                     }
 
-                    // Fetch the order details with unique spec names and types
                     $stmt = $conn->prepare('
                         SELECT DISTINCT sn.spec_name, s.spec_type 
                         FROM order_details od
@@ -158,7 +150,7 @@ $view = $_GET['view'] ?? 'view';
                         JOIN spec_names sn ON s.spec_name_id = sn.id
                         WHERE od.order_id = ?
                     ');
-                    $stmt->bind_param('s', $order_id); // Assuming order_id is varchar(255)
+                    $stmt->bind_param('s', $order_id);
                     $stmt->execute();
                     $details_result = $stmt->get_result();
                     $stmt->close();

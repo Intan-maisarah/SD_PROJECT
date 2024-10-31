@@ -214,28 +214,77 @@ function createToyyibPayBill($order_id, $email, $total_order_price, $name, $cont
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-    <div class="container mt-4">
-        <h1 class="text-center">Order Summary</h1>
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Order ID: <?php echo htmlspecialchars($order_id); ?></h5>
-                <p>Email: <?php echo htmlspecialchars($email); ?></p>
-                <p>Name: <?php echo htmlspecialchars($name); ?></p>
-                <p>Contact: <?php echo htmlspecialchars($contact); ?></p>
-                <h6>Specifications:</h6>
-                <ul>
-                    <?php foreach ($specification_data as $data) { ?>
-                        <li>Specification ID: <?php echo htmlspecialchars($data['id']); ?>, Price: RM<?php echo number_format($data['price'], 2); ?>, Total Price: RM<?php echo number_format($data['total_price'], 2); ?></li>
-                    <?php } ?>
-                </ul>
-                <h5>Total Price: RM<?php echo number_format($total_price, 2); ?></h5>
-                <form method="POST" action="">
-                    <input type="hidden" name="order_id" value="<?php echo htmlspecialchars($order_id); ?>">
-                    <button type="submit" name="proceed_to_payment" class="btn btn-primary">Proceed to Payment</button>
-                    <button type="submit" name="delete_order" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this order?');">Delete Order</button>
-                </form>
-            </div>
-        </div>
-    </div>
+<div class="container mt-5">
+    <h2>Order Summary</h2>
+    <p><strong>Order ID:</strong> <?php echo htmlspecialchars($order_id); ?></p>
+
+    <h4>Delivery Method: <?php echo htmlspecialchars($delivery_method); ?></h4>
+
+<?php if ($delivery_method === 'pickup') { ?>
+    <p>Pickup Appointment: <?php echo htmlspecialchars($pickup_appointment); ?></p>
+<?php } elseif ($delivery_method === 'delivery') { ?>
+    <?php if (isset($location_name)) { // Check if location_name is set?>
+        <p>Delivery Location: <?php echo htmlspecialchars($location_name); ?></p>
+    <?php } else { ?>
+        <p>Delivery Location: Not available</p>
+    <?php } ?>
+    <p>Delivery Time: <?php echo htmlspecialchars($delivery_time); // Ensure you set this variable elsewhere?></p>
+    <p>Delivery Fee: RM 2.00</p>
+<?php }
+
+// Display Specification Data Table
+if (!empty($specification_data)) { ?>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Specification Name</th>
+                    <th>Specification Type</th>
+                    <th>Price (RM)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php foreach ($specification_data as $spec) {
+                    $specification_id = $spec['id'];
+                    $spec_price = $spec['price'];
+                    $total_price_for_spec = $spec['total_price'];
+
+                    $query = 'SELECT sn.spec_name AS spec_name, s.spec_type AS spec_type FROM spec_names sn JOIN specification s ON s.spec_name_id = sn.id WHERE s.id = ?';
+                    $stmt = $conn->prepare($query);
+                    $stmt->bind_param('i', $specification_id);
+                    $stmt->execute();
+                    $result = $stmt->get_result();
+                    if ($result) {
+                        $spec_details = $result->fetch_assoc();
+                        $spec_name = $spec_details['spec_name'] ?? 'Unknown';
+                        $spec_type = $spec_details['spec_type'] ?? 'Unknown';
+                    }
+                    ?>
+                    <tr>
+                        <td><?php echo htmlspecialchars($spec_name); ?></td>
+                        <td><?php echo htmlspecialchars($spec_type); ?></td>
+                        <td><?php echo htmlspecialchars(number_format($total_price_for_spec, 2)); ?></td>
+                    </tr>
+                <?php } ?>
+            </tbody>
+        </table>
+
+        <h4>Total Price: RM <?php echo number_format($total_price, 2); ?></h4>
+
+        <form method="POST">
+            <input type="hidden" name="order_id" value="<?php echo htmlspecialchars($order_id); ?>">
+            <button type="submit" name="proceed_to_payment" class="btn btn-primary">Proceed to Payment</button>
+            <button type="submit" name="delete_order" class="btn btn-danger" onclick="return confirmDelete();">Delete Order</button>
+        </form>
+    <?php } else { ?>
+        <p>No specifications found for this order.</p>
+    <?php } ?>
+</div>
+
+<script>
+function confirmDelete() {
+    return confirm("Are you sure you want to delete this order?");
+}
+</script>
+
 </body>
 </html>
