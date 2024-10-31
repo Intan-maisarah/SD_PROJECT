@@ -294,9 +294,43 @@ try {
                 </select>
             <?php } ?>
             <input type="number" name="quantity" value="1" min="1" placeholder="Quantity" />
+            <div>
+    <label>Delivery Method:</label><br>
+    <input type="radio" id="pickup" name="delivery_method" value="pickup" required onclick="toggleDeliveryOptions()">
+    <label for="pickup">Pickup</label><br>
+
+    <input type="radio" id="delivery" name="delivery_method" value="delivery" onclick="toggleDeliveryOptions()">
+    <label for="delivery">Delivery</label><br>
+    
+</div>
+
+    <div id="pickupOptions" style="display: none;">
+        <label for="pickup_date">Select Pickup Date:</label>
+        <input type="datetime-local" name="pickup_appointment" id="pickup_appointment">
+    </div>
+
+    <div id="deliveryOptions" style="display: block;"> <!-- Make sure this is set to block when appropriate -->
+        <label for="delivery_location">Select Delivery Location:</label>
+        <select name="delivery_location" id="delivery_location" required>
+            <option value="">Select a location</option>
+            <?php
+            $stmt = $conn->prepare('SELECT id, location_name FROM delivery_locations');
+$stmt->execute();
+$stmt->bind_result($location_id, $location_name);
+while ($stmt->fetch()) {
+    echo '<option value="'.htmlspecialchars($location_id).'">'.htmlspecialchars($location_name).'</option>';
+}
+$stmt->close();
+?>
+        </select>
+        <label for="delivery_time">Delivery Time:</label>
+        <input type="datetime-local" name="delivery_time" id="delivery_time" required>
+    </div>
             <input type="submit" value="Checkout" class="checkout-btn">
             <button type="button" class="cancel-btn" onclick="cancelOrder('<?php echo $order_id; ?>')">Cancel</button>
             </form>
+
+            
     </section>
 
     <!-- Modal for PDF Viewer -->
@@ -353,27 +387,70 @@ try {
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script>
         function cancelOrder(orderId) {
-            $('#cancelOrderModal').modal('show');
-            $('#confirmCancelButton').off('click').on('click', function() {
-                $.ajax({
-                    type: "POST",
-                    url: "",  // Posting to the same page
-                    data: { delete_order_id: orderId },
-                    success: function(response) {
-                        const data = JSON.parse(response);
-                        if (data.status === "success") {
-                            alert("Order cancelled successfully.");
-                            window.location.href='index.php';
-                         } else {
-                            alert("Error cancelling order.");
-                        }
-                    },
-                    error: function() {
-                        alert("Error processing the request.");
+    $('#cancelOrderModal').modal('show');
+    $('#confirmCancelButton').off('click').on('click', function() {
+        $.ajax({
+            type: "POST",
+            url: window.location.href,  
+            data: { delete_order_id: orderId },
+            success: function(response) {
+                try {
+                    const data = JSON.parse(response);
+                    if (data.status === "success") {
+                        alert("Order cancelled successfully.");
+                        window.location.href = 'index.php';
+                    } else {
+                        alert("Error cancelling order.");
                     }
-                });
-            });
-        }
+                } catch (e) {
+                    console.error("JSON parse error:", e);
+                    alert("An error occurred while processing your request.");
+                }
+            },
+            error: function() {
+                alert("Error processing the request.");
+            }
+        });
+    });
+}
+
+function toggleDeliveryOptions() {
+    const pickupOptions = document.getElementById('pickupOptions');
+    const deliveryOptions = document.getElementById('deliveryOptions');
+    const pickupAppointment = document.getElementById('pickup_appointment');
+    const deliveryLocation = document.getElementById('delivery_location');
+    
+    if (!pickupOptions || !deliveryOptions || !pickupAppointment || !deliveryLocation) {
+        console.error("One or more elements are missing on the page.");
+        return;
+    }
+
+    pickupAppointment.value = '';
+    deliveryLocation.selectedIndex = 0;
+
+    const deliveryMethod = document.querySelector('input[name="delivery_method"]:checked');
+    if (!deliveryMethod) {
+        console.error("No delivery method selected.");
+        return;
+    }
+
+    if (deliveryMethod.value === 'pickup') {
+        pickupOptions.style.display = 'block';
+        deliveryOptions.style.display = 'none';
+        pickupAppointment.required = true;
+        deliveryLocation.required = false;
+    } else {
+        pickupOptions.style.display = 'none';
+        deliveryOptions.style.display = 'block';
+        pickupAppointment.required = false;
+        deliveryLocation.required = true;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', toggleDeliveryOptions);
+
+
+
     </script>
 </body>
 

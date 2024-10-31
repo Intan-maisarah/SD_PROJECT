@@ -4,7 +4,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 if (!isset($_SESSION['user_id'])) {
-    echo "User not logged in.<br>";
+    echo 'User not logged in.<br>';
     exit;
 }
 require '../../connection.php';
@@ -13,17 +13,17 @@ $user_id = $_SESSION['user_id'];
 $adminEmail = '';
 $profile_pic = '';
 
-$sql = "SELECT email, profile_pic FROM users WHERE id = ?";
+$sql = 'SELECT email, profile_pic FROM users WHERE id = ?';
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
-    echo "Prepare statement failed: " . $conn->error . "<br>";
+    echo 'Prepare statement failed: '.$conn->error.'<br>';
     exit;
 }
 $stmt->bind_param('i', $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 if (!$result) {
-    echo "Get result failed: " . $stmt->error . "<br>";
+    echo 'Get result failed: '.$stmt->error.'<br>';
     exit;
 }
 
@@ -32,7 +32,7 @@ if ($result->num_rows > 0) {
     $adminEmail = $row['email'];
     $profile_pic = $row['profile_pic'];
 } else {
-    $adminEmail = "Email not found";
+    $adminEmail = 'Email not found';
 }
 
 $stmt->close();
@@ -91,6 +91,9 @@ $conn->close();
         </li>
         <li class="sidebar-item">
           <a class="sidebar-link waves-effect waves-dark sidebar-link" href="../service/services.php" aria-expanded="false"><i class="mdi mdi-briefcase"></i><span class="hide-menu">Services</span></a>
+        </li>
+        <li class="sidebar-item">
+          <a class="sidebar-link waves-effect waves-dark sidebar-link" href="../service/delivery_location.php" aria-expanded="false"><i class="mdi mdi-map-marker"></i><span class="hide-menu">Delivery Locations</span></a>
         </li>
         <li class="sidebar-item">
           <a class="sidebar-link waves-effect waves-dark sidebar-link" href="../service/order.php" aria-expanded="false"><i class="mdi mdi-cart"></i><span class="hide-menu">Orders</span></a>

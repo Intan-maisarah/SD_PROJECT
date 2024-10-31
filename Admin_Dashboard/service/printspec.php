@@ -179,18 +179,34 @@ switch ($action) {
                 $spec_type = $_POST['spec_type'];
                 $price = $_POST['price'];
                 $status = $_POST['status'];
+                $apply_price_to_all = isset($_POST['apply_price_to_all']);
+                $apply_status_to_all = isset($_POST['apply_status_to_all']);
 
                 // Update the spec_name in spec_names table if changed
                 $stmt = $conn->prepare('UPDATE spec_names SET spec_name = ? WHERE id = ?');
                 $stmt->bind_param('si', $spec_name, $spec['spec_name_id']);
                 $stmt->execute();
 
-                // Update the specification details
+                // Update the specific specification details
                 $updateQuery = 'UPDATE specification SET spec_type = ?, price = ?, status = ? WHERE id = ?';
                 $stmt = $conn->prepare($updateQuery);
-                $stmt->bind_param('ssdi', $spec_type, $status, $price, $id);
+                $stmt->bind_param('sdsi', $spec_type, $price, $status, $id);
 
                 if ($stmt->execute()) {
+                    // Apply price to all specifications under the same spec_name_id
+                    if ($apply_price_to_all) {
+                        $stmt = $conn->prepare('UPDATE specification SET price = ? WHERE spec_name_id = ?');
+                        $stmt->bind_param('di', $price, $spec['spec_name_id']);
+                        $stmt->execute();
+                    }
+
+                    // Apply status to all specifications under the same spec_name_id
+                    if ($apply_status_to_all) {
+                        $stmt = $conn->prepare('UPDATE specification SET status = ? WHERE spec_name_id = ?');
+                        $stmt->bind_param('si', $status, $spec['spec_name_id']);
+                        $stmt->execute();
+                    }
+
                     if ($stmt->affected_rows > 0) {
                         $_SESSION['message'] = 'Specification updated successfully!';
                         $_SESSION['msg_type'] = 'success';
@@ -208,64 +224,55 @@ switch ($action) {
                     exit;
                 }
             }
-
             ?>
-                    
-
-                        <h2>Edit Specification</h2>
-
-                        <!-- Form to edit specification details -->
-                        <form method="POST" action="">
-                            <table>
-                                <tr>
-                                    <th>Specification Name</th>
-                                    <td><input type="text" name="spec_name" value="<?php echo htmlspecialchars($spec['spec_name']); ?>" readonly></td>
-                                </tr>
-                                <tr>
-                                    <th>Specification Type</th>
-                                    <td><input type="text" name="spec_type" value="<?php echo htmlspecialchars($spec['spec_type']); ?>" required></td>
-                                </tr>
-                                <tr>
-                                    <th>Price</th>
-                                    <td>
-                                        <input type="number" step="0.01" name="price" value="<?php echo htmlspecialchars($spec['price']); ?>" required>
-                                        <br>
-                                        <label>
-                                            <input type="checkbox" name="apply_price_to_all" value="1"> Apply price to all specification types under this specification name
-                                        </label>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <th>Status</th>
-                                    <td>
-                                        <select name="status" required>
-                                            <option value="available" <?php if ($spec['status'] == 'available') {
-                                                echo 'selected';
-                                            } ?>>Available</option>
-                                            <option value="unavailable" <?php if ($spec['status'] == 'unavailable') {
-                                                echo 'selected';
-                                            } ?>>Unavailable</option>
-                                        </select>
-                                        <br>
-                                        <label>
-                                            <input type="checkbox" name="apply_status_to_all" value="1"> Apply status to all specification types under this specification name
-                                        </label>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2" style="text-align: center;">
-                                        <input type="submit" value="Update" class="button button-edit">
-                                        <button onclick="history.go(-1);" class="button button-back">
-                                            Back
-                                        </button>
-                                    </td>
-                                </tr>
-                            </table>
-                        </form>
-
-
-
-                    <?php
+                <h2>Edit Specification</h2>
+                <!-- Form to edit specification details -->
+                <form method="POST" action="">
+                    <table>
+                        <tr>
+                            <th>Specification Name</th>
+                            <td><input type="text" name="spec_name" value="<?php echo htmlspecialchars($spec['spec_name']); ?>" readonly></td>
+                        </tr>
+                        <tr>
+                            <th>Specification Type</th>
+                            <td><input type="text" name="spec_type" value="<?php echo htmlspecialchars($spec['spec_type']); ?>" required></td>
+                        </tr>
+                        <tr>
+                            <th>Price</th>
+                            <td>
+                                <input type="number" step="0.01" name="price" value="<?php echo htmlspecialchars($spec['price']); ?>" required>
+                                <br>
+                                <label>
+                                    <input type="checkbox" name="apply_price_to_all" value="1"> Apply price to all specification types under this specification name
+                                </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Status</th>
+                            <td>
+                                <select name="status" required>
+                                    <option value="available" <?php if ($spec['status'] == 'available') {
+                                        echo 'selected';
+                                    } ?>>Available</option>
+                                    <option value="unavailable" <?php if ($spec['status'] == 'unavailable') {
+                                        echo 'selected';
+                                    } ?>>Unavailable</option>
+                                </select>
+                                <br>
+                                <label>
+                                    <input type="checkbox" name="apply_status_to_all" value="1"> Apply status to all specification types under this specification name
+                                </label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2" style="text-align: center;">
+                                <input type="submit" value="Update" class="button button-edit">
+                                <button onclick="history.go(-1);" class="button button-back">Back</button>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+                <?php
         } else {
             echo 'No specification ID provided!';
         }

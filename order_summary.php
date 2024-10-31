@@ -4,7 +4,6 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 include 'connection.php';
 
-// Verify session variables and fetch user info if not set
 if (!isset($_SESSION['email']) || !isset($_SESSION['name']) || !isset($_SESSION['contact'])) {
     $userId = $_SESSION['user_id'] ?? 0;
     if ($userId) {
@@ -21,7 +20,6 @@ if (!isset($_SESSION['email']) || !isset($_SESSION['name']) || !isset($_SESSION[
     }
 }
 
-// Handle delete order request
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_order'])) {
     $order_id = $_POST['order_id'];
 
@@ -31,31 +29,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['delete_order'])) {
         $deleteOrderStmt = $conn->prepare('DELETE FROM orders WHERE order_id = ?');
         $deleteOrderStmt->bind_param('s', $order_id);
         if ($deleteOrderStmt->execute()) {
-            echo 'Order deleted successfully.';
             header('Location: index.php');
             exit;
-        } else {
-            echo 'Error deleting order: '.$deleteOrderStmt->error;
         }
         $deleteOrderStmt->close();
-    } else {
-        echo 'Error deleting order details: '.$deleteDetailsStmt->error;
     }
     $deleteDetailsStmt->close();
 }
 
-// Initialize variables
 $order_id = $_POST['order_id'] ?? $_SESSION['order_id'];
 $total_price = 0;
 $email = $_SESSION['email'] ?? '';
 $name = $_SESSION['name'] ?? '';
 $contact = $_SESSION['contact'] ?? '';
 $specification_data = [];
+$delivery_method = $_POST['delivery_method'] ?? '';
+$pickup_appointment = $_POST['pickup_appointment'] ?? '';
+$delivery_time = $_POST['delivery_time'] ?? '';
+$delivery_location_id = $_POST['delivery_location'] ?? '';
 
 $toyyibpayApiKey = 'dn9jqdur-tzqt-pztk-6qgm-9xa4jg7m57qx';
 $toyyibpayCategoryCode = 'ltceill4';
 
-// Calculate order price and handle specifications
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && $order_id) {
     $specification_types = $_POST['specification_id'] ?? [];
     $quantity = $_POST['quantity'] ?? 1;
@@ -84,26 +79,56 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $order_id) {
 
                     $stmt = $conn->prepare('INSERT INTO order_details (order_id, specification_id, price, quantity, page_count, total_price) VALUES (?, ?, ?, ?, ?, ?)');
                     $stmt->bind_param('sidiid', $order_id, $specification_id, $spec_price, $quantity, $page_count, $total_doc_price);
-                    if ($stmt->execute()) {
-                        $specification_data[] = [
-                            'id' => $specification_id,
-                            'price' => $spec_price,
-                            'total_price' => $total_doc_price,
-                        ];
-                    }
+                    $stmt->execute();
+                    $specification_data[] = [
+                        'id' => $specification_id,
+                        'price' => $spec_price,
+                        'total_price' => $total_doc_price,
+                    ];
                     $stmt->close();
                 }
+            }
+
+            if ($delivery_method === 'pickup') {
+                $insertPickupStmt = $conn->prepare('UPDATE orders SET delivery_method = ?, pickup_appointment = ? WHERE order_id = ?');
+                $insertPickupStmt->bind_param('sss', $delivery_method, $pickup_appointment, $order_id);
+                $insertPickupStmt->execute();
+                $insertPickupStmt->close();
+            } elseif ($delivery_method === 'delivery') {
+                $total_price += 2;
+
+                if (!$delivery_location_id) {
+                    echo 'No delivery location ID provided.';
+                } else {
+                    $stmt = $conn->prepare('SELECT location_name FROM delivery_locations WHERE id = ?');
+                    $stmt->bind_param('i', $delivery_location_id);
+                    $stmt->execute();
+                    $stmt->bind_result($location_name);
+
+                    if ($stmt->fetch()) {
+                        $stmt->close();
+
+                        $delivery_time = $_POST['delivery_time'] ?? '';
+
+                        $updateOrderStmt = $conn->prepare('UPDATE orders SET delivery_method = ?, delivery_location_id = ?, delivery_time = ? WHERE order_id = ?');
+                        $updateOrderStmt->bind_param('siss', $delivery_method, $delivery_location_id, $delivery_time, $order_id);
+                        $updateOrderStmt->execute();
+                        $updateOrderStmt->close();
+                    } else {
+                        echo 'Invalid delivery location ID.';
+                        $stmt->close();
+                    }
+                }
+            } else {
+                echo 'Invalid delivery method.';
             }
 
             if ($total_price > 0) {
                 $updateOrderStmt = $conn->prepare('UPDATE orders SET total_order_price = ? WHERE order_id = ?');
                 $updateOrderStmt->bind_param('ds', $total_price, $order_id);
-                if ($updateOrderStmt->execute()) {
-                    $_SESSION['total_order_price'] = $total_price;
-                    $_SESSION['specification_data'] = $specification_data;
-                } else {
-                    echo 'Error updating total_order_price: '.$updateOrderStmt->error.'<br>';
-                }
+                $updateOrderStmt->execute();
+                $_SESSION['total_order_price'] = $total_price;
+                $_SESSION['specification_data'] = $specification_data;
                 $updateOrderStmt->close();
             } else {
                 echo 'Error: total_price is zero, check specification and pricing data.<br>';
@@ -114,7 +139,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $order_id) {
     }
 }
 
-// Handle payment request
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['proceed_to_payment'])) {
     $total_price = $_SESSION['total_order_price'] ?? 0;
     $specification_data = $_SESSION['specification_data'] ?? [];
@@ -122,7 +146,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['proceed_to_payment']))
     if ($total_price > 0) {
         $billUrl = createToyyibPayBill($order_id, $email, $total_price, $name, $contact);
         if ($billUrl) {
-            // Clear session data after successful payment initiation
             unset($_SESSION['total_order_price'], $_SESSION['specification_data']);
             header("Location: $billUrl");
             exit;
@@ -149,8 +172,8 @@ function createToyyibPayBill($order_id, $email, $total_order_price, $name, $cont
         'billTo' => $name,
         'billEmail' => $email,
         'billPhone' => $contact,
-        'billReturnUrl' => 'https://palegreen-buffalo-300863.hostingersite.com/payment-success.php?order_id='.$order_id,
-        'billCallbackUrl' => 'https://palegreen-buffalo-300863.hostingersite.com/payment-callback.php',
+        'billReturnUrl' => 'https://localhost/SD_PROJECT/payment-success.php?order_id='.$order_id,
+        'billCallbackUrl' => 'https://localhost/SD_PROJECT/payment-callback.php',
         'billPriceSetting' => '1',
         'billPayorInfo' => '1',
     ];
@@ -170,27 +193,18 @@ function createToyyibPayBill($order_id, $email, $total_order_price, $name, $cont
     if (isset($responseArray[0]['BillCode'])) {
         $billCode = $responseArray[0]['BillCode'];
 
-        // Store BillCode in the database
         $stmt = $conn->prepare('UPDATE orders SET BillCode = ? WHERE order_id = ?');
         $stmt->bind_param('ss', $billCode, $order_id);
         if ($stmt->execute()) {
-            echo 'ToyyibPay Bill Code saved: '.$billCode.'<br>';
-        } else {
-            echo 'Error saving BillCode: '.$stmt->error.'<br>';
         }
         $stmt->close();
 
         return 'https://dev.toyyibpay.com/'.$billCode;
     } else {
-        echo 'ToyyibPay API Error: ';
-        print_r($responseArray);
-
         return false;
     }
 }
-
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -200,62 +214,28 @@ function createToyyibPayBill($order_id, $email, $total_order_price, $name, $cont
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-<div class="container mt-5">
-    <h2>Order Summary</h2>
-    <p><strong>Order ID:</strong> <?php echo htmlspecialchars($order_id); ?></p>
-
-    <?php if (!empty($specification_data)) { ?>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Specification Name</th>
-                    <th>Specification Type</th>
-                    <th>Price (RM)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php foreach ($specification_data as $spec) {
-                    $specification_id = $spec['id'];
-                    $spec_price = $spec['price'];
-                    $total_price_for_spec = $spec['total_price'];
-
-                    $query = 'SELECT sn.spec_name AS spec_name, s.spec_type AS spec_type FROM spec_names sn JOIN specification s ON s.spec_name_id = sn.id WHERE s.id = ?';
-                    $stmt = $conn->prepare($query);
-                    $stmt->bind_param('i', $specification_id);
-                    $stmt->execute();
-                    $result = $stmt->get_result();
-                    if ($result) {
-                        $spec_details = $result->fetch_assoc();
-                        $spec_name = $spec_details['spec_name'] ?? 'Unknown';
-                        $spec_type = $spec_details['spec_type'] ?? 'Unknown';
-                    }
-                    ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($spec_name); ?></td>
-                        <td><?php echo htmlspecialchars($spec_type); ?></td>
-                        <td><?php echo htmlspecialchars(number_format($total_price_for_spec, 2)); ?></td>
-                    </tr>
-                <?php } ?>
-            </tbody>
-        </table>
-
-        <h4>Total Price: RM <?php echo number_format($total_price, 2); ?></h4>
-
-        <form method="POST">
-            <input type="hidden" name="order_id" value="<?php echo htmlspecialchars($order_id); ?>">
-            <button type="submit" name="proceed_to_payment" class="btn btn-primary">Proceed to Payment</button>
-            <button type="submit" name="delete_order" class="btn btn-danger" onclick="return confirmDelete();">Delete Order</button>
-            </form>
-    <?php } else { ?>
-        <p>No specifications found for this order.</p>
-    <?php } ?>
-</div>
-
-<script>
-function confirmDelete() {
-    return confirm("Are you sure you want to delete this order?");
-}
-</script>
-
+    <div class="container mt-4">
+        <h1 class="text-center">Order Summary</h1>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Order ID: <?php echo htmlspecialchars($order_id); ?></h5>
+                <p>Email: <?php echo htmlspecialchars($email); ?></p>
+                <p>Name: <?php echo htmlspecialchars($name); ?></p>
+                <p>Contact: <?php echo htmlspecialchars($contact); ?></p>
+                <h6>Specifications:</h6>
+                <ul>
+                    <?php foreach ($specification_data as $data) { ?>
+                        <li>Specification ID: <?php echo htmlspecialchars($data['id']); ?>, Price: RM<?php echo number_format($data['price'], 2); ?>, Total Price: RM<?php echo number_format($data['total_price'], 2); ?></li>
+                    <?php } ?>
+                </ul>
+                <h5>Total Price: RM<?php echo number_format($total_price, 2); ?></h5>
+                <form method="POST" action="">
+                    <input type="hidden" name="order_id" value="<?php echo htmlspecialchars($order_id); ?>">
+                    <button type="submit" name="proceed_to_payment" class="btn btn-primary">Proceed to Payment</button>
+                    <button type="submit" name="delete_order" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this order?');">Delete Order</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

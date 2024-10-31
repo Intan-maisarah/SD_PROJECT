@@ -19,6 +19,7 @@
                         <button class="btn btn-primary rounded sm-4" onclick="window.location.href='user/signup.php'">Sign Up</button>
                     </div>
                 <?php } else { ?>
+                    <a href="order_history.php">History</a>
                     <div class="nav-item">
                         <button class="btn btn-primary rounded sm-4" onclick="window.location.href='logout.php'">Log Out</button>
                     </div>
