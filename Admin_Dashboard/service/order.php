@@ -100,16 +100,18 @@ switch ($action) {
                 $query .= ' WHERE payment_status = "unpaid"';
             } elseif ($statusFilter === 'paid') {
                 $query .= ' WHERE payment_status = "paid"';
+            } elseif ($statusFilter === 'pendingpayment') {
+                $query .= ' WHERE payment_status = "pending"';
             } elseif ($statusFilter === 'pending') {
-                $query .= ' WHERE payment_status = "paid" AND status = "pending"';
+                $query .= ' WHERE (payment_status = "paid" OR payment_status = "pending") AND status = "pending"';
             } elseif ($statusFilter === 'in_progress') {
-                $query .= ' WHERE payment_status = "paid" AND status = "in_progress"';
+                $query .= ' WHERE (payment_status = "paid" OR payment_status = "pending") AND status = "in_progress"';
             } elseif ($statusFilter === 'completed') {
-                $query .= ' WHERE payment_status = "paid" AND status = "completed"';
+                $query .= ' WHERE (payment_status = "paid" OR payment_status = "pending") AND status = "completed"';
             } elseif ($statusFilter === 'pickup') {
-                $query .= ' WHERE delivery_method = "pickup" AND payment_status =  "paid"';
+                $query .= ' WHERE (payment_status = "paid" OR payment_status = "pending") AND delivery_method = "pickup"';
             } elseif ($statusFilter === 'delivery') {
-                $query .= ' WHERE delivery_method = "delivery"AND payment_status =  "paid"';
+                $query .= ' WHERE (payment_status = "paid" OR payment_status = "pending") AND delivery_method = "delivery"';
             }
             $filterApplied = true;
         }
@@ -126,6 +128,7 @@ switch ($action) {
         echo '<option value="">All</option>';
         echo '<option value="paid" '.($statusFilter == 'paid' ? 'selected' : '').'>Paid</option>';
         echo '<option value="unpaid" '.($statusFilter == 'unpaid' ? 'selected' : '').'>Unpaid</option>';
+        echo '<option value="pendingpayment" '.($statusFilter == 'pending' ? 'selected' : '').'>Payment Pending (Cash)</option>';
         echo '<option value="pending" '.($statusFilter == 'pending' ? 'selected' : '').'>Pending</option>';
         echo '<option value="in_progress" '.($statusFilter == 'in_progress' ? 'selected' : '').'>In Progress</option>';
         echo '<option value="completed" '.($statusFilter == 'completed' ? 'selected' : '').'>Completed</option>';

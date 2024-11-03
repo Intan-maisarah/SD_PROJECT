@@ -142,18 +142,57 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $order_id) {
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['proceed_to_payment'])) {
     $total_price = $_SESSION['total_order_price'] ?? 0;
     $specification_data = $_SESSION['specification_data'] ?? [];
+    $payment_method = $_POST['payment_method'] ?? '';
 
     if ($total_price > 0) {
-        $billUrl = createToyyibPayBill($order_id, $email, $total_price, $name, $contact);
-        if ($billUrl) {
-            unset($_SESSION['total_order_price'], $_SESSION['specification_data']);
-            header("Location: $billUrl");
-            exit;
+        if ($payment_method === 'online') {
+            if (!isset($_SESSION['specification_data']) || empty($_SESSION['specification_data'])) {
+                echo 'Error: No specifications selected.';
+            } else {
+                // Create payment bill for online payment
+                $billUrl = createToyyibPayBill($order_id, $email, $total_price, $name, $contact);
+                if ($billUrl) {
+                    unset($_SESSION['total_order_price'], $_SESSION['specification_data']);
+                    header("Location: $billUrl");
+                    exit;
+                } else {
+                    echo 'Error creating payment bill.';
+                }
+            }
+        } elseif ($payment_method === 'offline') {
+            // Handle offline payment
+            if (handleOfflinePayment($order_id, $total_price, $email, $name, $contact)) {
+                unset($_SESSION['total_order_price'], $_SESSION['specification_data'], $_SESSION['order_id']);
+                header('Location: order-success.php?order_id='.urlencode($order_id));
+                exit;
+            } else {
+                echo 'Error processing offline payment. Please try again.';
+            }
         } else {
-            echo 'Error creating payment bill.';
+            echo 'Error: Unsupported payment method.';
         }
     } else {
         echo 'Error: total_order_price is not set or is zero.';
+    }
+}
+
+function handleOfflinePayment($order_id, $total_price, $email, $name, $contact)
+{
+    global $conn;
+
+    $stmt = $conn->prepare('UPDATE orders SET payment_status = ?, total_order_price = ?, payment_method = ? WHERE order_id = ?');
+    $status = 'pending';
+    $payment_method = 'offline';
+    $stmt->bind_param('sdss', $status, $total_price, $payment_method, $order_id);
+
+    if ($stmt->execute()) {
+        $stmt->close();
+
+        return true;
+    } else {
+        $stmt->close();
+
+        return false;
     }
 }
 
@@ -271,7 +310,17 @@ if (!empty($specification_data)) { ?>
 
         <form method="POST">
             <input type="hidden" name="order_id" value="<?php echo htmlspecialchars($order_id); ?>">
-            <button type="submit" name="proceed_to_payment" class="btn btn-primary">Proceed to Payment</button>
+
+            <!-- Payment Method Selection -->
+            <div class="form-group">
+                <label for="payment_method">Select Payment Method:</label>
+                <select name="payment_method" id="payment_method" class="form-control" required>
+                    <option value="online">Online Banking</option>
+                    <option value="offline">Cash</option>
+                </select>
+            </div>
+
+            <button type="submit" name="proceed_to_payment" class="btn btn-primary" onclick="return checkPaymentMethod();">Proceed to Payment</button>
             <button type="submit" name="delete_order" class="btn btn-danger" onclick="return confirmDelete();">Delete Order</button>
         </form>
     <?php } else { ?>
@@ -279,11 +328,37 @@ if (!empty($specification_data)) { ?>
     <?php } ?>
 </div>
 
+
 <script>
 function confirmDelete() {
     return confirm("Are you sure you want to delete this order?");
 }
+
+function checkPaymentMethod() {
+    var paymentMethod = document.getElementById('payment_method').value;
+    var totalPrice = <?php echo $total_price; ?>; 
+
+    if (paymentMethod === "") {
+        alert("Please select a payment method."); 
+        return false; 
+    }
+
+    if (paymentMethod === 'online' && totalPrice < 1) {
+        alert("For online payments, the total must be greater than zero.");
+        return false; 
+    }
+
+    return true; 
+}
+
+
+function showCashOnlyAlert() {
+    alert("For online payments, the total must be greater than zero.");
+}
+
+
 </script>
+
 
 </body>
 </html>

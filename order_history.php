@@ -82,7 +82,7 @@ $view = $_GET['view'] ?? 'view';
                   SELECT o.order_id, o.payment_status, o.status, o.total_order_price, 
                     o.document_upload
                     FROM orders o
-                    WHERE o.user_id = ? AND o.payment_status = "paid"
+                    WHERE o.user_id = ? AND o.payment_status = "paid" OR o.payment_status =  "pending"
                     ORDER BY o.order_id DESC
                 ');
                 $stmt->bind_param('i', $user_id);
