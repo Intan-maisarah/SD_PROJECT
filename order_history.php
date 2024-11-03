@@ -110,7 +110,7 @@ $view = $_GET['view'] ?? 'view';
                                     <td><?php echo htmlspecialchars($row['order_id']); ?></td>
                                     <td>RM <?php echo htmlspecialchars(number_format($row['total_order_price'], 2)); ?></td>
                                     <td><?php echo htmlspecialchars($cleaned_file_name); ?></td>
-                                    <td><a href="order_history.php?view=view_payment_status&order_id=<?php echo $row['order_id']; ?>" class="btn btn-primary btn-sm">View Status</a></td>
+                                    <td><a href="order_history.php?view=viewstatus&order_id=<?php echo $row['order_id']; ?>" class="btn btn-primary btn-sm">View Status</a></td>
                                 </tr>
                             <?php } ?>
                         </tbody>
@@ -121,7 +121,7 @@ $view = $_GET['view'] ?? 'view';
                 <?php $stmt->close();
                 break;
 
-            case 'view_payment_status':
+            case 'viewstatus':
                 $order_id = $_GET['order_id'] ?? null;
                 if ($order_id) {
                     $stmt = $conn->prepare('
@@ -129,7 +129,7 @@ $view = $_GET['view'] ?? 'view';
                         FROM orders o
                         WHERE o.order_id = ? AND o.user_id = ?
                     ');
-                    $stmt->bind_param('ii', $order_id, $user_id);
+                    $stmt->bind_param('si', $order_id, $user_id);
                     $stmt->execute();
                     $result = $stmt->get_result();
                     $order = $result->fetch_assoc();

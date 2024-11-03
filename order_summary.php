@@ -223,16 +223,15 @@ function createToyyibPayBill($order_id, $email, $total_order_price, $name, $cont
 <?php if ($delivery_method === 'pickup') { ?>
     <p>Pickup Appointment: <?php echo htmlspecialchars($pickup_appointment); ?></p>
 <?php } elseif ($delivery_method === 'delivery') { ?>
-    <?php if (isset($location_name)) { // Check if location_name is set?>
+    <?php if (isset($location_name)) { ?>
         <p>Delivery Location: <?php echo htmlspecialchars($location_name); ?></p>
     <?php } else { ?>
         <p>Delivery Location: Not available</p>
     <?php } ?>
-    <p>Delivery Time: <?php echo htmlspecialchars($delivery_time); // Ensure you set this variable elsewhere?></p>
+    <p>Delivery Time: <?php echo htmlspecialchars($delivery_time); ?></p>
     <p>Delivery Fee: RM 2.00</p>
 <?php }
 
-// Display Specification Data Table
 if (!empty($specification_data)) { ?>
         <table class="table table-bordered">
             <thead>

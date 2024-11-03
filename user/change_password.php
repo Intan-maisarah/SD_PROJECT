@@ -1,15 +1,16 @@
 <?php
 session_start();
-require '../connection.php'; 
-function validatePassword($password) {
-    return preg_match('/.{8,}/', $password) &&
-           preg_match('/[A-Z]/', $password) &&
-           preg_match('/\d/', $password) &&
-           preg_match('/[!@#$%^&*(),.?":{}|<>]/', $password);
+require '../connection.php';
+function validatePassword($password)
+{
+    return preg_match('/.{8,}/', $password)
+           && preg_match('/[A-Z]/', $password)
+           && preg_match('/\d/', $password)
+           && preg_match('/[!@#$%^&*(),.?":{}|<>]/', $password);
 }
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $user_id = $_SESSION['user_id']; 
+    $user_id = $_SESSION['user_id'];
 
     $currentPassword = $_POST['currentPassword'];
     $newPassword = $_POST['newPassword'];
@@ -21,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif (!validatePassword($newPassword)) {
         echo "<script>alert('New password does not meet the requirements.');</script>";
     } else {
-        $query = "SELECT password FROM users WHERE id = ?";
+        $query = 'SELECT password FROM users WHERE id = ?';
         $stmt = $conn->prepare($query);
         $stmt->bind_param('i', $user_id);
         $stmt->execute();
@@ -33,7 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Hash the new password before storing it in the database
             $newHashedPassword = password_hash($newPassword, PASSWORD_DEFAULT);
 
-            $updateQuery = "UPDATE users SET password = ? WHERE id = ?";
+            $updateQuery = 'UPDATE users SET password = ? WHERE id = ?';
             $updateStmt = $conn->prepare($updateQuery);
             $updateStmt->bind_param('si', $newHashedPassword, $user_id);
 
@@ -75,40 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 </head>
 <body>
 <div class="container-xl px-4 mt-4">
-<nav class="navbar navbar-expand-lg navbar-light fixed-top">
-        <div class="container">
-            <a class="navbar-brand" href="#"><img src="../assets/images/logo.png" alt="Logo" style="width: 100px; height: auto;"></a>
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <nav>
-                <div id="marker"></div>
-                <a href="../index.php#home" class="active">Home</a>
-                <a href="../index.php#services">Services</a>
-                <a href="../index.php#about">About</a>
-                <a href="../index.php#contact">Contact</a>
-                <a href="../index.php#feedback">Feedback</a>
-
-                </nav>
-                <?php if (!isset($_SESSION['signin'])): ?>
-                    <div class="nav-item">
-                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='signin.php'">Log In</button>
-                    </div>
-                    <div class="nav-item">
-                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='signup.php'">Sign Up</button>
-                    </div>
-                <?php else: ?>
-                    <div class="nav-item">
-                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='../logout.php'">Log Out</button>
-                    </div>
-                    <div class="nav-item">
-                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='view_profile.php'">Profile</button>
-                    </div>
-                <?php endif; ?>
-            </div>
-        </div>
-    </nav>  
+<?php include 'navbar.php'; ?>
     <br>
     <hr class="mt-0 mb-4">
     <div class="row">

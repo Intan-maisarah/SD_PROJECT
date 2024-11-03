@@ -7,13 +7,11 @@ include 'connection.php';
 $order_id = $_GET['order_id'] ?? '';
 $toyyibpayApiKey = 'dn9jqdur-tzqt-pztk-6qgm-9xa4jg7m57qx';
 
-// Check if the order ID is provided and valid
 if (empty($order_id)) {
     echo 'Invalid order ID. Please try again.';
     exit;
 }
 
-// Fetch BillCode from the database associated with the order_id
 $stmt = $conn->prepare('SELECT BillCode, total_order_price FROM orders WHERE order_id = ?');
 $stmt->bind_param('s', $order_id);
 $stmt->execute();
@@ -24,7 +22,6 @@ if (!$stmt->fetch() || empty($billCode)) {
 }
 $stmt->close();
 
-// ToyyibPay API to confirm payment status
 $toyyibpayUrl = 'https://dev.toyyibpay.com/index.php/api/getBillTransactions';
 $data = [
     'userSecretKey' => $toyyibpayApiKey,
@@ -44,10 +41,8 @@ curl_close($ch);
 
 $responseArray = json_decode($response, true);
 
-// Check payment status
 if (isset($responseArray[0]['billpaymentStatus'])) {
     if ($responseArray[0]['billpaymentStatus'] === '1') {
-        // Payment confirmed, update the order status in the database
         $updateStatusStmt = $conn->prepare('UPDATE orders SET payment_status = ? WHERE order_id = ?');
         $payment_status = 'PAID';
         $updateStatusStmt->bind_param('ss', $payment_status, $order_id);
@@ -59,7 +54,6 @@ if (isset($responseArray[0]['billpaymentStatus'])) {
             exit;
         }
     } else {
-        // Payment failed, redirect to payment failed page
         header('Location: payment-fail.php?order_id='.urlencode($order_id));
         exit;
     }
@@ -68,7 +62,6 @@ if (isset($responseArray[0]['billpaymentStatus'])) {
     exit;
 }
 
-// Display success page
 ?>
 <!DOCTYPE html>
 <html lang="en">

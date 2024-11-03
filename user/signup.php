@@ -5,9 +5,9 @@ ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-include "../connection.php";
-use PHPMailer\PHPMailer\PHPMailer;
+include '../connection.php';
 use PHPMailer\PHPMailer\Exception;
+use PHPMailer\PHPMailer\PHPMailer;
 
 require '../vendor/autoload.php';
 
@@ -22,15 +22,12 @@ if (isset($_POST['register'])) {
 
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error_message = 'Invalid email format.';
-    } 
-    elseif ($password !== $confirm_password) {
+    } elseif ($password !== $confirm_password) {
         $error_message = 'Passwords do not match. Please try again.';
-    } 
-    elseif (strlen($password) < 8) {
+    } elseif (strlen($password) < 8) {
         $error_message = 'Password must be at least 8 characters long.';
-    } 
-    else {
-        $check = "SELECT * FROM users WHERE email=?";
+    } else {
+        $check = 'SELECT * FROM users WHERE email=?';
         $stmt = $conn->prepare($check);
         $stmt->bind_param('s', $email);
         $stmt->execute();
@@ -42,46 +39,45 @@ if (isset($_POST['register'])) {
             $hashed_password = password_hash($password, PASSWORD_DEFAULT);
 
             $verification_token = bin2hex(random_bytes(16));
-            $sql = "INSERT INTO users(username, email, password, verification_token, is_verified) VALUES(?, ?, ?, ?, 0)";
+            $sql = 'INSERT INTO users(username, email, password, verification_token, is_verified) VALUES(?, ?, ?, ?, 0)';
             $stmt = $conn->prepare($sql);
             $stmt->bind_param('ssss', $username, $email, $hashed_password, $verification_token);
             $result = $stmt->execute();
 
             if ($result) {
                 $mail = new PHPMailer(true);
-            
+
                 try {
                     $mail->isSMTP();
                     $mail->Host = 'smtp.gmail.com';
                     $mail->SMTPAuth = true;
-                    $mail->Username = 'dayangziha@gmail.com'; 
-                    $mail->Password = 'fknw ujbi ecku tqmn'; 
+                    $mail->Username = 'dayangziha@gmail.com';
+                    $mail->Password = 'fknw ujbi ecku tqmn';
                     $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                     $mail->Port = 587;
-            
+
                     // Recipients
                     $mail->setFrom('no-reply@infinityprinting.com', 'Infinity Printing');
                     $mail->addAddress($email);
-            
+
                     // Content
                     $mail->isHTML(true);
                     $mail->Subject = 'Verify Your Email Address';
-                    $mail->Body    = '<p>Hi ' . htmlspecialchars($username) . ',</p>
+                    $mail->Body = '<p>Hi '.htmlspecialchars($username).',</p>
                                       <p>Thank you for registering. Please click the link below to verify your email address:</p>
-                                      <p><a href="http://localhost/SD_PROJECT/user/verify_email.php?token=' . $verification_token . '">Verify Email</a></p>';
-            
+                                      <p><a href="https://palegreen-buffalo-300863.hostingersite.com/user/verify_email.php?token='.$verification_token.'">Verify Email</a></p>';
+
                     $mail->send();
-            
+
                     $_SESSION['email_sent'] = true;
-                    
-                    header("Location: signin.php");
-                    exit();
+
+                    header('Location: signin.php');
+                    exit;
                 } catch (Exception $e) {
-                    error_log('Message could not be sent. Mailer Error: ' . $mail->ErrorInfo);
+                    error_log('Message could not be sent. Mailer Error: '.$mail->ErrorInfo);
                     $error_message = 'Message could not be sent. Please try again later.';
                 }
             }
-            
         }
     }
 }
@@ -111,11 +107,11 @@ if (isset($_POST['register'])) {
                             <div class="row justify-content-center">
                                 <div class="col-md-10 col-lg-6 col-xl-5 order-2 order-lg-1">
                                     <p class="text-center h1 fw-bold mb-5 mx-1 mx-md-4 mt-4">Sign up</p>
-                                    <?php if (!empty($error_message)): ?>
+                                    <?php if (!empty($error_message)) { ?>
                                     <div class="alert alert-danger" role="alert">
                                         <?php echo htmlspecialchars($error_message); ?>
                                     </div>
-                                    <?php endif; ?>
+                                    <?php } ?>
                                     <form id="signupForm" action="signup.php" method="POST" class="mx-1 mx-md-4">
                                         <div class="d-flex flex-row align-items-center mb-4">
                                             <i class="fas fa-user fa-lg me-3 fa-fw"></i>
@@ -222,10 +218,10 @@ if (isset($_POST['register'])) {
     <script>
     document.addEventListener('DOMContentLoaded', function() {
         document.addEventListener('DOMContentLoaded', function() {
-    <?php if (isset($_SESSION['email_sent']) && $_SESSION['email_sent']): ?>
+    <?php if (isset($_SESSION['email_sent']) && $_SESSION['email_sent']) { ?>
     alert('Verification link has been sent to your email. Please check your inbox.');
-    <?php unset($_SESSION['email_sent']);  ?>
-    <?php endif; ?>
+    <?php unset($_SESSION['email_sent']); ?>
+    <?php } ?>
 });
 
         document.getElementById('signupForm').addEventListener('submit', function(event) {
