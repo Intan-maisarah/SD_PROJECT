@@ -193,12 +193,6 @@ $conn->close();
           </div>
         </div>
       </div>
-      <!-- ============================================================== -->
-      <!-- End Bread crumb and right sidebar toggle -->
-      <!-- ============================================================== -->
-      <!-- ============================================================== -->
-      <!-- Container fluid  -->
-      <!-- ============================================================== -->
       <div class="container-fluid">
         <!-- ============================================================== -->
         <!-- Sales chart -->
@@ -210,9 +204,9 @@ $conn->close();
                 <div class="d-md-flex align-items-center">
                   <div>
                     <h4 class="card-title">Sales Summary</h4>
-                    <h5 class="card-subtitle">Overview of Latest Month</h5>
+                <!--    <h5 class="card-subtitle">Overview of Latest Month</h5> -->
                   </div>
-                  <div class="ms-auto d-flex no-block align-items-center">
+                <!--  <div class="ms-auto d-flex no-block align-items-center">
                     <ul class="list-inline font-12 dl m-r-15 m-b-0">
                       <li class="list-inline-item text-info">
                         <i class="mdi mdi-checkbox-blank-circle"></i> Iphone
@@ -221,19 +215,19 @@ $conn->close();
                         <i class="mdi mdi-checkbox-blank-circle"></i> Ipad
                       </li>
                     </ul>
-                  </div>
+                  </div> -->
                 </div>
-                <div class="row">
-                  <!-- column -->
+                 <!--<div class="row">
+                  // column 
                   <div class="col-lg-12">
                     <div class="campaign ct-charts"></div>
                   </div>
-                  <!-- column -->
-                </div>
+                  // column 
+                </div> -->
               </div>
             </div>
           </div>
-          <div class="col-md-4">
+        <!--  <div class="col-md-4">
             <div class="card">
               <div class="card-body">
                 <h4 class="card-title">Feeds</h4>
@@ -268,319 +262,16 @@ $conn->close();
                 </div>
               </div>
             </div>
-          </div>
+          </div> -->
         </div>
         <!-- ============================================================== -->
         <!-- Sales chart -->
         <!-- ============================================================== -->
         <!-- ============================================================== -->
-        <!-- Table -->
-        <!-- ============================================================== -->
-        <div class="row">
-          <!-- column -->
-          <div class="col-12">
-            <div class="card">
-              <div class="card-body">
-                <!-- title -->
-                <div class="d-md-flex">
-                  <div>
-                    <h4 class="card-title">Top Selling Products</h4>
-                    <h5 class="card-subtitle">
-                      Overview of Top Selling Items
-                    </h5>
-                  </div>
-                  <div class="ms-auto">
-                    <div class="dl">
-                      <select class="form-select shadow-none">
-                        <option value="0" selected>Monthly</option>
-                        <option value="1">Daily</option>
-                        <option value="2">Weekly</option>
-                        <option value="3">Yearly</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-                <!-- title -->
-              </div>
-              <div class="table-responsive">
-                <table class="table v-middle">
-                  <thead>
-                    <tr class="bg-light">
-                      <th class="border-top-0">Products</th>
-                      <th class="border-top-0">License</th>
-                      <th class="border-top-0">Support Agent</th>
-                      <th class="border-top-0">Technology</th>
-                      <th class="border-top-0">Tickets</th>
-                      <th class="border-top-0">Sales</th>
-                      <th class="border-top-0">Earnings</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>
-                        <div class="d-flex align-items-center">
-                          <div class="m-r-10">
-                            <a class="
-                                  btn btn-circle
-                                  d-flex
-                                  btn-info
-                                  text-white
-                                ">EA</a>
-                          </div>
-                          <div class="">
-                            <h4 class="m-b-0 font-16">Elite Admin</h4>
-                          </div>
-                        </div>
-                      </td>
-                      <td>Single Use</td>
-                      <td>John Doe</td>
-                      <td>
-                        <label class="label label-danger">Angular</label>
-                      </td>
-                      <td>46</td>
-                      <td>356</td>
-                      <td>
-                        <h5 class="m-b-0">$2850.06</h5>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex align-items-center">
-                          <div class="m-r-10">
-                            <a class="
-                                  btn btn-circle
-                                  d-flex
-                                  btn-orange
-                                  text-white
-                                ">MA</a>
-                          </div>
-                          <div class="">
-                            <h4 class="m-b-0 font-16">Monster Admin</h4>
-                          </div>
-                        </div>
-                      </td>
-                      <td>Single Use</td>
-                      <td>Venessa Fern</td>
-                      <td>
-                        <label class="label label-info">Vue Js</label>
-                      </td>
-                      <td>46</td>
-                      <td>356</td>
-                      <td>
-                        <h5 class="m-b-0">$2850.06</h5>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex align-items-center">
-                          <div class="m-r-10">
-                            <a class="
-                                  btn btn-circle
-                                  d-flex
-                                  btn-success
-                                  text-white
-                                ">MP</a>
-                          </div>
-                          <div class="">
-                            <h4 class="m-b-0 font-16">Material Pro Admin</h4>
-                          </div>
-                        </div>
-                      </td>
-                      <td>Single Use</td>
-                      <td>John Doe</td>
-                      <td>
-                        <label class="label label-success">Bootstrap</label>
-                      </td>
-                      <td>46</td>
-                      <td>356</td>
-                      <td>
-                        <h5 class="m-b-0">$2850.06</h5>
-                      </td>
-                    </tr>
-                    <tr>
-                      <td>
-                        <div class="d-flex align-items-center">
-                          <div class="m-r-10">
-                            <a class="
-                                  btn btn-circle
-                                  d-flex
-                                  btn-purple
-                                  text-white
-                                ">AA</a>
-                          </div>
-                          <div class="">
-                            <h4 class="m-b-0 font-16">Ample Admin</h4>
-                          </div>
-                        </div>
-                      </td>
-                      <td>Single Use</td>
-                      <td>John Doe</td>
-                      <td>
-                        <label class="label label-purple">React</label>
-                      </td>
-                      <td>46</td>
-                      <td>356</td>
-                      <td>
-                        <h5 class="m-b-0">$2850.06</h5>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- ============================================================== -->
-        <!-- Table -->
+        
         <!-- ============================================================== -->
         <!-- ============================================================== -->
-        <!-- Recent comment and chats -->
-        <!-- ============================================================== -->
-        <div class="row">
-          <!-- column -->
-          <div class="col-lg-6">
-            <div class="card">
-              <div class="card-body">
-                <h4 class="card-title">Recent Comments</h4>
-              </div>
-              <div class="comment-widgets scrollable">
-                <!-- Comment Row -->
-                <div class="d-flex flex-row comment-row m-t-0">
-                  <div class="p-2">
-                    <img src="../assets/images/users/1.jpg" alt="user" width="50" class="rounded-circle" />
-                  </div>
-                  <div class="comment-text w-100">
-                    <h6 class="font-medium">James Anderson</h6>
-                    <span class="m-b-15 d-block">Lorem Ipsum is simply dummy text of the printing and
-                      type setting industry.
-                    </span>
-                    <div class="comment-footer">
-                      <span class="text-muted float-end">April 14, 2024</span>
-                      <span class="label label-rounded label-primary">Pending</span>
-                      <span class="action-icons">
-                        <a href="javascript:void(0)"><i class="mdi mdi-pencil-box-outline fs-4"></i></a>
-                        <a href="javascript:void(0)"><i class="mdi mdi-check fs-4"></i></a>
-                        <a href="javascript:void(0)"><i class="mdi mdi-heart-outline fs-4"></i></a>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <!-- Comment Row -->
-                <div class="d-flex flex-row comment-row">
-                  <div class="p-2">
-                    <img src="../assets/images/users/4.jpg" alt="user" width="50" class="rounded-circle" />
-                  </div>
-                  <div class="comment-text active w-100">
-                    <h6 class="font-medium">Michael Jorden</h6>
-                    <span class="m-b-15 d-block">Lorem Ipsum is simply dummy text of the printing and
-                      type setting industry.
-                    </span>
-                    <div class="comment-footer">
-                      <span class="text-muted float-end">April 14, 2024</span>
-                      <span class="label label-success label-rounded">Approved</span>
-                      <span class="action-icons active">
-                        <a href="javascript:void(0)"><i class="mdi mdi-pencil-box-outline fs-4"></i></a>
-                        <a href="javascript:void(0)"><i class="mdi mdi-window-close fs-4"></i></a>
-                        <a href="javascript:void(0)"><i class="mdi mdi-heart-outline fs-4 text-danger"></i></a>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <!-- Comment Row -->
-                <div class="d-flex flex-row comment-row">
-                  <div class="p-2">
-                    <img src="../assets/images/users/5.jpg" alt="user" width="50" class="rounded-circle" />
-                  </div>
-                  <div class="comment-text w-100">
-                    <h6 class="font-medium">Johnathan Doeting</h6>
-                    <span class="m-b-15 d-block">Lorem Ipsum is simply dummy text of the printing and
-                      type setting industry.
-                    </span>
-                    <div class="comment-footer">
-                      <span class="text-muted float-end">April 14, 2024</span>
-                      <span class="label label-rounded label-danger">Rejected</span>
-                      <span class="action-icons">
-                        <a href="javascript:void(0)"><i class="mdi mdi-pencil-box-outline fs-4"></i></a>
-                        <a href="javascript:void(0)"><i class="mdi mdi-check fs-4"></i></a>
-                        <a href="javascript:void(0)"><i class="mdi mdi-heart-outline fs-4"></i></a>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- column -->
-          <div class="col-lg-6">
-            <div class="card">
-              <div class="card-body">
-                <h4 class="card-title">Temp Guide</h4>
-                <div class="d-flex align-items-center flex-row m-t-30">
-                  <div class="display-5 text-info">
-                    <i class="mdi mdi-weather-lightning-rainy"></i>
-                    <span>73<sup>°</sup></span>
-                  </div>
-                  <div class="m-l-10">
-                    <h3 class="m-b-0">Saturday</h3>
-                    <small>Ahmedabad, India</small>
-                  </div>
-                </div>
-                <table class="table no-border mini-table m-t-20">
-                  <tbody>
-                    <tr>
-                      <td class="text-muted">Wind</td>
-                      <td class="font-medium">ESE 17 mph</td>
-                    </tr>
-                    <tr>
-                      <td class="text-muted">Humidity</td>
-                      <td class="font-medium">83%</td>
-                    </tr>
-                    <tr>
-                      <td class="text-muted">Pressure</td>
-                      <td class="font-medium">28.56 in</td>
-                    </tr>
-                    <tr>
-                      <td class="text-muted">Cloud Cover</td>
-                      <td class="font-medium">78%</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <ul class="row list-style-none text-center m-t-30">
-                  <li class="col-3">
-                    <h4 class="text-info">
-                      <i class="mdi mdi-weather-sunny fs-3"></i>
-                    </h4>
-                    <span class="d-block text-muted">09:30</span>
-                    <h3 class="m-t-5">70<sup>°</sup></h3>
-                  </li>
-                  <li class="col-3">
-                    <h4 class="text-info">
-                      <i class="mdi mdi-weather-partlycloudy fs-3"></i>
-                    </h4>
-                    <span class="d-block text-muted">11:30</span>
-                    <h3 class="m-t-5">72<sup>°</sup></h3>
-                  </li>
-                  <li class="col-3">
-                    <h4 class="text-info">
-                      <i class="mdi mdi-weather-pouring fs-3"></i>
-                    </h4>
-                    <span class="d-block text-muted">13:30</span>
-                    <h3 class="m-t-5">75<sup>°</sup></h3>
-                  </li>
-                  <li class="col-3">
-                    <h4 class="text-info">
-                      <i class="mdi mdi-weather-hail fs-3"></i>
-                    </h4>
-                    <span class="d-block text-muted">15:30</span>
-                    <h3 class="m-t-5">76<sup>°</sup></h3>
-                  </li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- ============================================================== -->
-        <!-- Recent comment and chats -->
+        
         <!-- ============================================================== -->
       </div>
       <!-- ============================================================== -->
@@ -589,6 +280,260 @@ $conn->close();
       <!-- ============================================================== -->
       <!-- footer -->
       <!-- ============================================================== -->
+
+      <!-- new report data -->
+
+      <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Sales Report</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="navbar-header">
+        <h4 style="padding-left: 100px;padding-top: 20px;">Sales Report</h4>
+    </div>
+</nav>
+
+<div class="container-fluid">
+    <div class="col-sm-8">
+        <div class="row">
+            <div class="col-xs-12">
+                <h3 style="padding-left: 100px;">Sales Report between Two Dates</h3>
+                <hr>
+                <form name="bwdatesdata" action="" method="post">
+                    <table width="100%" height="117" border="0">
+                        <tr>
+                            <th width="27%" height="63" scope="row">From Date :</th>
+                            <td width="73%">
+                                <input type="date" name="fdate" class="form-control" id="fdate" required>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th width="27%" height="63" scope="row">To Date :</th>
+                            <td width="73%">
+                                <input type="date" name="tdate" class="form-control" id="tdate" required>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th width="27%" height="63" scope="row">Request Type :</th>
+                            <td width="73%">
+                                <input type="radio" name="requesttype" value="mtwise" checked="true"> Month wise
+                                <input type="radio" name="requesttype" value="yrwise"> Year wise
+                            </td>
+                        </tr>
+                        <tr>
+                            <th width="27%" height="63" scope="row"></th>
+                            <td width="73%">
+                                <button class="btn-primary btn" type="submit" name="submit">Submit</button>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-xs-12">
+                <?php
+                if (isset($_POST['submit'])) {
+                    $fdate = $_POST['fdate'];
+                    $tdate = $_POST['tdate'];
+                    $rtype = $_POST['requesttype'];
+
+                    if ($rtype == 'mtwise') {
+                        $month1 = strtotime($fdate);
+                        $month2 = strtotime($tdate);
+                        $m1 = date("F", $month1);
+                        $m2 = date("F", $month2);
+                        $y1 = date("Y", $month1);
+                        $y2 = date("Y", $month2);
+                        ?>
+                        <h4 class="header-title m-t-0 m-b-30">Sales Report Month Wise</h4>
+                        <h4 align="center" style="color:blue">Sales Report from <?php echo $m1 . "-" . $y1; ?> to <?php echo $m2 . "-" . $y2; ?></h4>
+                        <hr>
+                        <div class="row">
+                            <table class="table table-bordered" width="100%" border="0">
+                                <thead>
+                                <tr>
+                                    <th>S.NO</th>
+                                    <th>Month / Year</th>
+                                    <th>Sales</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php
+                                $query = "
+                                    SELECT 
+                                        MONTH(pickup_appointment) AS month,
+                                        YEAR(pickup_appointment) AS year,
+                                        SUM(total_order_price) AS total_order_price
+                                    FROM 
+                                        orders
+                                    WHERE 
+                                        DATE(pickup_appointment) BETWEEN '$fdate' AND '$tdate' 
+                                    GROUP BY 
+                                        month, year
+                                    UNION ALL
+                                    SELECT 
+                                        MONTH(delivery_time) AS month,
+                                        YEAR(delivery_time) AS year,
+                                        SUM(total_order_price) AS total_order_price
+                                    FROM 
+                                        orders
+                                    WHERE 
+                                        DATE(delivery_time) BETWEEN '$fdate' AND '$tdate' 
+                                    GROUP BY 
+                                        month, year
+                                ";
+
+                                $ret = mysqli_query($conn, $query);
+                                if (!$ret) {
+                                    die("SQL Query Failed: " . mysqli_error($con)); // Display the SQL error message
+                                }
+
+                                $num = mysqli_num_rows($ret);
+                                if ($num > 0) {
+                                    $cnt = 1;
+                                    $ftotal = 0; // Initialize total for final sum
+                                    $salesData = [];
+                                    while ($row = mysqli_fetch_array($ret)) {
+                                        $key = $row['month'] . "/" . $row['year'];
+                                        if (!isset($salesData[$key])) {
+                                            $salesData[$key] = 0;
+                                        }
+                                        $salesData[$key] += $row['total_order_price'];
+                                    }
+
+                                    foreach ($salesData as $key => $total) {
+                                        ?>
+                                        <tr>
+                                            <td><?php echo $cnt; ?></td>
+                                            <td><?php echo $key; ?></td>
+                                            <td><?php echo $total; ?></td>
+                                        </tr>
+                                        <?php
+                                        $ftotal += $total;
+                                        $cnt++;
+                                    }
+                                    ?>
+                                    <tr>
+                                        <td colspan="2" align="center">Total</td>
+                                        <td><?php echo $ftotal; ?></td>
+                                    </tr>
+                                    <?php
+                                } else {
+                                    echo "<tr><td colspan='3' align='center'>No records found.</td></tr>";
+                                }
+                                ?>
+                                </tbody>
+                            </table>
+                        </div>
+                        <?php
+                    } else {
+                        $year1 = strtotime($fdate);
+                        $year2 = strtotime($tdate);
+                        $y1 = date("Y", $year1);
+                        $y2 = date("Y", $year2);
+                        ?>
+                        <h4 class="header-title m-t-0 m-b-30">Sales Report Year Wise</h4>
+                        <h4 align="center" style="color:blue">Sales Report from <?php echo $y1; ?> to <?php echo $y2; ?></h4>
+                        <hr>
+                        <div class="row">
+                            <table class="table table-bordered" width="100%" border="0">
+                                <thead>
+                                <tr>
+                                    <th>S.NO</th>
+                                    <th>Year</th>
+                                    <th>Sales</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <?php
+                                $query = "
+                                    SELECT 
+                                        YEAR(pickup_appointment) AS year,
+                                        SUM(total_order_price) AS total_order_price
+                                    FROM 
+                                        orders
+                                    WHERE 
+                                        DATE(pickup_appointment) BETWEEN '$fdate' AND '$tdate' 
+                                    GROUP BY 
+                                        year
+                                    UNION ALL
+                                    SELECT 
+                                        YEAR(delivery_time) AS year,
+                                        SUM(total_order_price) AS total_order_price
+                                    FROM 
+                                        orders
+                                    WHERE 
+                                        DATE(delivery_time) BETWEEN '$fdate' AND '$tdate' 
+                                    GROUP BY 
+                                        year
+                                ";
+
+                                $ret = mysqli_query($conn, $query);
+                                if (!$ret) {
+                                    die("SQL Query Failed: " . mysqli_error($con)); // Display the SQL error message
+                                }
+
+                                $num = mysqli_num_rows($ret);
+                                if ($num > 0) {
+                                    $cnt = 1;
+                                    $ftotal = 0; // Initialize total for final sum
+                                    $salesData = [];
+                                    while ($row = mysqli_fetch_array($ret)) {
+                                        $year = $row['year'];
+                                        if (!isset($salesData[$year])) {
+                                            $salesData[$year] = 0;
+                                        }
+                                        $salesData[$year] += $row['total_order_price'];
+                                    }
+
+                                    foreach ($salesData as $year => $total) {
+                                        ?>
+                                        <tr>
+                                            <td><?php echo $cnt; ?></td>
+                                            <td><?php echo $year; ?></td>
+                                            <td><?php echo $total; ?></td>
+                                        </tr>
+                                        <?php
+                                        $ftotal += $total;
+                                        $cnt++;
+                                    }
+                                    ?>
+                                    <tr>
+                                        <td colspan="2" align="center">Total</td>
+                                        <td><?php echo $ftotal; ?></td>
+                                    </tr>
+                                    <?php
+                                } else {
+                                    echo "<tr><td colspan='3' align='center'>No records found.</td></tr>";
+                                }
+                                ?>
+                                </tbody>
+                            </table>
+                        </div>
+                        <?php
+                    }
+                }
+                ?>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- script references -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+</body>
+</html>
+
+
+
       <footer class="footer text-center">
         All Rights Reserved by Xtreme Admin. Designed and Developed by
         <a href="https://www.wrappixel.com">WrapPixel</a>.
