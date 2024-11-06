@@ -251,6 +251,123 @@ function createToyyibPayBill($order_id, $email, $total_order_price, $name, $cont
     <meta charset="UTF-8">
     <title>Order Summary</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <style>
+        /* Main container styling */
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #94bdff;
+            color: #333;
+            padding-top: 20px;
+        }
+        .container {
+            max-width: 800px;
+            background-color: #f9f9f9;
+            padding: 30px;
+            margin-top: 50px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Header styling */
+        h2 {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        /* Order ID and Delivery Method styling */
+        p strong {
+            font-size: 1.1em;
+            color: #444;
+        }
+
+        h4 {
+            color: #555;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        /* Table styling */
+        .table {
+            margin-top: 20px;
+            background-color: #fff;
+        }
+
+        .table th {
+            background-color: #94bdff;
+            color: #fff;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .table td {
+            text-align: center;
+            font-size: 0.95em;
+            color: #555;
+        }
+
+        /* Total Price styling */
+        h4.total-price {
+            text-align: right;
+            font-size: 1.5em;
+            color: #28a745;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        /* Payment and Delete buttons */
+        .btn-primary {
+            background-color: #7be07b;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #29e329;
+        }
+
+        .btn-danger {
+            background-color: #e07b7b;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-top: 10px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            background-color: #c82333;
+        }
+
+        /* Payment method dropdown */
+        .form-group label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-control {
+            border-radius: 5px;
+            padding: 10px;
+        }
+
+        /* Footer message styling */
+        .footer-message {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
 </head>
 <body>
 <div class="container mt-5">
