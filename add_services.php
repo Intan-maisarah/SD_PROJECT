@@ -382,6 +382,53 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 });
 
+const BUSINESS_HOURS_START = 9; 
+const BUSINESS_HOURS_END = 18; 
+
+function validateBusinessHours(selectedDateTime) {
+    const selectedDate = new Date(selectedDateTime);
+    const dayOfWeek = selectedDate.getUTCDay();
+    const hour = selectedDate.getUTCHours();
+    
+    if (dayOfWeek >= 1 && dayOfWeek <= 5) {
+        if (hour >= BUSINESS_HOURS_START && hour < BUSINESS_HOURS_END) {
+            return true;
+        } else {
+            alert("Please select a time within business hours (Mon-Fri, 9 AM - 6 PM).");
+            return false;
+        }
+    } else {
+        alert("Pickup/Delivery can only be scheduled from Monday to Friday.");
+        return false;
+    }
+}
+
+function validatePickupTime() {
+    const pickupTime = document.getElementById('pickup_appointment').value;
+    if (pickupTime && !validateBusinessHours(pickupTime)) {
+        return false; 
+    }
+    return true;
+}
+
+function validateDeliveryTime() {
+    const deliveryTime = document.getElementById('delivery_time').value;
+    if (deliveryTime && !validateBusinessHours(deliveryTime)) {
+        return false; 
+    }
+    return true;
+}
+
+document.querySelector("form").addEventListener("submit", function(event) {
+    const isPickupValid = validatePickupTime();
+    const isDeliveryValid = validateDeliveryTime();
+
+    if (!isPickupValid || !isDeliveryValid) {
+        event.preventDefault(); 
+    }
+});
+
+
 
     </script>
 </body>

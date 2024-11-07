@@ -38,7 +38,7 @@ ini_set('display_errors', 1);
 <body>
 <div class="container mt-5">
     <h2>Payment Failed</h2>
-    <p>We're sorry, but your payment could not be processed. Please try again later or contact support.</p>
+    <p>We're sorry, but your payment could not be processed. Please try again later or <a href="contact.php">contact us</a></p>
     <p><strong>Order ID:</strong> <?php echo htmlspecialchars($_GET['order_id']); ?></p>
     
     <!-- Add GIF here -->

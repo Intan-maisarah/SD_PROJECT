@@ -138,7 +138,6 @@ if (isset($responseArray[0]['billpaymentStatus'])) {
         <p>Thank you for your payment!</p>
         <p><strong>Order ID:</strong> <?php echo htmlspecialchars($order_id); ?></p>
         <p><strong>Total Paid:</strong> RM <?php echo htmlspecialchars(number_format($total_order_price, 2)); ?></p>
-        <p>Your order status has been updated to <strong>Paid</strong>. A confirmation email will be sent to you shortly.</p>
         <a href="index.php" class="btn btn-primary">Return to Home</a>
     </div>
 </div>

@@ -99,7 +99,7 @@ nav #marker {
     }
 
     .nav-item {
-        margin-left: -25px;
+        margin-left: -10px;
         margin-bottom: 5px; 
         
     }
@@ -1033,6 +1033,22 @@ section {
     .icon:nth-child(31) { bottom: 18%; left: 35%; }  
     .icon:nth-child(32) { top: 60%; right: 20%; }   
 
+    .extra-content h1 {
+      font-size: 1.5rem;
+    }
+
+    .extra-content h3 {
+      font-size: 1.3rem;
+    }
+
+    .goal-card {
+      max-width: 500px;
+    }
+
+    .goal-card img {
+      max-width: 300px;
+    }
+
    
     /*service*/
 
@@ -1055,13 +1071,13 @@ section {
     }
     
     /*about*/
-    .about-content {
-        display: flex;
-        flex-wrap: wrap;
-        flex-direction: column;
-        justify-content: space-between;
-        align-items: center;
-      }
+
+    #about{
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
 
       .text-content {
         flex: 1;
@@ -1073,6 +1089,34 @@ section {
         max-width: 50%;
         height: auto;
         
+      }
+      .about-images {
+       max-width: 500px;
+align-items: center;      }
+
+      .about-images img{
+        width: 200px;
+      }
+
+      .about-text h2{
+        width: 100%;
+      }
+
+      .about-para p{
+        font-size: 1rem;
+      }
+
+      .swirl-icon {
+        right: 20%;
+        top: 12%;
+      }
+
+      .contact-form{
+        margin-top: 0%;
+      }
+
+      .contact-container{
+        gap: 2px;
       }
     
     }

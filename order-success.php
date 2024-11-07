@@ -1,17 +1,14 @@
 <?php
 session_start();
-include 'connection.php'; // Include your database connection
+include 'connection.php';
 
-// Assuming order_id is passed via GET request
 $order_id = $_GET['order_id'] ?? null;
 
 if (!$order_id) {
-    // Redirect to homepage or show an error if no order ID is provided
     header('Location: index.php');
     exit;
 }
 
-// Fetch order details from the database
 $stmt = $conn->prepare('SELECT * FROM orders WHERE order_id = ?');
 $stmt->bind_param('s', $order_id);
 $stmt->execute();
@@ -20,7 +17,6 @@ $result = $stmt->get_result();
 if ($result->num_rows > 0) {
     $order = $result->fetch_assoc();
 } else {
-    // Order not found, redirect or show error
     echo 'Order not found.';
     exit;
 }
@@ -44,7 +40,6 @@ $stmt->close();
         <ul>
             <li><strong>Order ID:</strong> <?php echo htmlspecialchars($order['order_id']); ?></li>
             <li><strong>Total Price:</strong> RM <?php echo number_format($order['total_order_price'], 2); ?></li>
-            <li><strong>Payment Method:</strong> <?php echo htmlspecialchars($order['payment_method']); ?></li>
             <li><strong>Status:</strong> <?php echo htmlspecialchars($order['status']); ?></li>
         </ul>
 

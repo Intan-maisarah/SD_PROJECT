@@ -1,13 +1,24 @@
 <?php
 session_start();
-include "../connection.php"; 
-include "user.php";
+include '../connection.php';
+include 'user.php';
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+if (isset($_SESSION['email_sent']) && $_SESSION['email_sent']) {
+    $popup_message = 'A verification link has been sent to your email. Please check your inbox.';
+    unset($_SESSION['email_sent']);
+} else {
+    $popup_message = '';
+}
 
 if (isset($_POST['signin'])) {
     $username = mysqli_real_escape_string($conn, $_POST['username']);
     $password = $_POST['password'];
 
-    $stmt = $conn->prepare("SELECT * FROM users WHERE username = ?");
+    $stmt = $conn->prepare('SELECT * FROM users WHERE username = ?');
     $stmt->bind_param('s', $username);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -23,16 +34,15 @@ if (isset($_POST['signin'])) {
 
             $userType = getUserType($conn, $username);
             if ($userType == 'ADMIN') {
-                header("Location: ../Admin_Dashboard/admin/admin_page.php");
-                exit();
-            } else if ($userType == 'STAFF') {
-                header("Location: ../Admin_Dashboard/staff/staff_page.php"); 
-                exit();
+                header('Location: ../Admin_Dashboard/admin/admin_page.php');
+                exit;
+            } elseif ($userType == 'STAFF') {
+                header('Location: ../Admin_Dashboard/staff/staff_page.php');
+                exit;
             } else {
-                header("Location: ../index.php");
-                exit();
+                header('Location: ../index.php');
+                exit;
             }
-
         } else {
             $_SESSION['error'] = 'Incorrect Username or Password';
         }
@@ -40,8 +50,8 @@ if (isset($_POST['signin'])) {
         $_SESSION['error'] = 'Incorrect Username or Password';
     }
 
-    header("Location: signin.php");
-    exit();
+    header('Location: signin.php');
+    exit;
 }
 ?>
 
@@ -120,14 +130,14 @@ if (isset($_POST['signin'])) {
                     </form>
 
                     <!-- Display error message -->
-                    <?php if (isset($_SESSION['error'])): ?>
+                    <?php if (isset($_SESSION['error'])) { ?>
                         <div class="error-message mt-3">
                             <?php
                                 echo $_SESSION['error'];
-                                unset($_SESSION['error']);
-                            ?>
+                        unset($_SESSION['error']);
+                        ?>
                         </div>
-                    <?php endif; ?>
+                    <?php } ?>
                 </div>
             </div>
         </div>
@@ -170,29 +180,11 @@ if (isset($_POST['signin'])) {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
-$(document).ready(function() {
-    $('#forgotPasswordForm').on('submit', function(e) {
-        e.preventDefault();
-
-        var email = $('#email').val();
-
-        $('#modalMessage').html('');
-
-        $.ajax({
-            url: 'forgot_password.php', 
-            method: 'POST',
-            data: { email: email, submit_email: true },
-            success: function(response) {
-                $('#modalMessage').html('<div class="alert alert-success">A password reset link has been sent to your email.</div>');
-                
-                $('#email').val('');
-            },
-            error: function() {
-                $('#modalMessage').html('<div class="alert alert-danger">There was an error sending the reset link. Please try again later.</div>');
-            }
-        });
+    $(document).ready(function() {
+        <?php if (!empty($popup_message)) { ?>
+            alert('<?php echo $popup_message; ?>');  
+        <?php } ?>
     });
-});
-</script>
+    </script>
 </body>
 </html>

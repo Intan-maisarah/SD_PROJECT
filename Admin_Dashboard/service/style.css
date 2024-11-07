@@ -327,3 +327,86 @@ img {
 .currency-label {
     margin-right: 5px; 
 }
+
+
+/* Monthly Report Section */
+.monthly-sales-report {
+    background-color: #ffffff;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-top: 20px;  /* Add margin to separate from notifications */
+  }
+  
+  .monthly-sales-report h4 {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+  
+  .monthly-sales-report p {
+    color: #555;
+  }
+  
+  /* Make the notifications and report sections responsive */
+  @media (max-width: 768px) {
+    .monthly-sales-report {
+      margin-top: 10px; /* Reduce space between notifications and report */
+    }
+  }
+
+.notifications-panel {
+    background-color: #ffffff;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    margin-top: 20px;
+  }
+  
+  .notification-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .notification-table th,
+  .notification-table td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+  }
+  
+  .notification-table th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+  }
+  
+  .notification-item {
+    border-left: 4px solid #007bff; /* Default blue border */
+  }
+  
+  .notification-item:hover {
+    background-color: #f8f8f8;
+  }
+  
+  .notification-time {
+    font-size: 12px;
+    color: #6c757d;
+  }
+  
+  .notification-item i {
+    font-size: 18px;
+    margin-right: 10px;
+  }
+  
+  h4 {
+    font-size: 18px;
+    margin-bottom: 15px;
+    font-weight: bold;
+  }
+  
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .notifications-panel {
+      margin-bottom: 20px;
+    }
+  }
+      

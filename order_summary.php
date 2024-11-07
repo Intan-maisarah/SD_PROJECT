@@ -438,7 +438,7 @@ if (!empty($specification_data)) { ?>
             </div>
 
             <button type="submit" name="proceed_to_payment" class="btn btn-primary" onclick="return checkPaymentMethod();">Proceed to Payment</button>
-            <button type="submit" name="delete_order" class="btn btn-danger" onclick="return confirmDelete();">Delete Order</button>
+            <button type="submit" name="delete_order" class="btn btn-danger" onclick="return confirmDelete();">Cancel Order</button>
         </form>
     <?php } else { ?>
         <p>No specifications found for this order.</p>
@@ -448,7 +448,7 @@ if (!empty($specification_data)) { ?>
 
 <script>
 function confirmDelete() {
-    return confirm("Are you sure you want to delete this order?");
+    return confirm("Are you sure you want to cancel this order?");
 }
 
 function checkPaymentMethod() {
