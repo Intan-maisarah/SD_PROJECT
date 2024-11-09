@@ -19,28 +19,53 @@ $view = $_GET['view'] ?? 'view';
     <title>Order History</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
     <style>
-        body {
+      body {
             font-family: 'Arial', sans-serif;
-            background-color: #f4f4f9;
+            background-color: #d6a1ed;
+            color: #333;
             padding-top: 20px;
         }
         .container {
             max-width: 800px;
             margin: auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
+        h2 {
+            font-size: 1.8em;
+            color: #444;
         }
         .order-history-table {
             width: 100%;
             border-collapse: collapse;
+            margin-top: 20px;
         }
         .order-history-table th, .order-history-table td {
-            padding: 12px;
+            padding: 15px;
             text-align: left;
             border-bottom: 1px solid #ddd;
         }
         .order-history-table th {
-            background-color: #4CAF50;
+            background-color: #6c63ff;
             color: white;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #6c63ff 0%, #3b8dff 100%);
+            border: none;
+            color: white;
+            transition: transform 0.2s;
+            font-weight: bold;
+            padding: 8px 20px;
+        }
+        .btn-primary:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #3b8dff 0%, #6c63ff 100%);
         }
         .no-orders {
             color: #666;
@@ -48,27 +73,34 @@ $view = $_GET['view'] ?? 'view';
             font-size: 1.2em;
             margin-top: 20px;
         }
-        /* Style for the timeline */
+        /* Timeline styling */
         .timeline-container {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            max-width: 600px;
-            margin: 20px auto;
+            margin: 20px 0;
         }
         .timeline-step {
             text-align: center;
             flex: 1;
         }
         .payment-status-circle {
-            width: 25px;
-            height: 25px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             background-color: #ddd;
             margin: 0 auto 10px;
+            transition: background-color 0.3s ease;
         }
         .payment-status-circle.active {
-            background-color: #4CAF50;
+            background-color: #6c63ff;
+        }
+        .timeline-step.active .payment-status-circle {
+            background-color: #6c63ff;
+        }
+        .timeline-step.active div {
+            color: #6c63ff;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -110,7 +142,7 @@ $view = $_GET['view'] ?? 'view';
                                     <td><?php echo htmlspecialchars($row['order_id']); ?></td>
                                     <td>RM <?php echo htmlspecialchars(number_format($row['total_order_price'], 2)); ?></td>
                                     <td><?php echo htmlspecialchars($cleaned_file_name); ?></td>
-                                    <td><a href="order_history.php?view=viewstatus&order_id=<?php echo $row['order_id']; ?>" class="btn btn-primary btn-sm">View Status</a></td>
+                                    <td><a href="order_status.php?order_id=<?php echo $row['order_id']; ?>" class="btn btn-primary btn-sm">View Status</a></td>
                                 </tr>
                             <?php } ?>
                         </tbody>
