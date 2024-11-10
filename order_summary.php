@@ -307,8 +307,8 @@ function createToyyibPayBill($order_id, $email, $total_order_price, $name, $cont
         'billTo' => $name,
         'billEmail' => $email,
         'billPhone' => $contact,
-        'billReturnUrl' => 'https://localhost/SD_PROJECT/payment-success.php?order_id='.$order_id,
-        'billCallbackUrl' => 'https://localhost/SD_PROJECT/payment-callback.php',
+        'billReturnUrl' => 'https://palegreen-buffalo-300863.hostingersite.com/payment-success.php?order_id='.$order_id,
+        'billCallbackUrl' => 'https://palegreen-buffalo-300863.hostingersite.com/payment-callback.php',
         'billPriceSetting' => '1',
         'billPayorInfo' => '1',
     ];
