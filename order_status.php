@@ -55,79 +55,80 @@ if ($order_id) {
     <meta charset="UTF-8">
     <title>Order Status</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #d6a1ed;
-            color: #333;
-            padding-top: 20px;
-        }
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background: #fff;
-            border-radius: 8px;
-            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-        }
-        h2 {
-            font-size: 1.8em;
-            color: #444;
-        }
-        .timeline-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 20px 0;
-        }
-        .timeline-step {
-            text-align: center;
-            flex: 1;
-        }
-        .payment-status-circle {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background-color: #ddd;
-            margin: 0 auto 10px;
-            transition: background-color 0.3s ease;
-        }
-        .payment-status-circle.active {
-            background-color: #6c63ff;
-        }
-        .timeline-step.active div {
-            color: #6c63ff;
-            font-weight: bold;
-        }
-        .order-details-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-        .order-details-table th, .order-details-table td {
-            padding: 15px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-        .order-details-table th {
-            background-color: #6c63ff;
-            color: white;
-            font-weight: 600;
-        }
-        .btn-secondary {
-            margin-top: 20px;
-            background-color: #6c63ff;
-            color: white;
-            border: none;
-            padding: 8px 20px;
-        }
-        .btn-secondary:hover {
-            background-color: #5a53c1;
-        }
-    </style>
+    
+<style>
+ body {
+    font-family: 'Arial', sans-serif;
+    background-color: #d6a1ed;
+    color: #333;
+    padding-top: 20px;
+}
+.status-container {
+    max-width: 800px;
+    margin: auto;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+h2 {
+    font-size: 1.8em;
+    color: #444;
+}
+.timeline-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px 0;
+}
+.timeline-step {
+    text-align: center;
+    flex: 1;
+}
+.payment-status-circle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #ddd;
+    margin: 0 auto 10px;
+    transition: background-color 0.3s ease;
+}
+.payment-status-circle.active {
+    background-color: #6c63ff;
+}
+.timeline-step.active div {
+    color: #6c63ff;
+    font-weight: bold;
+}
+.order-details-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+.order-details-table th, .order-details-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+.order-details-table th {
+    background-color: #6c63ff;
+    color: white;
+    font-weight: 600;
+}
+.btn-secondary {
+    margin-top: 20px;
+    background-color: #6c63ff;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+}
+.btn-secondary:hover {
+    background-color: #5a53c1;
+}
+</style>
 </head>
 <body>
-    <div class="container">
+    <div class="status-container">
         <h2>Order Status</h2>
         <div class="timeline-container">
             <div class="timeline-step <?php echo ($status == 'pending' || $status == 'in_progress' || $status == 'completed') ? 'active' : ''; ?>">
