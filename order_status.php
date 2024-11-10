@@ -32,9 +32,24 @@ if ($order_id) {
         exit;
     }
 
+    // Fetch document names for the order
+    $stmt = $conn->prepare('
+        SELECT id, document_upload 
+        FROM order_documents
+        WHERE order_id = ?
+    ');
+    $stmt->bind_param('s', $order_id);
+    $stmt->execute();
+    $doc_result = $stmt->get_result();
+    $documents = [];
+    while ($doc = $doc_result->fetch_assoc()) {
+        $documents[$doc['id']] = basename($doc['document_upload']);
+    }
+    $stmt->close();
+
     // Fetch order details
     $stmt = $conn->prepare('
-        SELECT DISTINCT sn.spec_name, s.spec_type 
+        SELECT DISTINCT sn.spec_name, s.spec_type, od.document_id
         FROM order_details od
         JOIN specification s ON od.specification_id = s.id
         JOIN spec_names sn ON s.spec_name_id = sn.id
@@ -44,6 +59,16 @@ if ($order_id) {
     $stmt->execute();
     $details_result = $stmt->get_result();
     $stmt->close();
+
+    // Group specifications by document
+    $specifications = [];
+    while ($detail = $details_result->fetch_assoc()) {
+        $doc_id = $detail['document_id'];
+        $specifications[$doc_id][] = [
+            'spec_name' => $detail['spec_name'],
+            'spec_type' => $detail['spec_type'],
+        ];
+    }
 } else {
     echo "<p class='no-orders'>Invalid order ID.</p>";
     exit;
@@ -55,118 +80,67 @@ if ($order_id) {
     <meta charset="UTF-8">
     <title>Order Status</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    
-<style>
- body {
-    font-family: 'Arial', sans-serif;
-    background-color: #d6a1ed;
-    color: #333;
-    padding-top: 20px;
-}
-.status-container {
-    max-width: 800px;
-    margin: auto;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-}
-h2 {
-    font-size: 1.8em;
-    color: #444;
-}
-.timeline-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin: 20px 0;
-}
-.timeline-step {
-    text-align: center;
-    flex: 1;
-}
-.payment-status-circle {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background-color: #ddd;
-    margin: 0 auto 10px;
-    transition: background-color 0.3s ease;
-}
-.payment-status-circle.active {
-    background-color: #6c63ff;
-}
-.timeline-step.active div {
-    color: #6c63ff;
-    font-weight: bold;
-}
-.order-details-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-.order-details-table th, .order-details-table td {
-    padding: 15px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-}
-.order-details-table th {
-    background-color: #6c63ff;
-    color: white;
-    font-weight: 600;
-}
-.btn-secondary {
-    margin-top: 20px;
-    background-color: #6c63ff;
-    color: white;
-    border: none;
-    padding: 8px 20px;
-}
-.btn-secondary:hover {
-    background-color: #5a53c1;
-}
-</style>
+    <link rel="stylesheet" href="assets/order.css">
 </head>
-<body>
-    <div class="status-container">
-        <h2>Order Status</h2>
-        <div class="timeline-container">
+<body class="order-status-body">
+    <div class="order-status-container">
+        <h2 class="order-status-title">Order Status</h2>
+        <div class="order-status-timeline">
             <div class="timeline-step <?php echo ($status == 'pending' || $status == 'in_progress' || $status == 'completed') ? 'active' : ''; ?>">
-                <div class="payment-status-circle <?php echo $status == 'pending' ? 'active' : ''; ?>"></div>
+                <div class="timeline-circle <?php echo $status == 'pending' ? 'active' : ''; ?>"></div>
                 <div>Pending</div>
             </div>
             <div class="timeline-step <?php echo ($status == 'in_progress' || $status == 'completed') ? 'active' : ''; ?>">
-                <div class="payment-status-circle <?php echo $status == 'in_progress' ? 'active' : ''; ?>"></div>
+                <div class="timeline-circle <?php echo $status == 'in_progress' ? 'active' : ''; ?>"></div>
                 <div>In Progress</div>
             </div>
             <div class="timeline-step <?php echo $status == 'completed' ? 'active' : ''; ?>">
-                <div class="payment-status-circle <?php echo $status == 'completed' ? 'active' : ''; ?>"></div>
+                <div class="timeline-circle <?php echo $status == 'completed' ? 'active' : ''; ?>"></div>
                 <div>Completed</div>
             </div>
         </div>
 
-        <h4>Order Details</h4>
-        <?php if ($details_result->num_rows > 0) { ?>
+        <h4 class="order-details-title">Order Documents</h4>
+        <?php if (!empty($documents)) { ?>
+            <ul class="order-documents-list">
+                <?php foreach ($documents as $doc_id => $doc_name) { ?>
+                    <li><?php echo htmlspecialchars($doc_name); ?></li>
+                <?php } ?>
+            </ul>
+        <?php } else { ?>
+            <p class="order-status-no-documents">No documents uploaded.</p>
+        <?php } ?>
+
+        <h4 class="order-details-title">Order Specifications</h4>
+        <?php if (!empty($specifications)) { ?>
             <table class="order-details-table">
                 <thead>
                     <tr>
+                        <th>Document Name</th>
                         <th>Specification Name</th>
                         <th>Specification Type</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <?php while ($detail = $details_result->fetch_assoc()) { ?>
+                    <?php foreach ($specifications as $doc_id => $specs) { ?>
                         <tr>
-                            <td><?php echo htmlspecialchars($detail['spec_name']); ?></td>
-                            <td><?php echo htmlspecialchars($detail['spec_type']); ?></td>
+                            <td rowspan="<?php echo count($specs); ?>"><?php echo htmlspecialchars($documents[$doc_id] ?? 'Unknown Document'); ?></td>
+                            <td><?php echo htmlspecialchars($specs[0]['spec_name']); ?></td>
+                            <td><?php echo htmlspecialchars($specs[0]['spec_type']); ?></td>
                         </tr>
+                        <?php for ($i = 1; $i < count($specs); ++$i) { ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($specs[$i]['spec_name']); ?></td>
+                                <td><?php echo htmlspecialchars($specs[$i]['spec_type']); ?></td>
+                            </tr>
+                        <?php } ?>
                     <?php } ?>
                 </tbody>
             </table>
         <?php } else { ?>
-            <p class="no-orders">No order details found.</p>
+            <p class="order-status-no-details">No order details found.</p>
         <?php } ?>
-        <a href="order_history.php?view=view" class="btn btn-secondary">Back to Order History</a>
+        <a href="order_history.php?view=view" class="order-status-back-btn">Back to Order History</a>
     </div>
 </body>
 </html>

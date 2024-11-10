@@ -1,3 +1,4 @@
+/* Global Styles for Order Success */
 body {
     font-family: Arial, sans-serif;
     background-color: #5e8872;
@@ -9,7 +10,8 @@ body {
     margin: 0;
 }
 
-.container {
+/* Order Success Container */
+.order-success-container {
     max-width: 600px;
     background-color: #fff;
     padding: 30px;
@@ -19,30 +21,34 @@ body {
     text-align: center;
 }
 
-h1 {
+/* Order Success Title */
+.order-success-title {
     font-size: 2em;
     color: #4CAF50;
     margin-bottom: 10px;
 }
 
-p {
+/* Order Success Message */
+.order-success-message {
     font-size: 1em;
     color: #555;
 }
 
-h2 {
+/* Order Details Title */
+.order-details-title {
     font-size: 1.5em;
     color: #333;
     margin-top: 20px;
 }
 
 /* Order Details List */
-ul {
+.order-details-list {
     list-style-type: none;
     padding: 0;
+    margin: 0;
 }
 
-ul li {
+.order-details-list li {
     font-size: 1em;
     color: #333;
     padding: 8px;
@@ -51,19 +57,20 @@ ul li {
     margin-bottom: 10px;
 }
 
-/* Link Styling */
-a {
+/* Links */
+.order-contact-link, .order-home-link {
     color: #4CAF50;
     text-decoration: none;
     font-weight: bold;
+    transition: text-decoration 0.3s ease;
 }
 
-a:hover {
+.order-contact-link:hover, .order-home-link:hover {
     text-decoration: underline;
 }
 
-/* Button Styling */
-button, .container a {
+/* Buttons (Optional, if any) */
+button, .order-success-container a {
     display: inline-block;
     margin-top: 20px;
     padding: 12px 20px;
@@ -77,104 +84,537 @@ button, .container a {
     transition: background-color 0.3s ease;
 }
 
-button:hover, .container a:hover {
+button:hover, .order-success-container a:hover {
     background-color: #2b5de6;
 }
 
-/* Contact Link */
-.container a.contact {
-    color: #2b5de6;
-    text-decoration: none;
-    font-size: 1em;
+/* Order History Page Styles */
+
+.history-body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; 
+    margin-top: 120px; 
+    padding: 0;
+    background-color: #e8c3f7;
 }
 
-.container a.contact:hover {
+.order-container {
+    flex-grow: 1; 
+    max-width: 900px;
+    margin: 50px auto;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    overflow-x: auto; 
+}
+
+.order-title {
+    font-size: 1.8em;
+    color: #444;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.order-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    table-layout: auto;
+}
+
+.order-table th,
+.order-table td {
+    padding: 12px 15px; 
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+    vertical-align: middle;
+}
+
+.order-table th {
+    background-color: #6c63ff;
+    color: white;
+    border-radius: 4px;
+    font-weight: 600;
+    text-align: center; }
+
+.order-table td {
+    font-size: 0.9em;
+    color: #555;
+    text-align: center; 
+}
+
+.order-btn-primary {
+    background: linear-gradient(135deg, #6c63ff 0%, #3b8dff 100%);
+    border: none;
+    color: white;
+    font-size: 0.9em;
+    font-weight: bold;
+    padding: 6px 16px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    display: inline-block;
+    text-decoration: none;
+    transition: all 0.3s ease-in-out;
+}
+
+.order-btn-primary:hover {
+    transform: scale(1.1);
+    background: linear-gradient(135deg, #3b8dff 0%, #6c63ff 100%);
+    cursor: pointer;
+}
+
+.order-btn-sm {
+    font-size: 0.875em;
+    padding: 6px 16px;
+}
+
+.order-no-orders {
+    color: #666;
+    text-align: center;
+    font-size: 1.2em;
+    margin-top: 20px;
+    font-style: italic;
+}
+
+.order-table tbody tr:hover {
+    background-color: #f9f9f9;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .order-container {
+        padding: 15px;
+    }
+
+    .order-table th,
+    .order-table td {
+        font-size: 0.85em;
+        padding: 10px 8px;
+    }
+
+    .order-btn-primary {
+        font-size: 0.8em;
+        padding: 6px 10px;
+    }
+}
+
+
+/* Payment Page Specific Body Styling */
+.payment-page-body {
+    background-color: #7ecfed;
+    font-family: Arial, sans-serif;
+}
+
+/* Other Payment Page Styles */
+.payment-success-container {
+    max-width: 600px;
+    margin: 50px auto;
+    background-color: #ffffff;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+}
+
+.payment-gif-container {
+    flex-shrink: 0;
+    margin-right: 20px;
+}
+
+.payment-gif-container img {
+    width: 230px;
+    height: 230px;
+    border-radius: 8px;
+}
+
+.payment-content {
+    flex: 1;
+    text-align: left;
+}
+
+.payment-title {
+    color: #28a745;
+    font-weight: bold;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.payment-message {
+    font-size: 16px;
+    color: #333333;
+    margin-bottom: 10px;
+}
+
+.payment-btn-primary {
+    background-color: #007bff;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 4px;
+    text-transform: uppercase;
+    display: inline-block;
+    text-decoration: none;
+    color: white;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.payment-btn-primary:hover {
+    background-color: #0056b3;
+}
+
+strong {
+    color: #000;
+}
+
+/* Payment Failed Page Body Styling */
+.payment-failed-body {
+    background-color: #ff4d4d;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+/* Payment Failed Container */
+.payment-failed-container {
+    background-color: #ffffff;
+    padding: 40px;
+    border-radius: 8px;
+    text-align: center;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Payment Failed Title */
+.payment-failed-title {
+    color: #d9534f;
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+/* Payment Failed Message */
+.payment-failed-message {
+    color: #333333;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.payment-failed-link {
+    color: #d9534f;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.payment-failed-link:hover {
     text-decoration: underline;
 }
 
-/* order history */
+/* GIF Styling */
+.payment-failed-gif {
+    margin: 20px 0;
+}
 
-body {
-      font-family: 'Arial', sans-serif;
-      background-color: #d6a1ed;
-      color: #333;
-      padding-top: 20px;
-  }
-  .history-container {
-      max-width: 800px;
-      margin: auto;
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
-      padding: 20px;
-  }
-  h2 {
-      font-size: 1.8em;
-      color: #444;
-  }
-  .order-history-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-  }
-  .order-history-table th, .order-history-table td {
-      padding: 15px;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
-  }
-  .order-history-table th {
-      background-color: #6c63ff;
-      color: white;
-      border-radius: 4px;
-      font-weight: 600;
-  }
-  .btn-primary {
-      background: linear-gradient(135deg, #6c63ff 0%, #3b8dff 100%);
-      border: none;
-      color: white;
-      transition: transform 0.2s;
-      font-weight: bold;
-      padding: 8px 20px;
-  }
-  .btn-primary:hover {
-      transform: scale(1.05);
-      background: linear-gradient(135deg, #3b8dff 0%, #6c63ff 100%);
-  }
-  .no-orders {
-      color: #666;
-      text-align: center;
-      font-size: 1.2em;
-      margin-top: 20px;
-  }
-  /* Timeline styling */
-  .timeline-container {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin: 20px 0;
-  }
-  .timeline-step {
-      text-align: center;
-      flex: 1;
-  }
-  .payment-status-circle {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      background-color: #ddd;
-      margin: 0 auto 10px;
-      transition: background-color 0.3s ease;
-  }
-  .payment-status-circle.active {
-      background-color: #6c63ff;
-  }
-  .timeline-step.active .payment-status-circle {
-      background-color: #6c63ff;
-  }
-  .timeline-step.active div {
-      color: #6c63ff;
-      font-weight: bold;
-  }
+.payment-failed-gif img {
+    width: 200px;
+    border-radius: 8px;
+}
 
-  /* order status */
- 
+/* Button Styling */
+.payment-failed-btn {
+    display: inline-block;
+    background-color: #007bff;
+    color: #ffffff;
+    text-decoration: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: bold;
+    text-transform: uppercase;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
+}
+
+.payment-failed-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Order Summary Page Body */
+.order-summary-body {
+    font-family: 'Arial', sans-serif;
+    background-color: #94bdff;
+    color: #333;
+    padding-top: 20px;
+}
+
+/* Main Container */
+.order-summary-container {
+    max-width: 800px;
+    background-color: #f9f9f9;
+    padding: 30px;
+    margin-top: 50px;
+    border-radius: 8px;
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Header Styling */
+.order-summary-title {
+    font-size: 2em;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* Delivery Method and Order ID */
+.order-summary-delivery,
+.order-summary-container p strong {
+    font-size: 1.1em;
+    color: #444;
+}
+
+/* Table Styling */
+.order-summary-table {
+    margin-top: 20px;
+    background-color: #fff;
+}
+
+.order-summary-table th {
+    background-color: #94bdff;
+    color: #fff;
+    font-weight: bold;
+    text-align: center;
+}
+
+.order-summary-table td {
+    text-align: center;
+    font-size: 0.95em;
+    color: #555;
+}
+
+/* Total Price */
+.order-summary-total-price {
+    text-align: right;
+    font-size: 1.5em;
+    color: #28a745;
+    font-weight: bold;
+    margin-top: 20px;
+}
+
+/* Buttons */
+.order-summary-btn-primary {
+    background-color: #7be07b;
+    border: none;
+    width: 100%;
+    padding: 12px;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+    text-align: center;
+    text-transform: uppercase;
+    color: white;
+}
+
+.order-summary-btn-primary:hover {
+    background-color: #29e329;
+}
+
+.order-summary-btn-danger {
+    background-color: #e07b7b;
+    border: none;
+    width: 100%;
+    padding: 12px;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-top: 10px;
+    transition: background-color 0.3s ease;
+    text-align: center;
+    text-transform: uppercase;
+    color: white;
+}
+
+.order-summary-btn-danger:hover {
+    background-color: #c82333;
+}
+
+/* Form Styling */
+.form-group label {
+    font-weight: bold;
+    color: #333;
+}
+
+.form-control {
+    border-radius: 5px;
+    padding: 10px;
+}
+
+/* Footer Message */
+.footer-message {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 0.9em;
+    color: #666;
+}
+
+/* Order Status Page Body */
+.order-status-body {
+    font-family: 'Arial', sans-serif;
+    background-color: #d6a1ed;
+    color: #333;
+    padding-top: 20px;
+}
+
+/* Main Container */
+.order-status-container {
+    width: 1000px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+}
+
+/* Title Styling */
+.order-status-title {
+    font-size: 1.8em;
+    color: #444;
+    margin-bottom: 20px;
+}
+
+/* Timeline Container */
+.order-status-timeline {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.timeline-step {
+    text-align: center;
+    flex: 1;
+}
+
+.timeline-circle {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #ddd;
+    margin: 0 auto 10px;
+    transition: background-color 0.3s ease;
+}
+
+.timeline-circle.active {
+    background-color: #6c63ff;
+}
+
+.timeline-step.active div {
+    color: #6c63ff;
+    font-weight: bold;
+}
+
+/* Order Details Table */
+.order-details-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.order-details-table th,
+.order-details-table td {
+    padding: 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.order-details-table th {
+    background-color: #6c63ff;
+    color: white;
+    font-weight: 600;
+}
+
+/* No Details Message */
+.order-status-no-details {
+    color: #666;
+    text-align: center;
+    font-size: 1.2em;
+    margin-top: 20px;
+}
+
+/* Back Button */
+.order-status-back-btn {
+    margin-top: 20px;
+    background-color: #6c63ff;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    display: inline-block;
+    text-decoration: none;
+    font-weight: bold;
+    text-align: center;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.order-status-back-btn:hover {
+    background-color: #5a53c1;
+}
+
+/* Footer Styling */
+footer {
+    background-color: #A7C7E7;
+    padding: 40px 0;
+    color: #fff5f5;
+    text-align: left;
+    width: 100%;
+}
+
+footer .container {
+    width: 100%;
+    margin: auto;
+}
+
+footer p {
+    font-size: 0.9em;
+    line-height: 1.6;
+    color: #ffffff;
+}
+
+footer ul {
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+footer ul li {
+    font-size: 0.9em;
+    color: #ffffff;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+footer ul li img {
+    width: 24px;
+    height: auto;
+    margin-right: 10px;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .order-container {
+        padding: 15px;
+    }
+
+    footer ul li {
+        font-size: 0.8em;
+    }
+
+    footer p {
+        font-size: 0.8em;
+    }
+}

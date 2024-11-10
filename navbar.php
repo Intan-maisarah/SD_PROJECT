@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="assets/ipasss.css">
 <nav class="navbar navbar-expand-lg navbar-light fixed-top">
         <div class="container">
             <a class="navbar-brand" href="index.php"><img src="assets/images/logo.png" alt="Logo" style="width: 100px; height: auto;"></a>

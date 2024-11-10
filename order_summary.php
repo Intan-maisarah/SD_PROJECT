@@ -51,12 +51,14 @@ $delivery_location_id = $_POST['delivery_location'] ?? '';
 $toyyibpayApiKey = 'dn9jqdur-tzqt-pztk-6qgm-9xa4jg7m57qx';
 $toyyibpayCategoryCode = 'ltceill4';
 
+// Ensure POST data is available
 if ($_SERVER['REQUEST_METHOD'] == 'POST' && $order_id) {
-    $specification_types = $_POST['specification_id'] ?? [];
-    $quantity = $_POST['quantity'] ?? 1;
-    $page_count = $_POST['page_count'] ?? 1;
+    $document_paths = $_POST['document_path'] ?? []; // Array of document paths
+    $specification_types_flat = $_POST['specification_id'] ?? []; // Flat array of specification types for all documents
+    $quantities = $_POST['quantity'] ?? []; // Array of quantities for each document
+    $page_counts = $_POST['page_count'] ?? []; // Array of page counts for each document
 
-    if (!empty($specification_types)) {
+    if (!empty($document_paths) && !empty($specification_types_flat)) {
         $checkOrderStmt = $conn->prepare('SELECT COUNT(*) FROM orders WHERE order_id = ?');
         $checkOrderStmt->bind_param('s', $order_id);
         $checkOrderStmt->execute();
@@ -65,77 +67,171 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && $order_id) {
         $checkOrderStmt->close();
 
         if ($count > 0) {
-            foreach ($specification_types as $specification_type) {
-                $stmt = $conn->prepare('SELECT id, price FROM specification WHERE spec_type = ?');
-                $stmt->bind_param('s', $specification_type);
-                $stmt->execute();
-                $stmt->bind_result($specification_id, $spec_price);
+            $total_price = 0;
+            $specification_data = [];
 
-                if ($stmt->fetch()) {
-                    $total_doc_price = $spec_price * $page_count * $quantity;
-                    $total_price += $total_doc_price;
+            $num_documents = count($document_paths);
+            $num_specifications = count($specification_types_flat);
 
-                    $stmt->close();
+            // Calculate specifications per document dynamically
+            if ($num_documents > 0 && $num_specifications > 0) {
+                $specification_types_per_document = intval($num_specifications / $num_documents);
 
-                    $stmt = $conn->prepare('INSERT INTO order_details (order_id, specification_id, price, quantity, page_count, total_price) VALUES (?, ?, ?, ?, ?, ?)');
-                    $stmt->bind_param('sidiid', $order_id, $specification_id, $spec_price, $quantity, $page_count, $total_doc_price);
-                    $stmt->execute();
-                    $specification_data[] = [
-                        'id' => $specification_id,
-                        'price' => $spec_price,
-                        'total_price' => $total_doc_price,
-                    ];
-                    $stmt->close();
+                // Ensure specifications are evenly distributed across documents
+                if ($specification_types_per_document * $num_documents !== $num_specifications) {
+                    echo 'Error: Specification count does not match the number of documents evenly.<br>';
+                    error_log("Error: Specification count does not match the number of documents for order_id {$order_id}");
+
+                    return;
                 }
-            }
 
-            if ($delivery_method === 'pickup') {
-                $insertPickupStmt = $conn->prepare('UPDATE orders SET delivery_method = ?, pickup_appointment = ? WHERE order_id = ?');
-                $insertPickupStmt->bind_param('sss', $delivery_method, $pickup_appointment, $order_id);
-                $insertPickupStmt->execute();
-                $insertPickupStmt->close();
-            } elseif ($delivery_method === 'delivery') {
-                $total_price += 2;
-
-                if (!$delivery_location_id) {
-                    echo 'No delivery location ID provided.';
-                } else {
-                    $stmt = $conn->prepare('SELECT location_name FROM delivery_locations WHERE id = ?');
-                    $stmt->bind_param('i', $delivery_location_id);
+                foreach ($document_paths as $index => $document_path) {
+                    // Fetch the document ID from the order_documents table
+                    $stmt = $conn->prepare('SELECT id FROM order_documents WHERE document_upload = ? AND order_id = ?');
+                    $stmt->bind_param('ss', $document_path, $order_id);
                     $stmt->execute();
-                    $stmt->bind_result($location_name);
+                    $stmt->bind_result($document_id);
+                    $stmt->fetch();
+                    $stmt->close();
 
-                    if ($stmt->fetch()) {
-                        $stmt->close();
+                    if ($document_id) {
+                        // Extract the specification types for this document
+                        $start = $index * $specification_types_per_document;
+                        $document_spec_types = array_slice($specification_types_flat, $start, $specification_types_per_document);
 
-                        $delivery_time = $_POST['delivery_time'] ?? '';
+                        $quantity = $quantities[$index] ?? 1;
+                        $page_count = $page_counts[$index] ?? 1;
 
-                        $updateOrderStmt = $conn->prepare('UPDATE orders SET delivery_method = ?, delivery_location_id = ?, delivery_time = ? WHERE order_id = ?');
-                        $updateOrderStmt->bind_param('siss', $delivery_method, $delivery_location_id, $delivery_time, $order_id);
-                        $updateOrderStmt->execute();
-                        $updateOrderStmt->close();
+                        // Debugging: Log details for this document
+                        error_log("Processing Document ID: {$document_id}");
+                        error_log("Specifications for Document ID {$document_id}: ".print_r($document_spec_types, true));
+                        error_log("Quantity for Document ID {$document_id}: {$quantity}");
+                        error_log("Page Count for Document ID {$document_id}: {$page_count}");
+
+                        foreach ($document_spec_types as $specification_type) {
+                            // Fetch specification ID and price from the database
+                            $stmt = $conn->prepare('SELECT id, price FROM specification WHERE spec_type = ?');
+                            $stmt->bind_param('s', $specification_type);
+                            $stmt->execute();
+                            $stmt->bind_result($specification_id, $spec_price);
+
+                            if ($stmt->fetch()) {
+                                $total_doc_price = $spec_price * $page_count * $quantity;
+                                $total_price += $total_doc_price;
+
+                                // Debugging: Log specification details
+                                error_log("Specification ID: {$specification_id}, Price: {$spec_price}, Total Price for Document: {$total_doc_price}");
+
+                                $stmt->close();
+
+                                // Insert order details linked to the document ID
+                                $stmt = $conn->prepare('INSERT INTO order_details (order_id, specification_id, price, quantity, page_count, total_price, document_id) VALUES (?, ?, ?, ?, ?, ?, ?)');
+                                $stmt->bind_param('sidiidi', $order_id, $specification_id, $spec_price, $quantity, $page_count, $total_doc_price, $document_id);
+                                if (!$stmt->execute()) {
+                                    error_log("Failed to insert order details for Document ID: {$document_id}, Error: ".$stmt->error);
+                                } else {
+                                    error_log("Order Details Inserted for Document ID: {$document_id}");
+                                }
+                                $specification_data[] = [
+                                    'id' => $specification_id,
+                                    'price' => $spec_price,
+                                    'total_price' => $total_doc_price,
+                                    'document_id' => $document_id,
+                                ];
+                                $stmt->close();
+                            } else {
+                                error_log("Failed to fetch specification for type: {$specification_type}");
+                            }
+                        }
                     } else {
-                        echo 'Invalid delivery location ID.';
-                        $stmt->close();
+                        error_log("Document ID not found for document path: {$document_path}");
                     }
                 }
-            } else {
-                echo 'Invalid delivery method.';
-            }
 
-            if ($total_price > 0) {
-                $updateOrderStmt = $conn->prepare('UPDATE orders SET total_order_price = ? WHERE order_id = ?');
-                $updateOrderStmt->bind_param('ds', $total_price, $order_id);
-                $updateOrderStmt->execute();
-                $_SESSION['total_order_price'] = $total_price;
-                $_SESSION['specification_data'] = $specification_data;
-                $updateOrderStmt->close();
+                if ($delivery_method === 'pickup') {
+                    // Updating the order for pickup method
+                    if (!empty($pickup_appointment)) {
+                        $insertPickupStmt = $conn->prepare('UPDATE orders SET delivery_method = ?, pickup_appointment = ? WHERE order_id = ?');
+                        if ($insertPickupStmt) {
+                            $insertPickupStmt->bind_param('sss', $delivery_method, $pickup_appointment, $order_id);
+                            if (!$insertPickupStmt->execute()) {
+                                error_log("Failed to update pickup appointment for order_id {$order_id}, Error: ".$insertPickupStmt->error);
+                            }
+                            $insertPickupStmt->close();
+                        } else {
+                            error_log("Failed to prepare statement for updating pickup appointment for order_id {$order_id}");
+                        }
+                    } else {
+                        echo 'No pickup appointment provided.';
+                    }
+                } elseif ($delivery_method === 'delivery') {
+                    // Updating the order for delivery method
+                    $total_price += 2; // Adding delivery fee to total price
+
+                    if (!$delivery_location_id) {
+                        echo 'No delivery location ID provided.';
+                    } else {
+                        // Fetch the location name to validate it exists
+                        $stmt = $conn->prepare('SELECT location_name FROM delivery_locations WHERE id = ?');
+                        if ($stmt) {
+                            $stmt->bind_param('i', $delivery_location_id);
+                            $stmt->execute();
+                            $stmt->bind_result($location_name);
+
+                            if ($stmt->fetch()) {
+                                $stmt->close();
+
+                                // Update order with delivery details
+                                $delivery_time = $_POST['delivery_time'] ?? '';
+                                $updateOrderStmt = $conn->prepare('UPDATE orders SET delivery_method = ?, delivery_location_id = ?, delivery_time = ? WHERE order_id = ?');
+                                if ($updateOrderStmt) {
+                                    $updateOrderStmt->bind_param('siss', $delivery_method, $delivery_location_id, $delivery_time, $order_id);
+                                    if (!$updateOrderStmt->execute()) {
+                                        error_log("Failed to update delivery details for order_id {$order_id}, Error: ".$updateOrderStmt->error);
+                                    }
+                                    $updateOrderStmt->close();
+                                } else {
+                                    error_log("Failed to prepare statement for updating delivery details for order_id {$order_id}");
+                                }
+                            } else {
+                                echo 'Invalid delivery location ID.';
+                                $stmt->close();
+                            }
+                        } else {
+                            error_log("Failed to prepare statement to fetch delivery location for ID {$delivery_location_id}");
+                        }
+                    }
+                } else {
+                    echo 'Invalid delivery method.';
+                }
+
+                // Update total order price in the orders table
+                if ($total_price > 0) {
+                    $updateOrderStmt = $conn->prepare('UPDATE orders SET total_order_price = ? WHERE order_id = ?');
+                    $updateOrderStmt->bind_param('ds', $total_price, $order_id);
+                    if (!$updateOrderStmt->execute()) {
+                        error_log("Failed to update total order price for order_id {$order_id}, Error: ".$updateOrderStmt->error);
+                    } else {
+                        error_log("Total order price updated for order_id {$order_id}, Total Price: {$total_price}");
+                    }
+                    $_SESSION['total_order_price'] = $total_price;
+                    $_SESSION['specification_data'] = $specification_data;
+                    $updateOrderStmt->close();
+                } else {
+                    echo 'Error: total_price is zero, check specification and pricing data.<br>';
+                    error_log("Error: total_price is zero for order_id {$order_id}. Check specification and pricing data.");
+                }
             } else {
-                echo 'Error: total_price is zero, check specification and pricing data.<br>';
+                echo 'Error: No documents or specifications available for processing.<br>';
+                error_log("Error: No documents or specifications available for processing for order_id {$order_id}");
             }
+        } else {
+            echo 'Error: Order not found.<br>';
+            error_log("Error: No matching order found for order_id {$order_id}");
         }
     } else {
-        echo 'Error: No specifications selected.<br>';
+        echo 'Error: No specifications or documents selected.<br>';
+        error_log("Error: No specifications or documents selected for order_id {$order_id}");
     }
 }
 
@@ -251,184 +347,85 @@ function createToyyibPayBill($order_id, $email, $total_order_price, $name, $cont
     <meta charset="UTF-8">
     <title>Order Summary</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-
-    <style>
-        /* Main container styling */
-        body {
-            font-family: 'Arial', sans-serif;
-            background-color: #94bdff;
-            color: #333;
-            padding-top: 20px;
-        }
-        .container {
-            max-width: 800px;
-            background-color: #f9f9f9;
-            padding: 30px;
-            margin-top: 50px;
-            border-radius: 8px;
-            box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Header styling */
-        h2 {
-            font-size: 2em;
-            font-weight: bold;
-            color: #333;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-
-        /* Order ID and Delivery Method styling */
-        p strong {
-            font-size: 1.1em;
-            color: #444;
-        }
-
-        h4 {
-            color: #555;
-            font-weight: bold;
-            margin-top: 20px;
-        }
-
-        /* Table styling */
-        .table {
-            margin-top: 20px;
-            background-color: #fff;
-        }
-
-        .table th {
-            background-color: #94bdff;
-            color: #fff;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        .table td {
-            text-align: center;
-            font-size: 0.95em;
-            color: #555;
-        }
-
-        /* Total Price styling */
-        h4.total-price {
-            text-align: right;
-            font-size: 1.5em;
-            color: #28a745;
-            font-weight: bold;
-            margin-top: 20px;
-        }
-
-        /* Payment and Delete buttons */
-        .btn-primary {
-            background-color: #7be07b;
-            border: none;
-            width: 100%;
-            padding: 12px;
-            font-size: 1.1em;
-            font-weight: bold;
-            margin-top: 10px;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-primary:hover {
-            background-color: #29e329;
-        }
-
-        .btn-danger {
-            background-color: #e07b7b;
-            border: none;
-            width: 100%;
-            padding: 12px;
-            font-size: 1.1em;
-            font-weight: bold;
-            margin-top: 10px;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-danger:hover {
-            background-color: #c82333;
-        }
-
-        /* Payment method dropdown */
-        .form-group label {
-            font-weight: bold;
-            color: #333;
-        }
-
-        .form-control {
-            border-radius: 5px;
-            padding: 10px;
-        }
-
-        /* Footer message styling */
-        .footer-message {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 0.9em;
-            color: #666;
-        }
-    </style>
+    <link rel="stylesheet" href="assets/order.css">
 </head>
-<body>
-<div class="container mt-5">
-    <h2>Order Summary</h2>
+<body class="order-summary-body">
+<div class="order-summary-container">
+    <h2 class="order-summary-title">Order Summary</h2>
     <p><strong>Order ID:</strong> <?php echo htmlspecialchars($order_id); ?></p>
 
-    <h4>Delivery Method: <?php echo htmlspecialchars($delivery_method); ?></h4>
+    <h4 class="order-summary-delivery">Delivery Method: <?php echo htmlspecialchars($delivery_method); ?></h4>
 
-<?php if ($delivery_method === 'pickup') { ?>
-    <p>Pickup Appointment: <?php echo htmlspecialchars($pickup_appointment); ?></p>
-<?php } elseif ($delivery_method === 'delivery') { ?>
-    <?php if (isset($location_name)) { ?>
-        <p>Delivery Location: <?php echo htmlspecialchars($location_name); ?></p>
-    <?php } else { ?>
-        <p>Delivery Location: Not available</p>
+    <?php if ($delivery_method === 'pickup') { ?>
+        <p>Pickup Appointment: <?php echo htmlspecialchars($pickup_appointment); ?></p>
+    <?php } elseif ($delivery_method === 'delivery') { ?>
+        <?php if (isset($location_name)) { ?>
+            <p>Delivery Location: <?php echo htmlspecialchars($location_name); ?></p>
+        <?php } else { ?>
+            <p>Delivery Location: Not available</p>
+        <?php } ?>
+        <p>Delivery Time: <?php echo htmlspecialchars($delivery_time); ?></p>
+        <p>Delivery Fee: RM 2.00</p>
     <?php } ?>
-    <p>Delivery Time: <?php echo htmlspecialchars($delivery_time); ?></p>
-    <p>Delivery Fee: RM 2.00</p>
-<?php }
 
-if (!empty($specification_data)) { ?>
-        <table class="table table-bordered">
+    <?php if (!empty($_SESSION['specification_data'])) { ?>
+        <table class="order-summary-table table table-bordered">
             <thead>
                 <tr>
-                    <th>Specification Name</th>
-                    <th>Specification Type</th>
-                    <th>Price (RM)</th>
+                    <th>Document Path</th>
+                    <th>Specifications</th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($specification_data as $spec) {
-                    $specification_id = $spec['id'];
-                    $spec_price = $spec['price'];
-                    $total_price_for_spec = $spec['total_price'];
+                <?php
+                $groupedSpecs = [];
+        foreach ($_SESSION['specification_data'] as $spec) {
+            $document_id = $spec['document_id'];
 
-                    $query = 'SELECT sn.spec_name AS spec_name, s.spec_type AS spec_type FROM spec_names sn JOIN specification s ON s.spec_name_id = sn.id WHERE s.id = ?';
-                    $stmt = $conn->prepare($query);
-                    $stmt->bind_param('i', $specification_id);
-                    $stmt->execute();
-                    $result = $stmt->get_result();
-                    if ($result) {
-                        $spec_details = $result->fetch_assoc();
-                        $spec_name = $spec_details['spec_name'] ?? 'Unknown';
-                        $spec_type = $spec_details['spec_type'] ?? 'Unknown';
-                    }
-                    ?>
-                    <tr>
-                        <td><?php echo htmlspecialchars($spec_name); ?></td>
-                        <td><?php echo htmlspecialchars($spec_type); ?></td>
-                        <td><?php echo htmlspecialchars(number_format($total_price_for_spec, 2)); ?></td>
-                    </tr>
-                <?php } ?>
+            // Fetch document path
+            $stmt = $conn->prepare('SELECT document_upload FROM order_documents WHERE id = ?');
+            $stmt->bind_param('i', $document_id);
+            $stmt->execute();
+            $stmt->bind_result($document_path);
+            $stmt->fetch();
+            $stmt->close();
+
+            // Fetch specification details
+            $stmt = $conn->prepare('SELECT sn.spec_name AS spec_name, s.spec_type AS spec_type FROM specification s JOIN spec_names sn ON s.spec_name_id = sn.id WHERE s.id = ?');
+            $stmt->bind_param('i', $spec['id']);
+            $stmt->execute();
+            $stmt->bind_result($spec_name, $spec_type);
+            $stmt->fetch();
+            $stmt->close();
+
+            // Group specifications by document path
+            $cleaned_file_name = basename($document_path);
+            $groupedSpecs[$cleaned_file_name][] = [
+                'spec_name' => $spec_name,
+                'spec_type' => $spec_type,
+            ];
+        }
+
+        // Display grouped specifications
+        foreach ($groupedSpecs as $document => $specs) {
+            echo '<tr>';
+            echo '<td>'.htmlspecialchars($document).'</td>';
+            echo '<td>';
+            foreach ($specs as $spec) {
+                echo '<strong>'.htmlspecialchars($spec['spec_name']).':</strong> '.htmlspecialchars($spec['spec_type']).'<br>';
+            }
+            echo '</td>';
+            echo '</tr>';
+        }
+        ?>
             </tbody>
         </table>
 
-        <h4>Total Price: RM <?php echo number_format($total_price, 2); ?></h4>
+        <h4 class="order-summary-total-price">Total Price: RM <?php echo number_format($total_price, 2); ?></h4>
 
         <form method="POST">
             <input type="hidden" name="order_id" value="<?php echo htmlspecialchars($order_id); ?>">
 
-            <!-- Payment Method Selection -->
             <div class="form-group">
                 <label for="payment_method">Select Payment Method:</label>
                 <select name="payment_method" id="payment_method" class="form-control" required>
@@ -437,14 +434,13 @@ if (!empty($specification_data)) { ?>
                 </select>
             </div>
 
-            <button type="submit" name="proceed_to_payment" class="btn btn-primary" onclick="return checkPaymentMethod();">Proceed to Payment</button>
-            <button type="submit" name="delete_order" class="btn btn-danger" onclick="return confirmDelete();">Cancel Order</button>
+            <button type="submit" name="proceed_to_payment" class="order-summary-btn-primary" onclick="return checkPaymentMethod();">Proceed to Payment</button>
+            <button type="submit" name="delete_order" class="order-summary-btn-danger" onclick="return confirmDelete();">Cancel Order</button>
         </form>
     <?php } else { ?>
         <p>No specifications found for this order.</p>
     <?php } ?>
 </div>
-
 
 <script>
 function confirmDelete() {
@@ -453,29 +449,21 @@ function confirmDelete() {
 
 function checkPaymentMethod() {
     var paymentMethod = document.getElementById('payment_method').value;
-    var totalPrice = <?php echo $total_price; ?>; 
+    var totalPrice = <?php echo $total_price; ?>;
 
     if (paymentMethod === "") {
-        alert("Please select a payment method."); 
-        return false; 
+        alert("Please select a payment method.");
+        return false;
     }
 
     if (paymentMethod === 'online' && totalPrice < 1) {
         alert("For online payments, the total must be greater than zero.");
-        return false; 
+        return false;
     }
 
-    return true; 
+    return true;
 }
-
-
-function showCashOnlyAlert() {
-    alert("For online payments, the total must be greater than zero.");
-}
-
-
 </script>
-
 
 </body>
 </html>

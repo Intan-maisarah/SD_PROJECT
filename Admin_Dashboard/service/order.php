@@ -93,44 +93,45 @@ switch ($action) {
         $filterApplied = false;
         $statusFilter = isset($_POST['status_filter']) ? $_POST['status_filter'] : '';
 
-        // Base query to fetch orders
-        $query = 'SELECT order_id, document_upload, status, payment_status, delivery_method FROM orders';
+        $query = '
+            SELECT 
+                orders.order_id, 
+                GROUP_CONCAT(order_documents.document_upload SEPARATOR " / ") AS document_names,
+                orders.status, 
+                orders.payment_status, 
+                orders.delivery_method,
+                orders.created_at
+            FROM orders
+            LEFT JOIN order_documents ON orders.order_id = order_documents.order_id';
 
-        // Apply filters if selected
         if ($statusFilter) {
-            $queryConditions = [];
-
+            $query .= ' WHERE ';
             if ($statusFilter === 'unpaid') {
-                $queryConditions[] = 'payment_status = "UNPAID"';
+                $query .= 'orders.payment_status = "UNPAID"';
             } elseif ($statusFilter === 'paid') {
-                $queryConditions[] = 'payment_status = "PAID"';
+                $query .= 'orders.payment_status = "PAID"';
             } elseif ($statusFilter === 'pendingpayment') {
-                $queryConditions[] = 'payment_status = "PENDING"';
+                $query .= 'orders.payment_status = "PENDING"';
             } elseif ($statusFilter === 'pending') {
-                $queryConditions[] = 'status = "pending"';
+                $query .= '(orders.payment_status = "PAID" OR orders.payment_status = "PENDING") AND orders.status = "pending"';
             } elseif ($statusFilter === 'in_progress') {
-                $queryConditions[] = 'status = "in_progress"';
+                $query .= '(orders.payment_status = "PAID" OR orders.payment_status = "PENDING") AND orders.status = "in_progress"';
             } elseif ($statusFilter === 'completed') {
-                $queryConditions[] = 'status = "completed"';
+                $query .= '(orders.payment_status = "PAID" OR orders.payment_status = "PENDING") AND orders.status = "completed"';
             } elseif ($statusFilter === 'pickup') {
-                $queryConditions[] = 'delivery_method = "pickup"';
+                $query .= '(orders.payment_status = "PAID" OR orders.payment_status = "PENDING") AND orders.delivery_method = "pickup"';
             } elseif ($statusFilter === 'delivery') {
-                $queryConditions[] = 'delivery_method = "delivery"';
+                $query .= '(orders.payment_status = "PAID" OR orders.payment_status = "PENDING") AND orders.delivery_method = "delivery"';
             }
-
-            // Add conditions to the query
-            if (!empty($queryConditions)) {
-                $query .= ' WHERE '.implode(' AND ', $queryConditions);
-            }
-
-            $filterApplied = true;
         }
 
-        // Add sorting by creation date
-        $query .= ' ORDER BY created_at DESC';
+        $query .= ' GROUP BY orders.order_id ORDER BY orders.created_at DESC';
 
-        // Prepare and execute query
         $stmt = $conn->prepare($query);
+        if (!$stmt) {
+            echo 'Prepare failed: '.$conn->error;
+            exit;
+        }
         $stmt->execute();
         $result = $stmt->get_result();
 
@@ -140,9 +141,9 @@ switch ($action) {
         echo '<label for="status_filter">Filter by Status:</label>';
         echo '<select name="status_filter" id="status_filter">';
         echo '<option value="">All</option>';
-        echo '<option value="paid" '.($statusFilter == 'paid' ? 'selected' : '').'>Paid</option>';
-        echo '<option value="unpaid" '.($statusFilter == 'unpaid' ? 'selected' : '').'>Unpaid</option>';
-        echo '<option value="pendingpayment" '.($statusFilter == 'pendingpayment' ? 'selected' : '').'>Payment Pending (Cash)</option>';
+        echo '<option value="paid" '.($statusFilter == 'PAID' ? 'selected' : '').'>Paid</option>';
+        echo '<option value="unpaid" '.($statusFilter == 'UNPAID' ? 'selected' : '').'>Unpaid</option>';
+        echo '<option value="pendingpayment" '.($statusFilter == 'PENDING' ? 'selected' : '').'>Payment Pending (Cash)</option>';
         echo '<option value="pending" '.($statusFilter == 'pending' ? 'selected' : '').'>Pending</option>';
         echo '<option value="in_progress" '.($statusFilter == 'in_progress' ? 'selected' : '').'>In Progress</option>';
         echo '<option value="completed" '.($statusFilter == 'completed' ? 'selected' : '').'>Completed</option>';
@@ -152,14 +153,12 @@ switch ($action) {
         echo '<button type="submit" class="btn btn-primary">Filter</button>';
         echo '</form>';
 
-        // Delete all unpaid orders form
         if ($statusFilter === 'unpaid') {
             echo '<form method="POST" action="order.php?action=delete_all_unpaid" style="margin-bottom: 20px;">';
             echo '<button type="submit" class="btn btn-danger">Delete All Unpaid Orders</button>';
             echo '</form>';
         }
 
-        // Display messages
         if (isset($_SESSION['message'])) {
             echo '<div class="alert alert-'.$_SESSION['msg_type'].' alert-dismissible fade show" role="alert">';
             echo $_SESSION['message'];
@@ -170,20 +169,27 @@ switch ($action) {
 
         echo "<div class='table-container'>";
         echo '<table>';
-        echo '<tr><th>ID</th><th>Document</th><th>Status</th><th>Payment Status</th><th>Action</th></tr>';
+        echo '<tr><th>ID</th><th>Documents</th><th>Status</th><th>Payment Status</th><th>Action</th></tr>';
 
         while ($row = $result->fetch_assoc()) {
             echo '<tr>';
-            echo '<td>'.$row['order_id'].'</td>';
-            $full_document_upload = $row['document_upload'];
-            $file_name_with_ext = basename($full_document_upload);
-            $cleaned_file_name = preg_replace('/^.*?_(.*)$/', '$1', $file_name_with_ext);
-            echo '<td>'.$cleaned_file_name.'</td>';
+            echo '<td>'.htmlspecialchars($row['order_id']).'</td>';
+
+            // Document names handling
+            if ($row['document_names'] !== null) {
+                $documentNames = explode(' / ', $row['document_names']);
+                $formattedDocumentNames = implode('<br>', array_map(function ($doc) {
+                    return htmlspecialchars(basename($doc));
+                }, $documentNames));
+            } else {
+                $formattedDocumentNames = 'No documents uploaded';
+            }
+            echo '<td>'.$formattedDocumentNames.'</td>';
 
             // Status dropdown
             echo '<td>
-                <form method="POST" action="order.php?action=update_status" style="display:inline;">
-                    <input type="hidden" name="order_id" value="'.$row['order_id'].'">
+                <form method="POST" action="order.php?action=update_status" style="display:inline;"> 
+                    <input type="hidden" name="order_id" value="'.htmlspecialchars($row['order_id']).'">
                     <select name="status" onchange="this.form.submit()">
                         <option value="pending" '.($row['status'] == 'pending' ? 'selected' : '').'>Pending</option>
                         <option value="in_progress" '.($row['status'] == 'in_progress' ? 'selected' : '').'>In Progress</option>
@@ -193,57 +199,26 @@ switch ($action) {
               </td>';
 
             // Payment status
-            echo '<td>'.$row['payment_status'].'</td>';
+            echo '<td>'.htmlspecialchars($row['payment_status']).'</td>';
 
-            // Action buttons based on payment status
-            if ($row['payment_status'] == 'UNPAID') {
+            // Action buttons
+            if ($row['payment_status'] == 'unpaid') {
                 echo "<td>
                         <form method='POST' action='order.php?action=delete' style='display:inline;'>
-                            <input type='hidden' name='order_id' value='".$row['order_id']."'>
+                            <input type='hidden' name='order_id' value='".htmlspecialchars($row['order_id'])."'>
                             <button type='submit' class='btn btn-danger'>Delete</button>
                         </form>
                       </td>";
             } else {
                 echo "<td>
-                      <a href='order.php?action=viewall&id=".$row['order_id']."' class='button button-edit'>View Detail</a>
+                      <a href='order.php?action=viewall&id=".htmlspecialchars($row['order_id'])."' class='button button-edit'>View Detail</a>
                       </td>";
             }
             echo '</tr>';
         }
+
         echo '</table>';
         echo '</div>';
-
-        // Delete a single order
-        if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['order_id']) && $_GET['action'] === 'delete') {
-            $orderIdToDelete = $_POST['order_id'];
-            $deleteQuery = 'DELETE FROM orders WHERE order_id = ?';
-            $deleteStmt = $conn->prepare($deleteQuery);
-            $deleteStmt->bind_param('s', $orderIdToDelete);
-            if ($deleteStmt->execute()) {
-                $_SESSION['message'] = 'Order deleted successfully.';
-                $_SESSION['msg_type'] = 'success';
-            } else {
-                $_SESSION['message'] = 'Failed to delete order.';
-                $_SESSION['msg_type'] = 'danger';
-            }
-            $deleteStmt->close();
-            header('Location: order.php?action=view');
-            exit;
-        }
-
-        // Delete all unpaid orders
-        if ($_SERVER['REQUEST_METHOD'] == 'POST' && $_GET['action'] === 'delete_all_unpaid') {
-            $deleteAllQuery = 'DELETE FROM orders WHERE payment_status = "UNPAID"';
-            if ($conn->query($deleteAllQuery) === true) {
-                $_SESSION['message'] = 'All unpaid orders deleted successfully.';
-                $_SESSION['msg_type'] = 'success';
-            } else {
-                $_SESSION['message'] = 'Failed to delete unpaid orders.';
-                $_SESSION['msg_type'] = 'danger';
-            }
-            header('Location: order.php?action=view&status_filter=unpaid');
-            exit;
-        }
 
         $stmt->close();
         break;
@@ -252,6 +227,7 @@ switch ($action) {
         if (isset($_GET['id'])) {
             $order_id = $_GET['id'];
 
+            // Fetch the main order details
             $query_order = 'SELECT * FROM orders WHERE order_id = ?';
             $stmt_order = $conn->prepare($query_order);
             $stmt_order->bind_param('s', $order_id);
@@ -287,93 +263,121 @@ switch ($action) {
 
             if ($order) {
                 echo '<h2>Order Details</h2>';
+                echo '<form method="POST" action="" id="orderForm">';
                 echo '<table>';
-                echo '<tr><th>Order ID</th><td>'.$order['order_id'].'</td></tr>';
+                echo '<tr><th>Order ID</th><td>'.htmlspecialchars($order['order_id'] ?? 'N/A').'</td></tr>';
 
-                $customer_name = getCustomerName($order['user_id']);
-                echo '<tr><th>Customer Name</th><td>'.$customer_name.'</td></tr>';
+                $customer_name = getCustomerName($order['user_id'] ?? 0);
+                echo '<tr><th>Customer Name</th><td>'.htmlspecialchars($customer_name).'</td></tr>';
 
-                $full_document_upload = $order['document_upload'];
-                $file_name_with_ext = basename($full_document_upload);
-                $cleaned_file_name = preg_replace('/^.*?_(.*)$/', '$1', $file_name_with_ext);
-                $document_path = 'document_upload/'.$file_name_with_ext;
-                echo '<tr><th>Document Uploaded</th><td>'.$cleaned_file_name.'
-                        <button class="button button-edit" data-toggle="modal" data-target="#viewDocumentModal" data-document="'.$document_path.'" style="margin-left: 10px;">View Document</button>
-                        </td></tr>';
+                echo '<tr><th>Created At</th><td>'.htmlspecialchars($order['created_at'] ?? 'N/A').'</td></tr>';
+                echo '<tr><th>Payment Status</th><td>';
+                echo '<select name="payment_status" onchange="document.getElementById(\'orderForm\').submit();">';
+                echo '<option value="PENDING"'.(($order['payment_status'] ?? '') === 'PENDING' ? ' selected' : '').'>PENDING</option>';
+                echo '<option value="PAID"'.(($order['payment_status'] ?? '') === 'PAID' ? ' selected' : '').'>PAID</option>';
+                echo '<option value="UNPAID"'.(($order['payment_status'] ?? '') === 'UNPAID' ? ' selected' : '').'>UNPAID</option>';
+                echo '</select>';
+                echo '</td></tr>';
+                echo '<tr><th>Bill Code</th><td>'.htmlspecialchars($order['BillCode'] ?? 'N/A').'</td></tr>';
+                echo '<tr><th>Total Order Price</th><td>RM'.htmlspecialchars($order['total_order_price'] ?? '0.00').'</td></tr>';
+                echo '<tr><th>Status</th><td>';
+                echo '<select name="status" onchange="document.getElementById(\'orderForm\').submit();">';
+                echo '<option value="pending"'.(($order['status'] ?? '') === 'pending' ? ' selected' : '').'>Pending</option>';
+                echo '<option value="in_progress"'.(($order['status'] ?? '') === 'in_progress' ? ' selected' : '').'>In Progress</option>';
+                echo '<option value="completed"'.(($order['status'] ?? '') === 'completed' ? ' selected' : '').'>Completed</option>';
+                echo '</select>';
+                echo '</td></tr>';
 
-                echo '<tr><th>Created At</th><td>'.$order['created_at'].'</td></tr>';
-                echo '<tr><th>Payment Status</th><td>'.$order['payment_status'].'</td></tr>';
-                echo '<tr><th>Bill Code</th><td>'.$order['BillCode'].'</td></tr>';
-                echo '<tr><th>Total Order Price</th><td>RM'.$order['total_order_price'].'</td></tr>';
-                echo '<tr><th>Status</th><td>'.$order['status'].'</td></tr>';
-
-                if ($order['delivery_method'] == 'pickup') {
-                    echo '<tr><th>Pickup Appointment</th><td>'.$order['pickup_appointment'].'</td></tr>';
-                } elseif ($order['delivery_method'] == 'delivery') {
-                    $location_name = getLocationName($order['delivery_location_id']);
-                    echo '<tr><th>Delivery Location</th><td>'.$location_name.'</td></tr>';
-                    echo '<tr><th>Delivery Time</th><td>'.$order['delivery_time'].'</td></tr>';
+                if (($order['delivery_method'] ?? '') == 'pickup') {
+                    echo '<tr><th>Pickup Appointment</th><td>'.(!empty($order['pickup_appointment']) ? htmlspecialchars($order['pickup_appointment']) : 'N/A').'</td></tr>';
+                } elseif (($order['delivery_method'] ?? '') == 'delivery') {
+                    echo '<tr><th>Delivery Location</th><td>'.htmlspecialchars(getLocationName($order['delivery_location_id'] ?? 0)).'</td></tr>';
+                    echo '<tr><th>Delivery Time</th><td>'.htmlspecialchars($order['delivery_time'] ?? 'N/A').'</td></tr>';
                 }
 
                 echo '</table>';
+                echo '<input type="hidden" name="order_id" value="'.htmlspecialchars($order['order_id'] ?? '').'">';
+                echo '<input type="hidden" name="update_status" value="1">';
+                echo '</form>';
 
-                echo '
-                        <div class="modal fade" id="viewDocumentModal" tabindex="-1" role="dialog" aria-labelledby="viewDocumentModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-lg" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="viewDocumentModalLabel">View Document</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <iframe id="documentIframe" style="width: 100%; height: 500px;" frameborder="0"></iframe>
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>';
+                // Fetch and display all documents related to this order
+                $query_docs = 'SELECT * FROM order_documents WHERE order_id = ?';
+                $stmt_docs = $conn->prepare($query_docs);
+                $stmt_docs->bind_param('s', $order_id);
+                $stmt_docs->execute();
+                $result_docs = $stmt_docs->get_result();
 
-                // Display specifications
-                $displayedSpecifications = [];
-                $query_specs = 'SELECT spec_names.spec_name, specification.spec_type 
-                        FROM order_details 
-                        INNER JOIN specification ON order_details.specification_id = specification.id 
-                        INNER JOIN spec_names ON specification.spec_name_id = spec_names.id 
-                        WHERE order_details.order_id = ?';
+                if ($result_docs->num_rows > 0) {
+                    echo '<h3>Uploaded Documents</h3>';
+                    echo '<div class="documents-container">';
+                    while ($doc_row = $result_docs->fetch_assoc()) {
+                        $document_path = htmlspecialchars($doc_row['document_upload'] ?? '');
+                        $relative_path = str_replace('Admin_Dashboard/service/', '', $document_path);
+                        $file_name = basename($document_path);
 
-                $stmt_specs = $conn->prepare($query_specs);
-                $stmt_specs->bind_param('s', $order_id);
-                $stmt_specs->execute();
-                $result_specs = $stmt_specs->get_result();
+                        echo '<div class="document-box" style="margin-bottom: 20px;">';
+                        echo '<h4>'.htmlspecialchars($file_name).'</h4>';
+                        echo '<button class="btn btn-primary view-document-btn" data-document="'.$relative_path.'" onclick="openDocumentModal(\''.$relative_path.'\')">View Document</button>';
+                        echo '<a href="'.$document_path.'" class="btn btn-secondary" download>Download Document</a>';
 
-                if ($result_specs->num_rows > 0) {
-                    echo '<h3>Specifications</h3>';
-                    echo '<table>';
-                    echo '<tr><th>Specification Name</th><th>Specification Type</th></tr>';
-                    while ($spec_row = $result_specs->fetch_assoc()) {
-                        if (!in_array($spec_row['spec_name'], $displayedSpecifications)) {
-                            echo '<tr>';
-                            echo '<td>'.$spec_row['spec_name'].'</td>';
-                            echo '<td>'.$spec_row['spec_type'].'</td>';
-                            echo '</tr>';
-                            $displayedSpecifications[] = $spec_row['spec_name'];
+                        // Fetch specifications for this document
+                        $query_specs = 'SELECT spec_names.spec_name, specification.spec_type 
+                                                    FROM order_details 
+                                                    INNER JOIN specification ON order_details.specification_id = specification.id 
+                                                    INNER JOIN spec_names ON specification.spec_name_id = spec_names.id 
+                                                    WHERE order_details.document_id = ?';
+                        $stmt_specs = $conn->prepare($query_specs);
+                        $stmt_specs->bind_param('i', $doc_row['id']);
+                        $stmt_specs->execute();
+                        $result_specs = $stmt_specs->get_result();
+
+                        if ($result_specs->num_rows > 0) {
+                            echo '<table class="table mt-2">';
+                            echo '<tr><th>Specification Name</th><th>Specification Type</th></tr>';
+                            while ($spec_row = $result_specs->fetch_assoc()) {
+                                echo '<tr>';
+                                echo '<td>'.htmlspecialchars($spec_row['spec_name'] ?? 'N/A').'</td>';
+                                echo '<td>'.htmlspecialchars($spec_row['spec_type'] ?? 'N/A').'</td>';
+                                echo '</tr>';
+                            }
+                            echo '</table>';
                         }
+
+                        echo '</div>'; // End document box
+                        $stmt_specs->close();
                     }
-                    echo '</table>';
+                    echo '</div>'; // End documents container
+                } else {
+                    echo '<p>No documents found for this order.</p>';
                 }
 
-                echo "<button onclick=\"history.go(-1);\" class='button button-back'>Back</button>";
+                echo "<button type='button' onclick=\"window.location.href='order.php?action=view'\" class='btn btn-secondary mt-3'>Back</button>";
 
-                $stmt_specs->close();
+                // Modal to view documents
+                echo '
+                                <div class="modal fade" id="viewDocumentModal" tabindex="-1" role="dialog" aria-labelledby="viewDocumentModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog modal-lg" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="viewDocumentModalLabel">View Document</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <iframe id="documentIframe" style="width: 100%; height: 500px;" frameborder="0"></iframe>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>';
             } else {
-                echo 'Order not found.<br>';
+                echo '<p>Order not found.</p>';
             }
         } else {
-            echo 'Invalid order ID.<br>';
+            echo '<p>Invalid order ID.</p>';
         }
         break;
 
@@ -433,13 +437,11 @@ switch ($action) {
   <script src="../dist/js/waves.js"></script>
   <script src="../dist/js/sidebarmenu.js"></script>
   <script src="../dist/js/custom.js"></script>
-<script>
-  $('#viewDocumentModal').on('show.bs.modal', function (event) {
-    var button = $(event.relatedTarget); 
-    var documentPath = button.data('document'); 
-    var modal = $(this);
-    modal.find('#documentIframe').attr('src', documentPath); 
-});
+  <script>
+  function openDocumentModal(documentPath) {
+    $('#documentIframe').attr('src', documentPath + '?t=' + new Date().getTime());
+    $('#viewDocumentModal').modal('show');
+  }
 </script>
 
 </body>

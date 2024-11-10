@@ -5,12 +5,28 @@ ini_set('display_errors', 1);
 include 'connection.php';
 
 if (!isset($_SESSION['user_id'])) {
+    echo 'Session user_id not set. Redirecting to signin.php.';
     header('Location: signin.php');
     exit;
 }
 $user_id = $_SESSION['user_id'];
 
-$view = $_GET['view'] ?? 'view';
+$stmt = $conn->prepare('
+    SELECT o.order_id, o.payment_status, o.status, o.total_order_price, GROUP_CONCAT(d.document_upload SEPARATOR " / ") AS document_names
+    FROM orders o
+    LEFT JOIN order_documents d ON o.order_id = d.order_id
+    WHERE o.user_id = ? AND (o.payment_status = "paid" OR o.payment_status = "pending")
+    GROUP BY o.order_id
+    ORDER BY o.created_at DESC
+');
+
+if (!$stmt) {
+    exit('Prepare failed: '.$conn->error);
+}
+
+$stmt->bind_param('i', $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -20,141 +36,88 @@ $view = $_GET['view'] ?? 'view';
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/order.css">
-   
 </head>
-<body>
-    <div class="history-container">
-        <h2 class="my-4">Order History</h2>
-        <?php
-        switch ($view) {
-            case 'view':
-                $stmt = $conn->prepare('
-                  SELECT o.order_id, o.payment_status, o.status, o.total_order_price, 
-                    o.document_upload
-                    FROM orders o
-                    WHERE o.user_id = ? AND o.payment_status = "paid" OR o.payment_status =  "pending"
-                    ORDER BY o.order_id DESC
-                ');
-                $stmt->bind_param('i', $user_id);
-                $stmt->execute();
-                $result = $stmt->get_result();
-                ?>
-                <!-- Order History Table -->
-                <?php if ($result->num_rows > 0) { ?>
-                    <table class="order-history-table">
-                        <thead>
-                            <tr>
-                                <th>Order ID</th>
-                                <th>Total Price</th>
-                                <th>Document Name</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php while ($row = $result->fetch_assoc()) {
-                                $full_document_upload = $row['document_upload'];
-                                $file_name_with_ext = basename($full_document_upload);
-                                $cleaned_file_name = preg_replace('/^.*?_(.*)$/', '$1', $file_name_with_ext);
-                                ?>
-                                <tr>
-                                    <td><?php echo htmlspecialchars($row['order_id']); ?></td>
-                                    <td>RM <?php echo htmlspecialchars(number_format($row['total_order_price'], 2)); ?></td>
-                                    <td><?php echo htmlspecialchars($cleaned_file_name); ?></td>
-                                    <td><a href="order_status.php?order_id=<?php echo $row['order_id']; ?>" class="btn btn-primary btn-sm">View Status</a></td>
-                                </tr>
-                            <?php } ?>
-                        </tbody>
-                    </table>
-                <?php } else { ?>
-                    <p class="no-orders">No orders found in your history.</p>
-                <?php } ?>
-                <?php $stmt->close();
-                break;
-
-            case 'viewstatus':
-                $order_id = $_GET['order_id'] ?? null;
-                if ($order_id) {
-                    $stmt = $conn->prepare('
-                        SELECT o.payment_status, o.status 
-                        FROM orders o
-                        WHERE o.order_id = ? AND o.user_id = ?
-                    ');
-                    $stmt->bind_param('si', $order_id, $user_id);
-                    $stmt->execute();
-                    $result = $stmt->get_result();
-                    $order = $result->fetch_assoc();
-                    $stmt->close();
-
-                    if ($order) {
-                        $payment_status = $order['payment_status'];
-                        $status = $order['status'];
-                    } else {
-                        echo "<p class='no-orders'>Order not found.</p>";
-                        exit;
-                    }
-
-                    $stmt = $conn->prepare('
-                        SELECT DISTINCT sn.spec_name, s.spec_type 
-                        FROM order_details od
-                        JOIN specification s ON od.specification_id = s.id
-                        JOIN spec_names sn ON s.spec_name_id = sn.id
-                        WHERE od.order_id = ?
-                    ');
-                    $stmt->bind_param('s', $order_id);
-                    $stmt->execute();
-                    $details_result = $stmt->get_result();
-                    $stmt->close();
-                    ?>
-                    <h3>Order Status</h3>
-                    <div class="timeline-container">
-                        <div class="timeline-step <?php echo ($status == 'pending' || $status == 'in_progress' || $status == 'completed') ? 'active' : ''; ?>">
-                            <div class="payment-status-circle <?php echo $status == 'pending' ? 'active' : ''; ?>"></div>
-                            <div>Pending</div>
-                        </div>
-                        <div class="timeline-step <?php echo ($status == 'in_progress' || $status == 'completed') ? 'active' : ''; ?>">
-                            <div class="payment-status-circle <?php echo $status == 'in_progress' ? 'active' : ''; ?>"></div>
-                            <div>In Progress</div>
-                        </div>
-                        <div class="timeline-step <?php echo $status == 'completed' ? 'active' : ''; ?>">
-                            <div class="payment-status-circle <?php echo $status == 'completed' ? 'active' : ''; ?>"></div>
-                            <div>Completed</div>
-                        </div>
-                    </div>
-                
-                    <h4 class="my-4">Order Details</h4>
-                    <?php if ($details_result->num_rows > 0) { ?>
-                        <table class="order-history-table">
-                            <thead>
-                                <tr>
-                                    <th>Specification Name</th>
-                                    <th>Specification Type</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php while ($detail = $details_result->fetch_assoc()) { ?>
-                                    <tr>
-                                        <td><?php echo htmlspecialchars($detail['spec_name']); ?></td>
-                                        <td><?php echo htmlspecialchars($detail['spec_type']); ?></td>
-                                    </tr>
-                                <?php } ?>
-                            </tbody>
-                        </table>
-                    <?php } else { ?>
-                        <p class="no-orders">No order details found.</p>
+<body class="history-body">
+<?php include 'navbar.php'; ?>
+    <div class="order-container">
+        <h2 class="order-title">Order History</h2>
+        <?php if ($result->num_rows > 0) { ?>
+            <table class="order-table">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Total Price</th>
+                        <th>Document Names</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php while ($row = $result->fetch_assoc()) {
+                        $document_names = $row['document_names'];
+                        if ($document_names !== null) {
+                            $documentNamesArray = explode(' / ', $document_names);
+                            $formattedDocumentNames = implode('<br>', array_map(function ($doc) {
+                                return htmlspecialchars(basename($doc));
+                            }, $documentNamesArray));
+                        } else {
+                            $formattedDocumentNames = 'No documents uploaded';
+                        }
+                        ?>
+                        <tr>
+                            <td><?php echo htmlspecialchars($row['order_id']); ?></td>
+                            <td>RM <?php echo htmlspecialchars(number_format($row['total_order_price'], 2)); ?></td>
+                            <td><?php echo $formattedDocumentNames; ?></td>
+                            <td>
+                                <a href="order_status.php?order_id=<?php echo $row['order_id']; ?>" class="order-btn-primary order-btn-sm">View Status</a>
+                            </td>
+                        </tr>
                     <?php } ?>
-                    <a href="order_history.php?view=view" class="btn btn-secondary">Back to Order History</a>
-                    <?php
-                } else {
-                    echo "<p class='no-orders'>Invalid order ID.</p>";
-                }
-                break;
-
-            default:
-                echo "<p class='no-orders'>Invalid view.</p>";
-                break;
-        }
+                </tbody>
+            </table>
+        <?php } else { ?>
+            <p class="order-no-orders">No orders found in your history.</p>
+        <?php }
+        $stmt->close();
+$conn->close();
 ?>
     </div>
+
+    <!-- Footer -->
+    <footer class="text-white" style="background-color: #A7C7E7; padding: 40px 0;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <p>
+                        Our online printing service was inspired by the needs and creativity of students who constantly
+                        juggle tight deadlines and demanding schedules. With 24/7 document uploads and a convenient 1km
+                        delivery range, we provide the flexibility students need, ensuring their printing requirements are met
+                        anytime, anywhere.
+                    </p>
+                </div>
+
+                <div class="col-md-6">
+                    <ul class="list-unstyled">
+                        <li class="d-flex align-items-center mb-2">
+                            <img src="assets/images/location.png" alt="Location Icon" style="width: 24px; height: auto; margin-right: 10px;">
+                            <span>Gurney Mall, Lot 1-30, Jln Maktab, 54000 Kuala Lumpur</span>
+                        </li>
+                        <li class="d-flex align-items-center mb-2">
+                            <img src="assets/images/call.png" alt="Phone Icon" style="width: 24px; height: auto; margin-right: 10px;">
+                            <span>+6014 2272-647</span>
+                        </li>
+                        <li class="d-flex align-items-center mb-2">
+                            <img src="assets/images/mail.png" alt="Mail Icon" style="width: 24px; height: auto; margin-right: 10px;">
+                            <span>infinity.utmkl@gmail.com</span>
+                        </li>
+                        <li class="d-flex align-items-center">
+                            <img src="assets/images/bhours.png" alt="Business Hours Icon" style="width: 24px; height: auto; margin-right: 10px;">
+                            <span>Mon-Fri: 9 AM - 6 PM</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
 
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>

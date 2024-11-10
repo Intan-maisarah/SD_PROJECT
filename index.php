@@ -21,9 +21,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         exit;
     }
 
+    // Validate file type
     $allowedTypes = ['application/pdf', 'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', 'image/jpeg', 'image/png'];
     $fileType = mime_content_type($_FILES['file']['tmp_name']);
-
     if (!in_array($fileType, $allowedTypes)) {
         $_SESSION['modal_message'] = 'Invalid file type. Only PDF, DOC, DOCX, JPEG, and PNG files are allowed.';
         header('Location: '.$_SERVER['PHP_SELF']);
@@ -31,41 +31,54 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     $uploadDir = 'Admin_Dashboard/service/document_upload/';
-
     $fileName = basename($_FILES['file']['name']);
     $orderId = generateOrderId();
     $uniqueFileName = $orderId.'_'.$fileName;
     $uploadFile = $uploadDir.$uniqueFileName;
 
+    // Check for upload errors
     if ($_FILES['file']['error'] !== UPLOAD_ERR_OK) {
         $_SESSION['modal_message'] = 'File upload error: '.$_FILES['file']['error'];
         header('Location: '.$_SERVER['PHP_SELF']);
         exit;
     }
 
-    if (!is_dir($uploadDir)) {
-        if (!mkdir($uploadDir, 0777, true)) {
-            $_SESSION['modal_message'] = 'Failed to create upload directory.';
-            header('Location: '.$_SERVER['PHP_SELF']);
-            exit;
-        }
+    // Create upload directory if it does not exist
+    if (!is_dir($uploadDir) && !mkdir($uploadDir, 0777, true)) {
+        $_SESSION['modal_message'] = 'Failed to create upload directory.';
+        header('Location: '.$_SERVER['PHP_SELF']);
+        exit;
     }
 
+    // Move uploaded file
     if (move_uploaded_file($_FILES['file']['tmp_name'], $uploadFile)) {
-        $stmt = $conn->prepare('INSERT INTO orders (order_id, user_id, document_upload) VALUES (?, ?, ?)');
-        if ($stmt) {
-            $stmt->bind_param('sis', $orderId, $userId, $uploadFile);
-            if ($stmt->execute()) {
-                $_SESSION['document_upload'] = $uploadFile;
-                $_SESSION['order_id'] = $orderId;
-                header('Location: add_services.php');
-                exit;
+        // Insert data into `orders` table
+        $stmtOrder = $conn->prepare('INSERT INTO orders (order_id, user_id) VALUES (?, ?)');
+        if ($stmtOrder) {
+            $stmtOrder->bind_param('si', $orderId, $userId);
+            if ($stmtOrder->execute()) {
+                // Insert the first document into `order_documents` table
+                $stmtDoc = $conn->prepare('INSERT INTO order_documents (order_id, document_upload, user_id) VALUES (?,?, ?)');
+                if ($stmtDoc) {
+                    $stmtDoc->bind_param('ssi', $orderId, $uploadFile, $userId);
+                    if ($stmtDoc->execute()) {
+                        $_SESSION['document_upload'] = $uploadFile;
+                        $_SESSION['order_id'] = $orderId;
+                        header('Location: add_services.php');
+                        exit;
+                    } else {
+                        $_SESSION['modal_message'] = 'Database error (order_documents): '.$stmtDoc->error;
+                    }
+                    $stmtDoc->close();
+                } else {
+                    $_SESSION['modal_message'] = 'Failed to prepare SQL statement for order_documents: '.$conn->error;
+                }
             } else {
-                $_SESSION['modal_message'] = 'Database error: '.$stmt->error;
+                $_SESSION['modal_message'] = 'Database error (orders): '.$stmtOrder->error;
             }
-            $stmt->close();
+            $stmtOrder->close();
         } else {
-            $_SESSION['modal_message'] = 'Failed to prepare the SQL statement: '.$conn->error;
+            $_SESSION['modal_message'] = 'Failed to prepare SQL statement for orders: '.$conn->error;
         }
     } else {
         $_SESSION['modal_message'] = 'An error occurred during file upload.';
@@ -77,6 +90,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
 $conn->close();
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">

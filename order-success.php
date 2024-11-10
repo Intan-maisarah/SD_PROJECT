@@ -33,23 +33,17 @@ $stmt->close();
     <link rel="stylesheet" href="assets/order.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Thank You for Your Order!</h1>
-        <p>Your order has been successfully processed.</p>
-        <h2>Order Details:</h2>
-        <ul>
+    <div class="order-success-container">
+        <h1 class="order-success-title">Thank You for Your Order!</h1>
+        <p class="order-success-message">Your order has been successfully processed.</p>
+        <h2 class="order-details-title">Order Details:</h2>
+        <ul class="order-details-list">
             <li><strong>Order ID:</strong> <?php echo htmlspecialchars($order['order_id']); ?></li>
             <li><strong>Total Price:</strong> RM <?php echo number_format($order['total_order_price'], 2); ?></li>
             <li><strong>Status:</strong> <?php echo htmlspecialchars($order['status']); ?></li>
         </ul>
-
-        
-
-
-       
-
-        <p>If you have any questions, please <a href="contact.php">contact us</a></p>
-        <p><a href="index.php">Back to Home</a></p>
+        <p>If you have any questions, please <a href="contact.php" class="order-contact-link">contact us</a></p>
+        <p><a href="index.php" class="order-home-link">Back to Home</a></p>
     </div>
 </body>
 </html>

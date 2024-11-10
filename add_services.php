@@ -3,7 +3,6 @@ session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 include 'connection.php';
-
 ?>
 
 <!DOCTYPE html>
@@ -19,7 +18,6 @@ include 'connection.php';
         /* Container for document display and specifications */
         .document-container {
             margin: 20px auto;
-            max-width: 800px;
             text-align: center;
         }
 
@@ -32,16 +30,16 @@ include 'connection.php';
             color: #555;
             font-size: 18px;
             margin: 20px 0;
-            position: relative; /* For positioning inner content */
-            overflow: hidden; /* Hide overflow */
-            cursor: pointer; /* Cursor change for clickable area */
+            position: relative; 
+            overflow: hidden;
+            cursor: pointer; 
         }
 
         /* PDF Viewer Styling */
         #pdf-viewer {
             width: 100%;
             height: 100%;
-            position: absolute; /* Absolute positioning within the box */
+            position: absolute; 
             top: 0;
             left: 0;
         }
@@ -108,147 +106,249 @@ include 'connection.php';
 
     <!-- Document Viewer Section -->
     <section class="document-container">
-        <h2 class="mt-5">Print Details</h2>
+    <h2 class="mt-5 text-center">Print Details</h2>
 
-        <?php
-        $order_id = $_GET['order_id'] ?? $_SESSION['order_id'] ?? null;
+    <?php
+    $order_id = $_GET['order_id'] ?? $_SESSION['order_id'] ?? null;
 
 if ($order_id) {
-    $stmt = $conn->prepare('SELECT document_upload FROM orders WHERE order_id = ?');
+    // Start the form that encompasses all documents
+    echo '<form method="POST" action="order_summary.php" class="container mt-4" style="width: 1200px; background-color:#e6e1ff ">';
+    echo '<input type="hidden" name="order_id" value="'.htmlspecialchars($order_id).'">';
+    echo '<div class="uploaded-documents">';
+
+    // Fetch all documents related to the order
+    $stmt = $conn->prepare('SELECT document_upload FROM order_documents WHERE order_id = ?');
     $stmt->bind_param('s', $order_id);
     $stmt->execute();
-    $stmt->bind_result($document_upload);
-    $stmt->fetch();
-    $stmt->close();
+    $result = $stmt->get_result();
 
-    if ($document_upload && file_exists($document_upload)) {
-        $uploadedDocumentPath = $document_upload;
-        $fileExtension = strtolower(pathinfo($uploadedDocumentPath, PATHINFO_EXTENSION));
-        if ($fileExtension === 'pdf') {
-            echo '<div id="a4-box" onclick="openPdfModal()"><div id="pdf-viewer"></div><div id="number-of-pages"></div></div>';
-            echo '<script>
-                        pdfjsLib.getDocument("'.htmlspecialchars($uploadedDocumentPath).'").promise.then(function(pdf) {
-                            const numPages = pdf.numPages;
-                            document.getElementById("number-of-pages").textContent = "Total Pages: " + numPages;
-                            document.getElementById("page-count").value = numPages; 
-                        }).catch(function(error) {
-                            console.error("Error loading PDF: ", error);
-                        });
-                    </script>';
-        } elseif (in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif'])) {
-            echo '<img src="'.htmlspecialchars($uploadedDocumentPath).'" alt="Uploaded Document" style="width: 100%; max-width: 800px;">';
+    if ($result && $result->num_rows > 0) {
+        echo '<h4 class="text-center mb-4">Uploaded Documents and Specifications</h4>';
+        while ($row = $result->fetch_assoc()) {
+            $uploadedDocumentPath = $row['document_upload'];
+            $fileExtension = strtolower(pathinfo($uploadedDocumentPath, PATHINFO_EXTENSION));
 
-            $estimatedPageCount = 1;
-            echo '<script>
-            document.getElementById("page-count").value = '.$estimatedPageCount.';
-          </script>';
-        } elseif (in_array($fileExtension, ['doc', 'docx'])) {
-            $zip = new ZipArchive();
-            if ($zip->open($uploadedDocumentPath) === true) {
-                $xmlContent = $zip->getFromName('word/document.xml');
-                $zip->close();
+            if (file_exists($uploadedDocumentPath)) {
+                echo '<div class="document-spec-container" style="display: flex; align-items: center; gap: 20px; margin-bottom: 40px;">';
 
-                $xml = simplexml_load_string($xmlContent);
-                if ($xml === false) {
-                    echo '<p>Error reading document content.</p>';
-                    exit;
+                // Document Preview Section
+                echo '<div class="document-box" style="flex: 2; border: 1px solid #ccc; padding: 15px; background-color: #f9f9f9; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);">';
+                if ($fileExtension === 'pdf') {
+                    $uniqueId = md5($uploadedDocumentPath);
+
+                    echo '<div class="a4-box" id="a4-box-'.$uniqueId.'" onclick="openPdfModal(\''.htmlspecialchars($uploadedDocumentPath).'\')" style="width: 210mm; height: 297mm; border: 1px solid #ccc; overflow: hidden; position: relative; box-shadow: 0px 2px 6px rgba(0, 0, 0, 0.1);">
+                              <canvas id="pdf-canvas-'.$uniqueId.'" style="width: 100%; height: 100%;"></canvas>
+                          </div>';
+                    echo '<input type="hidden" id="page-count-'.$uniqueId.'" name="page_count[]" value="0">';
+
+                    echo '<script>
+                            document.addEventListener("DOMContentLoaded", function() {
+                                const pdfUrl = "'.htmlspecialchars($uploadedDocumentPath).'";
+                                const canvasId = "pdf-canvas-'.$uniqueId.'";
+                                const pageCountInputId = "page-count-'.$uniqueId.'";
+                                const loadingTask = pdfjsLib.getDocument(pdfUrl);
+                
+                                loadingTask.promise.then(function(pdf) {
+                                    console.log("PDF loaded successfully: ", pdfUrl);
+                                    const numPages = pdf.numPages;
+                                    console.log("Number of pages: ", numPages);
+                                    
+                                    // Update the page count input
+                                    document.getElementById(pageCountInputId).value = numPages;
+                
+                                    // Render the first page of the PDF
+                                    pdf.getPage(1).then(function(page) {
+                                        console.log("Rendering page 1 for: ", pdfUrl);
+                                        const scale = 1.0; // Adjust scale if needed
+                                        const viewport = page.getViewport({ scale: scale });
+                
+                                        const canvas = document.getElementById(canvasId);
+                                        if (!canvas) {
+                                            console.error("Canvas element not found: ", canvasId);
+                                            return;
+                                        }
+                                        const context = canvas.getContext("2d");
+                                        if (!context) {
+                                            console.error("Canvas context could not be retrieved.");
+                                            return;
+                                        }
+                
+                                        canvas.height = viewport.height;
+                                        canvas.width = viewport.width;
+                
+                                        const renderContext = {
+                                            canvasContext: context,
+                                            viewport: viewport
+                                        };
+                                        page.render(renderContext).promise.then(function() {
+                                            console.log("Page rendered successfully.");
+                                        }).catch(function(error) {
+                                            console.error("Error rendering page: ", error);
+                                        });
+                                    }).catch(function(error) {
+                                        console.error("Error getting page 1: ", error);
+                                    });
+                                }).catch(function(error) {
+                                    console.error("Error loading PDF: ", error);
+                                });
+                            });
+                          </script>';
+                } elseif (in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif'])) {
+                    echo '<img src="'.htmlspecialchars($uploadedDocumentPath).'" alt="Uploaded Document" style="width: 100%; max-width: 210mm;">';
+                    echo '<input type="hidden" id="page-count-'.$uniqueId.'" name="page_count[]" value="1">';
+                } elseif (in_array($fileExtension, ['doc', 'docx'])) {
+                    $zip = new ZipArchive();
+                    $uniqueId = md5($uploadedDocumentPath);
+
+                    if ($zip->open($uploadedDocumentPath) === true) {
+                        $xmlContent = $zip->getFromName('word/document.xml');
+                        $zip->close();
+
+                        $xml = simplexml_load_string($xmlContent);
+                        if ($xml === false) {
+                            echo '<p>Error reading document content.</p>';
+                            exit;
+                        }
+
+                        $paragraphs = $xml->xpath('//w:p');
+                        $paragraphCount = count($paragraphs);
+
+                        $linesPerPage = 10; // Assuming there are about 10 paragraphs per page
+                        $estimatedPageCount = ceil($paragraphCount / $linesPerPage);
+
+                        // Display the document preview (using Microsoft Office Online viewer)
+                        echo '<iframe src="https://view.officeapps.live.com/op/embed.aspx?src='.urlencode('http://'.$_SERVER['HTTP_HOST'].'/'.$uploadedDocumentPath).'" width="100%" height="600px"></iframe>';
+
+                        // Set the page count using JavaScript
+                        echo '<script>
+                                 document.getElementById("page-count-'.$uniqueId.'").value = '.$estimatedPageCount.';
+                              </script>';
+                    } else {
+                        echo '<p>Failed to open the DOCX file.</p>';
+                    }
+                } elseif ($fileExtension === 'txt') {
+                    $uniqueId = md5($uploadedDocumentPath);
+                    $content = htmlspecialchars(file_get_contents($uploadedDocumentPath));
+                    echo '<pre>'.$content.'</pre>';
+
+                    $lineCount = substr_count($content, "\n") + 1;
+                    $linesPerPage = 10; // Assuming there are about 10 lines per page
+                    $estimatedPageCount = ceil($lineCount / $linesPerPage);
+                    echo '<input type="hidden" id="page-count-'.$uniqueId.'" name="page_count[]" value="0">';
+                    // Set the page count using JavaScript
+                    echo '<script>
+                             document.getElementById("page-count-'.$uniqueId.'").value = '.$estimatedPageCount.';
+                          </script>';
+                } else {
+                    echo '<p>Unsupported file type. Please download to view.</p>';
+                    echo '<a href="'.htmlspecialchars($uploadedDocumentPath).'" download>Download Document</a>';
+                }
+                echo '</div>'; // End of Document Box
+
+                // Print Specification Form Section for Each Document
+                echo '<div class="spec-form-container" style="flex: 1; border: 1px solid #ccc; padding: 15px; background-color:#ffeae1 ; box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);">';
+                echo '<h4>Select Print Specifications:</h4>';
+                echo '<input type="hidden" name="document_path[]" value="'.htmlspecialchars($uploadedDocumentPath).'">';
+                echo '<input type="hidden" id="file-extension" value="">';
+                echo '<input type="hidden" id="page-count" name="page_count[]" value="0">';
+
+                $query = "SELECT sn.spec_name, s.spec_type, s.price FROM specification s JOIN spec_names sn ON s.spec_name_id = sn.id WHERE s.status = 'available'";
+                $spec_result = $conn->query($query);
+                $specification = [];
+                if ($spec_result && $spec_result->num_rows > 0) {
+                    while ($row = $spec_result->fetch_assoc()) {
+                        $specification[$row['spec_name']][] = $row['spec_type'];
+                    }
                 }
 
-                $paragraphs = $xml->xpath('//w:p');
-                $paragraphCount = count($paragraphs);
+                foreach ($specification as $spec_name => $spec_types) {
+                    echo '<label for="'.strtolower($spec_name).'" style="font-weight: bold;">'.htmlspecialchars($spec_name).':</label>';
+                    echo '<select name="specification_id[]" id="'.strtolower($spec_name).'" style="width: 100%; padding: 8px; margin-bottom: 10px;">';
+                    foreach ($spec_types as $spec_type) {
+                        echo '<option value="'.htmlspecialchars($spec_type).'">'.htmlspecialchars($spec_type).'</option>';
+                    }
+                    echo '</select>';
+                }
 
-                $linesPerPage = 10;
-                $estimatedPageCount = ceil($paragraphCount / $linesPerPage);
-                echo '<iframe src="https://view.officeapps.live.com/op/embed.aspx?src='.urlencode('http://'.$_SERVER['HTTP_HOST'].'/'.$uploadedDocumentPath).'" width="100%" height="600px"></iframe>';
-                echo '<script>
-                    document.getElementById("page-count").value = '.$estimatedPageCount.';
-                  </script>';
+                echo '<label style="font-weight: bold;">Quantity</label>';
+                echo '<input type="number" name="quantity[]" value="1" min="1" style="width: 100%; padding: 8px; margin-bottom: 10px;" placeholder="Quantity" /><br>';
+                echo '</div>'; // End of Spec Form Container
+
+                echo '</div>'; // End of Document-Spec Container
             } else {
-                echo '<p>Failed to open the DOCX file.</p>';
+                echo '<p>Document not found or file does not exist: '.htmlspecialchars(basename($uploadedDocumentPath)).'</p>';
             }
-        } elseif ($fileExtension === 'txt') {
-            $content = htmlspecialchars(file_get_contents($uploadedDocumentPath));
-            echo '<pre>'.$content.'</pre>';
-            $lineCount = substr_count($content, "\n") + 1;
-            $estimatedPageCount = ceil($lineCount / $linesPerPage);
-            echo '<script>
-            document.getElementById("page-count").value = '.$estimatedPageCount.';
-          </script>';
-        } else {
-            echo '<p>Unsupported file type. Please download to view.</p>';
-            echo '<a href="'.htmlspecialchars($uploadedDocumentPath).'" download>Download Document</a>';
-            echo '<script>
-            document.getElementById("page-count").value = '.$defaultPageCount.';
-          </script>';
         }
+
+        // End of document specification details
+        echo '</div>';
+
+        // Delivery Options and Checkout Section (Outside the Loop)
+        echo '<div class="delivery-options mt-5">';
+        echo '<h4>Delivery Method:</h4>';
+        echo '<div style="margin-bottom: 10px;">';
+        echo '<input type="radio" id="pickup" name="delivery_method" value="pickup" required onclick="toggleDeliveryOptions()">';
+        echo '<label for="pickup">Pickup</label>';
+        echo '<input type="radio" id="delivery" name="delivery_method" value="delivery" onclick="toggleDeliveryOptions()" style="margin-left: 20px;">';
+        echo '<label for="delivery">Delivery</label><br>';
+        echo '</div>';
+
+        echo '<div id="pickupOptions" style="display: none; margin-top: 15px;">';
+        echo '<label for="pickup_date">Select Pickup Date:</label>';
+        echo '<input type="datetime-local" name="pickup_appointment" id="pickup_appointment" style="width: 100%; padding: 8px;">';
+        echo '</div>';
+
+        echo '<div id="deliveryOptions" style="display: none; margin-top: 15px;">';
+        echo '<label for="delivery_location">Select Delivery Location:</label>';
+        echo '<select name="delivery_location" id="delivery_location" style="width: 100%; padding: 8px; margin-bottom: 10px;">';
+        echo '<option value="">Select a location</option>';
+
+        $stmt_location = $conn->prepare('SELECT id, location_name FROM delivery_locations');
+        $stmt_location->execute();
+        $stmt_location->bind_result($location_id, $location_name);
+        while ($stmt_location->fetch()) {
+            echo '<option value="'.htmlspecialchars($location_id).'">'.htmlspecialchars($location_name).'</option>';
+        }
+        $stmt_location->close();
+
+        echo '</select>';
+        echo '<label for="delivery_time">Delivery Time:</label>';
+        echo '<input type="datetime-local" name="delivery_time" id="delivery_time" style="width: 100%; padding: 8px;">';
+        echo '</div>';
+
+        echo '</div>'; // End of Delivery Options
+
+        // Checkout and Cancel Buttons
+        echo '<div class="checkout-cancel-buttons mt-4" style="text-align: center;">';
+        echo '<input type="submit" value="Checkout" class="checkout-btn" style="background-color: #7be07b; color: white; padding: 10px 20px; border: none; border-radius: 20px; margin-right: 20px;">';
+        echo '<button type="button" onclick="cancelOrder()" class="cancel-btn" style="background-color: #e07b7b; color: white; padding: 10px 20px; border: none; border-radius: 20px;">Cancel Order</button>';
+        echo '</div>';
+
+        // Close the form
+        echo '</form>';
     } else {
-        echo '<p>Document not found or file does not exist.</p>';
+        echo '<p>No documents uploaded yet for this order.</p>';
     }
+    $stmt->close();
 } else {
     echo '<p>No order ID provided.</p>';
 }
 ?>
 
-        <!-- Print Specification Form -->
-        <h4>Select Print Specifications:</h4>
-        <form method="POST" action="order_summary.php" class="container mt-4">
+    <!-- Add New Document Form -->
+    <div class="add-document-form mt-5">
+        <h4>Add New Document</h4>
+        <form method="POST" action="add_document.php" enctype="multipart/form-data" style="max-width: 600px; margin: auto;">
             <input type="hidden" name="order_id" value="<?php echo htmlspecialchars($order_id); ?>">
-            <input type="hidden" id="file-extension" value="<?php echo htmlspecialchars($fileExtension); ?>">
-            <input type="hidden" id="page-count" name="page_count" value="0">
-            
-            <?php
-    $query = "SELECT sn.spec_name, s.spec_type, s.price FROM specification s JOIN spec_names sn ON s.spec_name_id = sn.id WHERE s.status = 'available'";
-$result = $conn->query($query);
-$specification = [];
-if ($result && $result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $specification[$row['spec_name']][] = $row['spec_type'];
-    }
-}
-?>
-
-<?php foreach ($specification as $spec_name => $spec_types) { ?>
-                <label for="<?php echo strtolower($spec_name); ?>"><?php echo htmlspecialchars($spec_name); ?>:</label>
-                <select name="specification_id[]" id="<?php echo strtolower($spec_name); ?>">
-                    <?php foreach ($spec_types as $spec_type) { ?>
-                        <option value="<?php echo htmlspecialchars($spec_type); ?>"><?php echo htmlspecialchars($spec_type); ?></option>
-                    <?php } ?>
-                </select>
-            <?php } ?>
-            <label>Quantity</label>
-            <input type="number" name="quantity" value="1" min="1" placeholder="Quantity" /><br>
-            <label>Delivery Method:</label>
-<input type="radio" id="pickup" name="delivery_method" value="pickup" required onclick="toggleDeliveryOptions()">
-<label for="pickup">Pickup</label>
-<input type="radio" id="delivery" name="delivery_method" value="delivery" onclick="toggleDeliveryOptions()">
-<label for="delivery">Delivery</label><br>
-
-<div id="pickupOptions" style="display: none;">
-    <label for="pickup_date">Select Pickup Date:</label>
-    <input type="datetime-local" name="pickup_appointment" id="pickup_appointment">
-</div>
-<div id="deliveryOptions" style="display: none;">
-    <label for="delivery_location">Select Delivery Location:</label>
-    <select name="delivery_location" id="delivery_location">
-        <option value="">Select a location</option>
-        <?php
-        $stmt = $conn->prepare('SELECT id, location_name FROM delivery_locations');
-$stmt->execute();
-$stmt->bind_result($location_id, $location_name);
-while ($stmt->fetch()) {
-    echo '<option value="'.htmlspecialchars($location_id).'">'.htmlspecialchars($location_name).'</option>';
-}
-$stmt->close();
-?>
-    </select>
-    <label for="delivery_time">Delivery Time:</label>
-    <input type="datetime-local" name="delivery_time" id="delivery_time">
-</div>
-
-            <input type="submit" value="Checkout" class="checkout-btn">
-            <button onclick="cancelOrder()" class="cancel-btn">Cancel Order</button>        
+            <div class="form-group">
+                <label for="file">Choose Document to Upload:</label>
+                <input type="file" name="file" id="file" class="form-control" required style="width: 100%; padding: 8px;">
+            </div>
+            <button type="submit" class="btn btn-primary" style="background-color: #3650a6; color: white; padding: 10px 20px; border: none; border-radius: 20px;">Upload Document</button>
         </form>
-    </section>
+    </div>
+</section>
 
     <!-- PDF Modal -->
     <div class="modal fade" id="pdfModal" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
@@ -302,12 +402,12 @@ $stmt->close();
         console.error('Error loading PDF: ', error);
     });
 
-        function openPdfModal() {
-            $('#pdfModal').modal('show');
-            const pdfUrl = '<?php echo htmlspecialchars($uploadedDocumentPath); ?>';
-            const modalViewer = document.getElementById('pdf-viewer-modal');
-            modalViewer.innerHTML = `<iframe src="${pdfUrl}" width="100%" height="600px"></iframe>`;
-        }
+    function openPdfModal(pdfUrl) {
+    $('#pdfModal').modal('show');
+    const modalViewer = document.getElementById('pdf-viewer-modal');
+    modalViewer.innerHTML = `<iframe src="${pdfUrl}" width="100%" height="600px" style="border: none;"></iframe>`;
+}
+
 
         function toggleDeliveryOptions() {
     const pickupOptions = document.getElementById('pickupOptions');
@@ -343,7 +443,7 @@ $stmt->close();
 
 function cancelOrder() {
     if (confirm('Are you sure you want to cancel this order?')) {
-        window.history.back(); 
+        window.location.href="index.php"; 
     }
 }
 
@@ -387,10 +487,10 @@ const BUSINESS_HOURS_END = 18;
 
 function validateBusinessHours(selectedDateTime) {
     const selectedDate = new Date(selectedDateTime);
-    const dayOfWeek = selectedDate.getUTCDay();
-    const hour = selectedDate.getUTCHours();
+    const dayOfWeek = selectedDate.getDay();  
+    const hour = selectedDate.getHours();     
     
-    if (dayOfWeek >= 1 && dayOfWeek <= 5) {
+    if (dayOfWeek >= 1 && dayOfWeek <= 5) {  
         if (hour >= BUSINESS_HOURS_START && hour < BUSINESS_HOURS_END) {
             return true;
         } else {
@@ -427,8 +527,6 @@ document.querySelector("form").addEventListener("submit", function(event) {
         event.preventDefault(); 
     }
 });
-
-
 
     </script>
 </body>
