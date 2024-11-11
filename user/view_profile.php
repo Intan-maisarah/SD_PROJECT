@@ -4,31 +4,31 @@ session_start();
 
 $user_id = $_SESSION['user_id'] ?? null;
 if (!$user_id) {
-    die('User not logged in.');
+    exit('User not logged in.');
 }
 
-$query = "SELECT name, username, email, contact, address FROM users WHERE id = ?";
+$query = 'SELECT name, username, email, contact, address FROM users WHERE id = ?';
 $stmt = $conn->prepare($query);
-$stmt->bind_param("i", $user_id);
+$stmt->bind_param('i', $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
-    $name = $row['name'] ?? "N/A";
-    $username = $row['username'] ?? "N/A";
-    $email = $row['email'] ?? "N/A";
-    $contact = $row['contact'] ?? "N/A";
-    $address = $row['address'] ?? "N/A";
+    $name = $row['name'] ?? 'N/A';
+    $username = $row['username'] ?? 'N/A';
+    $email = $row['email'] ?? 'N/A';
+    $contact = $row['contact'] ?? 'N/A';
+    $address = $row['address'] ?? 'N/A';
 } else {
-    $name = "N/A";
-    $username = "N/A";
-    $email = "N/A";
-    $contact = "N/A";
-    $address = "N/A";
+    $name = 'N/A';
+    $username = 'N/A';
+    $email = 'N/A';
+    $contact = 'N/A';
+    $address = 'N/A';
 }
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $username = $_POST['username'];
     $name = $_POST['name'];
     $email = $_POST['email'];
@@ -36,20 +36,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $address = $_POST['address'];
 
     if (empty($name) || empty($email) || empty($contact) || empty($address)) {
-        $error = "All fields are required.";
+        $error = 'All fields are required.';
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $error = "Invalid email format.";
+        $error = 'Invalid email format.';
     } else {
-        $sql = "UPDATE users SET name=?, username=?, email=?, contact=?, address=? WHERE id=?";
+        $sql = 'UPDATE users SET name=?, username=?, email=?, contact=?, address=? WHERE id=?';
         $stmt = $conn->prepare($sql);
-        $stmt->bind_param("sssssi", $name, $username, $email, $contact, $address, $user_id);
+        $stmt->bind_param('sssssi', $name, $username, $email, $contact, $address, $user_id);
 
         if ($stmt->execute()) {
-            $success = "Profile updated successfully.";
-            header("Location: view_profile.php");
-            exit();
+            $success = 'Profile updated successfully.';
+            header('Location: view_profile.php');
+            exit;
         } else {
-            $error = "Error updating profile: " . $stmt->error;
+            $error = 'Error updating profile: '.$stmt->error;
         }
         $stmt->close();
     }
@@ -69,44 +69,42 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <body>
 <br>
     <div class="container-xl px-4 mt-4">
-    <nav class="navbar navbar-expand-lg navbar-light fixed-top">
+<nav class="navbar navbar-expand-lg navbar-light fixed-top">
         <div class="container">
-            <a class="navbar-brand" href="#"><img src="../assets/images/logo.png" alt="Logo" style="width: 100px; height: auto;"></a>
+            <a class="navbar-brand" href="index.php"><img src="../assets/images/logo.png" alt="Logo" style="width: 100px; height: auto;"></a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <nav>
-                <div id="marker"></div>
-                <a href="../index.php#home" class="active">Home</a>
-                <a href="../index.php#services">Services</a>
-                <a href="../index.php#about">About</a>
-                <a href="../index.php#contact">Contact</a>
-                <a href="../index.php#feedback">Feedback</a>
-
+                    <a href="../index.php" class="active">Home</a>
+                    <a href="../servicepage.php">Services</a>
+                    <a href="../about.php">About Us</a>
+                    <a href="../contact.php">Contact Us</a>
                 </nav>
-                <?php if (!isset($_SESSION['signin'])): ?>
+                <?php if (!isset($_SESSION['signin'])) { ?>
                     <div class="nav-item">
-                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='signin.php'">Log In</button>
+                        <button class="btn btn-primary rounded sm-4" onclick="window.location.href='signin.php'">Log In</button>
                     </div>
                     <div class="nav-item">
-                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='signup.php'">Sign Up</button>
+                        <button class="btn btn-primary rounded sm-4" onclick="window.location.href='signup.php'">Sign Up</button>
                     </div>
-                <?php else: ?>
+                <?php } else { ?>
+                    <a href="../order_history.php">History</a>
                     <div class="nav-item">
-                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='../logout.php'">Log Out</button>
+                        <button class="btn btn-primary rounded sm-4" onclick="window.location.href='../logout.php'">Log Out</button>
                     </div>
                     <div class="nav-item">
-                        <button class="btn btn-primary rounded ml-4" onclick="window.location.href='view_profile.php'">Profile</button>
+                        <button class="btn btn-primary rounded sm-4" onclick="window.location.href='view_profile.php'">Profile</button>
                     </div>
-                <?php endif; ?>
+                <?php } ?>
             </div>
         </div>
     </nav>
         <hr class="mt-0 mb-4">
     
         <!-- View Profile Section -->
-        <div id="viewProfile">
+        <div id="viewProfile" style="margin-top:100px;">
             <div class="row">
                 
                 <div class="col-xl-8">
@@ -127,14 +125,14 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         </div>
 
         <!-- Edit Profile Section -->
-        <div id="editProfile" style="display: none;">
+        <div id="editProfile" style="display: none; margin-top:100px;">
             <div class="row">
                 
                 <div class="col-xl-8">
                     <div class="card mb-4">
                         <div class="card-header">Edit Account Details</div>
                         <div class="card-body">
-                            <form action="view_profile.php" method="POST">
+                            <form action="view_profile.php" method="POST" style="background-color:#f0edff ">
                                 <div class="mb-3">
                                     <label class="small mb-1" for="inputUsername">Username</label>
                                     <input class="form-control" name="username" id="inputUsername" type="text" placeholder="Enter your username" value="<?php echo htmlspecialchars($username); ?>" required>

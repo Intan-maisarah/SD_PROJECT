@@ -209,18 +209,26 @@ require '../../connection.php';
 if (isset($_POST['submit'])) {
     $fdate = $_POST['fdate'];
     $tdate = $_POST['tdate'];
+    $fromDate = new DateTime($fdate);
+    $toDate = new DateTime($tdate);
     $rtype = $_POST['requesttype'];
 
     if ($rtype == 'mtwise') {
         $month1 = strtotime($fdate);
         $month2 = strtotime($tdate);
-        $m1 = date('F', $month1);
-        $m2 = date('F', $month2);
-        $y1 = date('Y', $month1);
-        $y2 = date('Y', $month2);
+        $m1 = $fromDate->format('F');
+        $y1 = $fromDate->format('Y');
+
+        $m2 = $toDate->format('F');
+        $y2 = $toDate->format('Y');
+
+        if ($m1 === $m2 && $y1 === $y2) {
+            echo "<h4 align='center' style='color:blue'>Sales Report for $m1-$y1</h4>";
+        } else {
+            echo "<h4 align='center' style='color:blue'>Sales Report from $m1-$y1 to $m2-$y2</h4>";
+        }
+
         ?>
-                        <h4 class="header-title m-t-0 m-b-30">Sales Report Month Wise</h4>
-                        <h4 align="center" style="color:blue">Sales Report from <?php echo $m1.'-'.$y1; ?> to <?php echo $m2.'-'.$y2; ?></h4>
                         <hr>
                         <div class="row">
                             <table class="table table-bordered" width="100%" border="0">
@@ -233,29 +241,18 @@ if (isset($_POST['submit'])) {
                                 </thead>
                                 <tbody>
                                 <?php
-                $query = "
-                                    SELECT 
-                                        MONTH(pickup_appointment) AS month,
-                                        YEAR(pickup_appointment) AS year,
-                                        SUM(total_order_price) AS total_order_price
-                                    FROM 
-                                        orders
-                                    WHERE 
-                                        DATE(pickup_appointment) BETWEEN '$fdate' AND '$tdate' 
-                                    GROUP BY 
-                                        month, year
-                                    UNION ALL
-                                    SELECT 
-                                        MONTH(delivery_time) AS month,
-                                        YEAR(delivery_time) AS year,
-                                        SUM(total_order_price) AS total_order_price
-                                    FROM 
-                                        orders
-                                    WHERE 
-                                        DATE(delivery_time) BETWEEN '$fdate' AND '$tdate' 
-                                    GROUP BY 
-                                        month, year
-                                ";
+                 $query = "
+                 SELECT 
+                     MONTH(created_at) AS month,
+                     YEAR(created_at) AS year,
+                     SUM(total_order_price) AS total_order_price
+                 FROM 
+                     orders
+                 WHERE 
+                     DATE(created_at) BETWEEN '$fdate' AND '$tdate' 
+                 GROUP BY 
+                     month, year
+             ";
 
         $ret = mysqli_query($conn, $query);
         if (!$ret) {
@@ -266,81 +263,56 @@ if (isset($_POST['submit'])) {
         if ($num > 0) {
             $cnt = 1;
             $ftotal = 0;
-            $salesData = [];
             while ($row = mysqli_fetch_array($ret)) {
-                $key = $row['month'].'/'.$row['year'];
-                if (!isset($salesData[$key])) {
-                    $salesData[$key] = 0;
-                }
-                $salesData[$key] += $row['total_order_price'];
-            }
-
-            foreach ($salesData as $key => $total) {
-                ?>
-                                        <tr>
-                                            <td><?php echo $cnt; ?></td>
-                                            <td><?php echo $key; ?></td>
-                                            <td><?php echo $total; ?></td>
-                                        </tr>
-                                        <?php
-                $ftotal += $total;
+                $monthYear = date('F', mktime(0, 0, 0, $row['month'], 10)).'/'.$row['year'];
+                echo "<tr>
+                        <td>{$cnt}</td>
+                        <td>{$monthYear}</td>
+                        <td>{$row['total_order_price']}</td>
+                    </tr>";
+                $ftotal += $row['total_order_price'];
                 ++$cnt;
             }
-            ?>
-                                    <tr>
-                                        <td colspan="2" align="center">Total</td>
-                                        <td><?php echo $ftotal; ?></td>
-                                    </tr>
-                                    <?php
+
+            echo "<tr>
+                    <td colspan='2' align='center'>Total</td>
+                    <td>{$ftotal}</td>
+                </tr>";
         } else {
             echo "<tr><td colspan='3' align='center'>No records found.</td></tr>";
         }
-        ?>
-                                </tbody>
-                            </table>
-                        </div>
-                        <?php
-    } else {
+
+        echo '</tbody></table></div>';
+    } else { // Year-wise Report
         $year1 = strtotime($fdate);
         $year2 = strtotime($tdate);
         $y1 = date('Y', $year1);
         $y2 = date('Y', $year2);
-        ?>
-                        <h4 class="header-title m-t-0 m-b-30">Sales Report Year Wise</h4>
-                        <h4 align="center" style="color:blue">Sales Report from <?php echo $y1; ?> to <?php echo $y2; ?></h4>
-                        <hr>
-                        <div class="row">
-                            <table class="table table-bordered" width="100%" border="0">
-                                <thead>
-                                <tr>
-                                    <th>S.NO</th>
-                                    <th>Year</th>
-                                    <th>Sales</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <?php
-                $query = "
-                                    SELECT 
-                                        YEAR(pickup_appointment) AS year,
-                                        SUM(total_order_price) AS total_order_price
-                                    FROM 
-                                        orders
-                                    WHERE 
-                                        DATE(pickup_appointment) BETWEEN '$fdate' AND '$tdate' 
-                                    GROUP BY 
-                                        year
-                                    UNION ALL
-                                    SELECT 
-                                        YEAR(delivery_time) AS year,
-                                        SUM(total_order_price) AS total_order_price
-                                    FROM 
-                                        orders
-                                    WHERE 
-                                        DATE(delivery_time) BETWEEN '$fdate' AND '$tdate' 
-                                    GROUP BY 
-                                        year
-                                ";
+
+        echo "<h4 class='header-title m-t-0 m-b-30'>Sales Report Year Wise</h4>";
+        echo "<h4 align='center' style='color:blue'>Sales Report from $y1 to $y2</h4>";
+        echo '<hr>';
+        echo "<div class='row'>";
+        echo "<table class='table table-bordered' width='100%' border='0'>
+                <thead>
+                    <tr>
+                        <th>S.NO</th>
+                        <th>Year</th>
+                        <th>Sales</th>
+                    </tr>
+                </thead>
+                <tbody>";
+        $query = "
+                SELECT 
+                    YEAR(created_at) AS year,
+                    SUM(total_order_price) AS total_order_price
+                FROM 
+                    orders
+                WHERE 
+                    DATE(created_at) BETWEEN '$fdate' AND '$tdate' 
+                GROUP BY 
+                    year
+            ";
 
         $ret = mysqli_query($conn, $query);
         if (!$ret) {
@@ -351,40 +323,25 @@ if (isset($_POST['submit'])) {
         if ($num > 0) {
             $cnt = 1;
             $ftotal = 0;
-            $salesData = [];
             while ($row = mysqli_fetch_array($ret)) {
-                $year = $row['year'];
-                if (!isset($salesData[$year])) {
-                    $salesData[$year] = 0;
-                }
-                $salesData[$year] += $row['total_order_price'];
-            }
-
-            foreach ($salesData as $year => $total) {
-                ?>
-                                        <tr>
-                                            <td><?php echo $cnt; ?></td>
-                                            <td><?php echo $year; ?></td>
-                                            <td><?php echo $total; ?></td>
-                                        </tr>
-                                        <?php
-                $ftotal += $total;
+                echo "<tr>
+                        <td>{$cnt}</td>
+                        <td>{$row['year']}</td>
+                        <td>{$row['total_order_price']}</td>
+                    </tr>";
+                $ftotal += $row['total_order_price'];
                 ++$cnt;
             }
-            ?>
-                                    <tr>
-                                        <td colspan="2" align="center">Total</td>
-                                        <td><?php echo $ftotal; ?></td>
-                                    </tr>
-                                    <?php
+
+            echo "<tr>
+                    <td colspan='2' align='center'>Total</td>
+                    <td>{$ftotal}</td>
+                </tr>";
         } else {
             echo "<tr><td colspan='3' align='center'>No records found.</td></tr>";
         }
-        ?>
-                                </tbody>
-                            </table>
-                        </div>
-                        <?php
+
+        echo '</tbody></table></div>';
     }
 }
 ?>

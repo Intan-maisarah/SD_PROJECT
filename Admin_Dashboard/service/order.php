@@ -262,7 +262,13 @@ switch ($action) {
             }
 
             if ($order) {
-                echo '<h2>Order Details</h2>';
+                echo "
+<div class='d-flex justify-content-start align-items-center'>
+    <h2 class='mb-0 me-3'>Order Details</h2>
+    <button type='button' onclick=\"window.location.href='order.php?action=view'\" class='btn btn-secondary'>Back</button>
+</div>
+";
+
                 echo '<form method="POST" action="" id="orderForm">';
                 echo '<table>';
                 echo '<tr><th>Order ID</th><td>'.htmlspecialchars($order['order_id'] ?? 'N/A').'</td></tr>';
@@ -350,8 +356,6 @@ switch ($action) {
                 } else {
                     echo '<p>No documents found for this order.</p>';
                 }
-
-                echo "<button type='button' onclick=\"window.location.href='order.php?action=view'\" class='btn btn-secondary mt-3'>Back</button>";
 
                 // Modal to view documents
                 echo '

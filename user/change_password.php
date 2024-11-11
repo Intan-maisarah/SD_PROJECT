@@ -84,7 +84,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <div class="card mb-4">
                 <div class="card-header">Change Password</div>
                 <div class="card-body">
-                    <form action="change_password.php" method="POST">
+                    <form action="change_password.php" method="POST" style="background-color:#f0edff;">
                         <div id="requirementsMessage"></div>
                         <div class="mb-3">
                             <label class="small mb-1" for="currentPassword">Current Password</label>
