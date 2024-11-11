@@ -6,6 +6,23 @@ ini_set('display_errors', 1);
 include 'connection.php';
 session_start();
 
+$userId = $_SESSION['user_id'];
+if ($userId) {
+    $stmt = $conn->prepare('SELECT contact, name, address FROM users WHERE id = ?');
+    $stmt->bind_param('i', $userId);
+    $stmt->execute();
+    $stmt->bind_result($contact, $name, $address);
+    if ($stmt->fetch()) {
+        $_SESSION['contact'] = $contact;
+        $_SESSION['name'] = $name;
+        $_SESSION['address'] = $address;
+    } else {
+        echo 'User not found in the database.';
+    }
+    $stmt->close();
+} else {
+    echo 'User ID not set in session.';
+}
 function generateOrderId()
 {
     $randomId = 'orderNum'.strtoupper(bin2hex(random_bytes(3)));
@@ -128,8 +145,16 @@ $conn->close();
                 <h1 class="hero-title">Let Us Handle All Your Printing Needs.</h1>            
                 <p class="hero-par">Your on-the-go printing service!</p>
                 <form id="upload-form" action="" method="post" enctype="multipart/form-data">
-                    <input type="file" name="file" id="file" required onchange="submitForm()" style="display:none;">
-                    <button type="button" class="hero-btn" onclick="document.getElementById('file').click();">Upload Document</button>               
+                    <!-- Hidden Fields for Contact, Name, and Address -->
+                    <input type="hidden" id="user-contact" value="<?php echo htmlspecialchars($_SESSION['contact'] ?? ''); ?>">
+<input type="hidden" id="user-name" value="<?php echo htmlspecialchars($_SESSION['name'] ?? ''); ?>">
+<input type="hidden" id="user-address" value="<?php echo htmlspecialchars($_SESSION['address'] ?? ''); ?>">
+
+                    <!-- File Input (Hidden) -->
+                    <input type="file" name="file" id="file" style="display:none;" onchange="submitUploadForm()">
+
+                    <!-- Button to Trigger Validation and File Selection -->
+                    <button type="button" class="hero-btn" onclick="validateDetailsAndSubmit()">Upload Document</button>
                 </form>
             </div>
             <?php } ?>
@@ -288,9 +313,32 @@ $conn->close();
         <?php } ?>
     });
 
-    function submitForm() {
-        document.getElementById("upload-form").submit(); 
+  
+
+    function validateDetailsAndSubmit() {
+    const contact = document.getElementById('user-contact').value.trim();
+    const name = document.getElementById('user-name').value.trim();
+    const address = document.getElementById('user-address').value.trim();
+
+    if (!contact || !name || !address) {
+        alert('Please ensure your contact, name, and address details are filled before uploading a document.');
+        return false; 
     }
+
+    document.getElementById('file').click();
+    return true; 
+}
+
+function submitUploadForm() {
+    const fileInput = document.getElementById('file');
+    if (fileInput.files.length === 0) {
+        alert('Please select a file before submitting.');
+        return false;
+    }
+    document.getElementById("upload-form").submit();
+}
+
+
     </script>
 </body>
 </html>

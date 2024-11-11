@@ -21,6 +21,13 @@ include 'connection.php';
             text-align: center;
         }
 
+        h2, h4{
+            font-family: "Prompt", sans-serif;
+  font-weight: 500;
+  font-size: 2.0rem;
+  color: #333;
+        }
+
         /* Paper Box Styling */
         #a4-box {
             width: 500px;
@@ -160,7 +167,7 @@ if ($order_id) {
                                     // Render the first page of the PDF
                                     pdf.getPage(1).then(function(page) {
                                         console.log("Rendering page 1 for: ", pdfUrl);
-                                        const scale = 1.0; // Adjust scale if needed
+                                        const scale = 0.75; // Adjust scale if needed
                                         const viewport = page.getViewport({ scale: scale });
                 
                                         const canvas = document.getElementById(canvasId);
