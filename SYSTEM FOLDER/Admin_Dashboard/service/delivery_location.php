@@ -14,8 +14,9 @@ require '../../connection.php';
 $user_id = $_SESSION['user_id'];
 $adminEmail = '';
 $usertype = '';
+$profile_pic = '';
 
-$sql = 'SELECT email, usertype FROM users WHERE id = ?';
+$sql = 'SELECT email, usertype, profile_pic FROM users WHERE id = ?';
 $stmt = $conn->prepare($sql);
 if (!$stmt) {
     echo 'Prepare statement failed: '.$conn->error.'<br>';
@@ -24,10 +25,16 @@ if (!$stmt) {
 $stmt->bind_param('i', $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
-if ($result && $result->num_rows > 0) {
+if (!$result) {
+    echo 'Get result failed: '.$stmt->error.'<br>';
+    exit;
+}
+
+if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $adminEmail = $row['email'];
     $usertype = $row['usertype'];
+    $profile_pic = $row['profile_pic'];
 } else {
     echo 'User not found.<br>';
     exit;
